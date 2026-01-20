@@ -1,10 +1,11 @@
 import type { LoaderFunctionArgs } from "react-router";
-import { useLoaderData, Link, useNavigate } from "react-router";
+import { useLoaderData, Link, useNavigate, useSearchParams } from "react-router";
 import { format, parseISO } from "date-fns";
+import { useState } from "react";
 import { prisma } from "~/utils/db.server";
 import { requireUser, getActiveStudentId } from "~/utils/permissions.server";
 import { AppShell } from "~/components/layout";
-import { TextInput } from "~/components/narration";
+import { TextInput, VoiceRecorder } from "~/components/narration";
 
 export function meta() {
   return [
@@ -56,10 +57,15 @@ interface LoaderData {
   selectedStudentId: string;
 }
 
+type NarrationTab = "text" | "voice";
+
 export default function NewNarration() {
   const { subject, date, userRole, students, selectedStudentId } =
     useLoaderData<LoaderData>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialTab = (searchParams.get("type") as NarrationTab) || "text";
+  const [activeTab, setActiveTab] = useState<NarrationTab>(initialTab);
 
   const dateFormatted = format(parseISO(date), "EEEE, MMMM d, yyyy");
 
@@ -98,12 +104,46 @@ export default function NewNarration() {
             </p>
           </div>
 
-          <TextInput
-            subjectId={subject.id}
-            date={date}
-            subjectName={subject.name}
-            onSaved={handleSaved}
-          />
+          <div className="flex border-b border-gray-200 mb-6">
+            <button
+              type="button"
+              onClick={() => setActiveTab("text")}
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors min-h-[44px] ${
+                activeTab === "text"
+                  ? "border-coral text-coral"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              ✏️ Text
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("voice")}
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors min-h-[44px] ${
+                activeTab === "voice"
+                  ? "border-coral text-coral"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              🎤 Voice
+            </button>
+          </div>
+
+          {activeTab === "text" ? (
+            <TextInput
+              subjectId={subject.id}
+              date={date}
+              subjectName={subject.name}
+              onSaved={handleSaved}
+            />
+          ) : (
+            <VoiceRecorder
+              subjectId={subject.id}
+              date={date}
+              subjectName={subject.name}
+              onSaved={handleSaved}
+            />
+          )}
         </div>
       </div>
     </AppShell>
