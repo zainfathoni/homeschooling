@@ -5,7 +5,7 @@ import { useState } from "react";
 import { prisma } from "~/utils/db.server";
 import { requireUser, getActiveStudentId } from "~/utils/permissions.server";
 import { AppShell } from "~/components/layout";
-import { TextInput, VoiceRecorder } from "~/components/narration";
+import { TextInput, VoiceRecorder, PhotoCapture } from "~/components/narration";
 
 export function meta() {
   return [
@@ -57,7 +57,7 @@ interface LoaderData {
   selectedStudentId: string;
 }
 
-type NarrationTab = "text" | "voice";
+type NarrationTab = "text" | "voice" | "photo";
 
 export default function NewNarration() {
   const { subject, date, userRole, students, selectedStudentId } =
@@ -127,17 +127,37 @@ export default function NewNarration() {
             >
               🎤 Voice
             </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("photo")}
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors min-h-[44px] ${
+                activeTab === "photo"
+                  ? "border-coral text-coral"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              📷 Photo
+            </button>
           </div>
 
-          {activeTab === "text" ? (
+          {activeTab === "text" && (
             <TextInput
               subjectId={subject.id}
               date={date}
               subjectName={subject.name}
               onSaved={handleSaved}
             />
-          ) : (
+          )}
+          {activeTab === "voice" && (
             <VoiceRecorder
+              subjectId={subject.id}
+              date={date}
+              subjectName={subject.name}
+              onSaved={handleSaved}
+            />
+          )}
+          {activeTab === "photo" && (
+            <PhotoCapture
               subjectId={subject.id}
               date={date}
               subjectName={subject.name}
