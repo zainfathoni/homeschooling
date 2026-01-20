@@ -43,3 +43,8 @@ npm-debug.log*
 
 # Local uploads
 uploads/
+
+# Playwright
+e2e/fixtures/auth/*.local.json
+test-results/
+playwright-report/

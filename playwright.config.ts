@@ -6,7 +6,7 @@ const config: PlaywrightTestConfig<Fixtures> = {
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   testDir: './e2e',
-  globalSetup: require.resolve('./playwright-global-setup'),
+  globalSetup: './playwright-global-setup.ts',
   globalTimeout: 10 * 60 * 1000,
   use: {
     trace: 'on-first-retry',
