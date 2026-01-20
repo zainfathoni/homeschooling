@@ -3,6 +3,11 @@ import { useLoaderData, Link, useFetcher } from "react-router";
 import { prisma } from "~/utils/db.server";
 import { getWeekStart, formatWeekParam } from "~/utils/week";
 import { format } from "date-fns";
+import {
+  requireUser,
+  getAccessibleStudentIds,
+  isParent,
+} from "~/utils/permissions.server";
 
 const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -13,10 +18,29 @@ export function meta() {
   ];
 }
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
+  const user = await requireUser(request);
   const weekStart = getWeekStart(params.weekStart ?? "");
 
-  const student = await prisma.student.findFirst();
+  if (!isParent(user)) {
+    throw new Response("Forbidden: Only parents can modify schedule settings", {
+      status: 403,
+    });
+  }
+
+  const accessibleStudentIds = getAccessibleStudentIds(user);
+
+  if (accessibleStudentIds.length === 0) {
+    return {
+      weekStart: weekStart.toISOString(),
+      schoolDays: [0, 1, 2, 3, 4],
+      scheduleId: null,
+    };
+  }
+
+  const student = await prisma.student.findFirst({
+    where: { id: { in: accessibleStudentIds } },
+  });
 
   if (!student) {
     return {
@@ -55,12 +79,32 @@ export async function loader({ params }: LoaderFunctionArgs) {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
+  const user = await requireUser(request);
+
+  if (!isParent(user)) {
+    throw new Response("Forbidden: Only parents can modify schedule settings", {
+      status: 403,
+    });
+  }
+
   const formData = await request.formData();
   const scheduleId = formData.get("scheduleId") as string;
   const schoolDaysJson = formData.get("schoolDays") as string;
 
   if (!scheduleId || !schoolDaysJson) {
     return new Response("Invalid request", { status: 400 });
+  }
+
+  const accessibleStudentIds = getAccessibleStudentIds(user);
+  const schedule = await prisma.weeklySchedule.findUnique({
+    where: { id: scheduleId },
+    select: { studentId: true },
+  });
+
+  if (!schedule || !accessibleStudentIds.includes(schedule.studentId)) {
+    throw new Response("Forbidden: Cannot modify this schedule", {
+      status: 403,
+    });
   }
 
   const schoolDays = JSON.parse(schoolDaysJson) as number[];

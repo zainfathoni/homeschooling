@@ -6,6 +6,11 @@ import { SubjectRow } from "~/components/schedule/SubjectRow";
 import { Pick1Selector } from "~/components/schedule/Pick1Selector";
 import { WeekNavigation } from "~/components/schedule/WeekNavigation";
 import { getWeekStart, getCurrentWeekStart } from "~/utils/week";
+import {
+  requireUser,
+  getAccessibleStudentIds,
+  getDefaultStudentId,
+} from "~/utils/permissions.server";
 
 export function meta() {
   return [
@@ -14,10 +19,26 @@ export function meta() {
   ];
 }
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
+  const user = await requireUser(request);
   const weekStart = getWeekStart(params.weekStart ?? "");
 
+  const accessibleStudentIds = getAccessibleStudentIds(user);
+  const defaultStudentId = getDefaultStudentId(user);
+
+  if (!defaultStudentId || accessibleStudentIds.length === 0) {
+    return {
+      entries: [],
+      weekStart: weekStart.toISOString(),
+      todayIndex: null,
+      offDays: [5, 6],
+    };
+  }
+
   const student = await prisma.student.findFirst({
+    where: {
+      id: { in: accessibleStudentIds },
+    },
     include: {
       subjects: {
         include: {

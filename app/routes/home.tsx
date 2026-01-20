@@ -1,4 +1,6 @@
+import type { LoaderFunctionArgs } from "react-router";
 import { redirect } from "react-router";
+import { requireUser } from "~/utils/permissions.server";
 
 export function meta() {
   return [
@@ -7,7 +9,8 @@ export function meta() {
   ];
 }
 
-export function loader() {
+export async function loader({ request }: LoaderFunctionArgs) {
+  await requireUser(request);
   return redirect("/week");
 }
 

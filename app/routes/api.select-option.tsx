@@ -1,7 +1,12 @@
 import type { ActionFunctionArgs } from "react-router";
 import { prisma } from "~/utils/db.server";
+import {
+  requireUser,
+  requireScheduleEntryAccess,
+} from "~/utils/permissions.server";
 
 export async function action({ request }: ActionFunctionArgs) {
+  const user = await requireUser(request);
   const formData = await request.formData();
   const entryId = formData.get("entryId") as string;
   const selectedOptionId = formData.get("selectedOptionId") as string;
@@ -9,6 +14,8 @@ export async function action({ request }: ActionFunctionArgs) {
   if (!entryId || !selectedOptionId) {
     return new Response("Invalid request", { status: 400 });
   }
+
+  await requireScheduleEntryAccess(user, entryId);
 
   const entry = await prisma.scheduleEntry.findUnique({
     where: { id: entryId },
