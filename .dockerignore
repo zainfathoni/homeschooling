@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+build/
+.react-router/
+
+# Generated files
+generated/
+
+# Database files
+*.db
+*.db-journal
+
+# Environment files
+.env
+.env.*
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE
+.vscode/
+.idea/
+
+# Documentation
+*.md
+!README.md
+docs/
+
+# Beads (issue tracking)
+.beads/
+
+# Development files
+*.log
+.DS_Store
