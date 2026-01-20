@@ -2,6 +2,7 @@ import type { Route } from "./+types/login";
 import { Form, useActionData, useSearchParams, redirect } from "react-router";
 import { generateMagicLink } from "~/utils/auth.server";
 import { getUserId } from "~/utils/session.server";
+import { sendMagicLinkEmail } from "~/utils/email.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await getUserId(request);
@@ -26,7 +27,17 @@ export async function action({ request }: Route.ActionArgs) {
 
   const { url } = generateMagicLink(email);
 
-  return { success: true, magicLinkUrl: url, email };
+  const isProduction = process.env.NODE_ENV === "production";
+  
+  if (isProduction) {
+    const result = await sendMagicLinkEmail(email, url);
+    if (!result.success) {
+      return { error: "Failed to send email. Please try again." };
+    }
+    return { success: true, emailSent: true, email };
+  }
+
+  return { success: true, emailSent: false, magicLinkUrl: url, email };
 }
 
 export default function LoginPage() {
@@ -45,20 +56,24 @@ export default function LoginPage() {
           <div className="space-y-4">
             <div className="bg-green-50 border border-green-200 rounded-lg p-4">
               <p className="text-green-800 text-sm">
-                Magic link generated for <strong>{actionData.email}</strong>
+                {"emailSent" in actionData && actionData.emailSent
+                  ? <>We've sent a magic link to <strong>{actionData.email}</strong>. Check your inbox!</>
+                  : <>Magic link generated for <strong>{actionData.email}</strong></>}
               </p>
             </div>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-blue-800 text-sm mb-2">
-                In production, this would be sent via email. For now, click below:
-              </p>
-              <a
-                href={actionData.magicLinkUrl}
-                className="block w-full bg-coral text-white text-center py-3 rounded-lg font-medium hover:bg-coral/90 transition-colors"
-              >
-                Click to Login
-              </a>
-            </div>
+            {"magicLinkUrl" in actionData && actionData.magicLinkUrl && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-blue-800 text-sm mb-2">
+                  Development mode: Click below to sign in
+                </p>
+                <a
+                  href={actionData.magicLinkUrl}
+                  className="block w-full bg-coral text-white text-center py-3 rounded-lg font-medium hover:bg-coral/90 transition-colors"
+                >
+                  Click to Login
+                </a>
+              </div>
+            )}
           </div>
         ) : (
           <Form method="post" className="space-y-4">
