@@ -1,4 +1,5 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import "./styles/tailwind.css";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -9,7 +10,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="bg-lavender min-h-screen">
         {children}
         <ScrollRestoration />
         <Scripts />
