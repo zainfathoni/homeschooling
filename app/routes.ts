@@ -5,4 +5,5 @@ export default [
   route("login", "routes/login.tsx"),
   route("magic", "routes/magic.tsx"),
   route("logout", "routes/logout.tsx"),
+  route("api/toggle-completion", "routes/api.toggle-completion.tsx"),
 ] satisfies RouteConfig;
