@@ -27,6 +27,7 @@ jobs:
           node-version: 20
           cache: 'npm'
       - run: npm ci
+      - run: npx prisma generate
       - run: npm run typecheck
 
   lint:
@@ -51,6 +52,7 @@ jobs:
           node-version: 20
           cache: 'npm'
       - run: npm ci
+      - run: npx prisma generate
       - run: npm run build
 
   e2e-test:
@@ -68,6 +70,7 @@ jobs:
           node-version: 20
           cache: 'npm'
       - run: npm ci
+      - run: npx prisma generate
 
       - name: Get Playwright version
         id: playwright-version
