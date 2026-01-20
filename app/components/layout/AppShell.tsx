@@ -1,5 +1,9 @@
 import { NavLink } from "react-router";
 import { useState } from "react";
+import {
+  StudentSwitcher,
+  type Student,
+} from "~/components/common/StudentSwitcher";
 
 interface NavItem {
   to: string;
@@ -73,49 +77,12 @@ const navItems: NavItem[] = [
   },
 ];
 
-interface Student {
-  id: string;
-  name: string;
-}
-
 interface AppShellProps {
   children: React.ReactNode;
   userRole?: "PARENT" | "STUDENT";
   students?: Student[];
   selectedStudentId?: string;
   onStudentChange?: (studentId: string) => void;
-}
-
-function StudentSwitcher({
-  students,
-  selectedStudentId,
-  onStudentChange,
-}: {
-  students: Student[];
-  selectedStudentId?: string;
-  onStudentChange?: (studentId: string) => void;
-}) {
-  if (students.length <= 1) {
-    return (
-      <div className="px-3 py-2 text-sm text-gray-600">
-        {students[0]?.name ?? "No students"}
-      </div>
-    );
-  }
-
-  return (
-    <select
-      value={selectedStudentId ?? students[0]?.id ?? ""}
-      onChange={(e) => onStudentChange?.(e.target.value)}
-      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-coral focus:border-transparent min-h-[44px]"
-    >
-      {students.map((student) => (
-        <option key={student.id} value={student.id}>
-          {student.name}
-        </option>
-      ))}
-    </select>
-  );
 }
 
 function SideNav({

@@ -1,6 +1,6 @@
 import { redirect } from "react-router";
 import { prisma } from "./db.server";
-import { getUserId } from "./session.server";
+import { getUserId, getSelectedStudentId } from "./session.server";
 
 type Role = "PARENT" | "STUDENT";
 
@@ -107,6 +107,30 @@ export function getDefaultStudentId(user: AuthUser): string | null {
   if (isParent(user) && user.ownedStudents.length > 0) {
     return user.ownedStudents[0].id;
   }
+  return null;
+}
+
+export async function getActiveStudentId(
+  request: Request,
+  user: AuthUser
+): Promise<string | null> {
+  if (isStudent(user) && user.studentProfile) {
+    return user.studentProfile.id;
+  }
+
+  if (isParent(user)) {
+    const savedStudentId = await getSelectedStudentId(request);
+    if (
+      savedStudentId &&
+      user.ownedStudents.some((s) => s.id === savedStudentId)
+    ) {
+      return savedStudentId;
+    }
+    if (user.ownedStudents.length > 0) {
+      return user.ownedStudents[0].id;
+    }
+  }
+
   return null;
 }
 

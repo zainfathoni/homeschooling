@@ -2,6 +2,7 @@ import { createCookieSessionStorage, redirect } from "react-router";
 
 type SessionData = {
   userId: string;
+  selectedStudentId?: string;
 };
 
 type SessionFlashData = {
@@ -66,4 +67,20 @@ export async function destroySession(request: Request): Promise<Response> {
       "Set-Cookie": await sessionStorage.destroySession(session),
     },
   });
+}
+
+export async function getSelectedStudentId(
+  request: Request
+): Promise<string | undefined> {
+  const session = await getSession(request);
+  return session.get("selectedStudentId");
+}
+
+export async function setSelectedStudentId(
+  request: Request,
+  studentId: string
+): Promise<string> {
+  const session = await getSession(request);
+  session.set("selectedStudentId", studentId);
+  return sessionStorage.commitSession(session);
 }
