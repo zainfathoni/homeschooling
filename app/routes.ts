@@ -10,4 +10,7 @@ export default [
   route("logout", "routes/logout.tsx"),
   route("api/toggle-completion", "routes/api.toggle-completion.tsx"),
   route("api/select-option", "routes/api.select-option.tsx"),
+  route("api/save-narration", "routes/api.save-narration.tsx"),
+  route("narration/new", "routes/narration.new.tsx"),
+  route("narration/:id", "routes/narration.$id.tsx"),
 ] satisfies RouteConfig;
