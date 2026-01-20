@@ -76,6 +76,8 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npx prisma generate
+      - run: npx prisma db push
+      - run: npx prisma db seed
 
       - name: Get Playwright version
         id: playwright-version
