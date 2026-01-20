@@ -6,18 +6,6 @@ set -e
 
 MAX_ITERATIONS=${1:-10}
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROGRESS_FILE="$SCRIPT_DIR/LOG.md"
-ARCHIVE_DIR="$SCRIPT_DIR/archive"
-
-# Initialize LOG.md if it doesn't exist
-if [ ! -f "$PROGRESS_FILE" ]; then
-    echo "# Ralph Progress Log" > "$PROGRESS_FILE"
-    echo "" >> "$PROGRESS_FILE"
-    echo "Started: $(date)" >> "$PROGRESS_FILE"
-    echo "" >> "$PROGRESS_FILE"
-    echo "---" >> "$PROGRESS_FILE"
-    echo "" >> "$PROGRESS_FILE"
-fi
 
 echo "Starting Ralph (Beads edition) - Max iterations: $MAX_ITERATIONS"
 
@@ -44,5 +32,5 @@ done
 
 echo ""
 echo "Ralph reached max iterations ($MAX_ITERATIONS) without completing all tasks."
-echo "Check $PROGRESS_FILE for status."
+echo "Run 'bd list' to check status."
 exit 1

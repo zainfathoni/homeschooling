@@ -26,10 +26,6 @@ bd sync
 git push
 ```
 
-## Logging
-
-Append one-liner to ./LOG.md: `- YYYY-MM-DD - HH:mm:ss: <issue-id> - <brief description>`
-
 ## Completion Signal
 
 When all tasks are done and pushed, output: **COMPLETE**
