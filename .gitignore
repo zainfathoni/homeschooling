@@ -37,3 +37,6 @@ npm-debug.log*
 # bv (beads viewer) local config and caches
 .bv/
 .bv.lock
+
+# Kamal secrets (never commit)
+.kamal/secrets

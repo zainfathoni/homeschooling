@@ -1,0 +1,45 @@
+# Kamal deployment configuration
+# Docs: https://kamal-deploy.org/docs/
+
+service: homeschool-planner
+
+image: zainfathoni/homeschool-planner
+
+servers:
+  web:
+    hosts:
+      - 103.235.75.227
+    labels:
+      traefik.http.routers.homeschool-planner.rule: Host(`homeschool.zainfathoni.com`)
+      traefik.http.routers.homeschool-planner-secure.entrypoints: websecure
+      traefik.http.routers.homeschool-planner-secure.rule: Host(`homeschool.zainfathoni.com`)
+      traefik.http.routers.homeschool-planner-secure.tls: true
+      traefik.http.routers.homeschool-planner-secure.tls.certresolver: letsencrypt
+
+proxy:
+  ssl: true
+  host: homeschool.zainfathoni.com
+
+registry:
+  username: zainfathoni
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+env:
+  clear:
+    NODE_ENV: production
+    DATABASE_URL: file:/app/data/app.db
+  secret:
+    - MAILGUN_API_KEY
+    - MAILGUN_DOMAIN
+    - SESSION_SECRET
+
+volumes:
+  - /var/lib/homeschool-planner/data:/app/data
+  - /var/lib/homeschool-planner/uploads:/app/uploads
+
+builder:
+  arch: amd64
+
+ssh:
+  user: root
