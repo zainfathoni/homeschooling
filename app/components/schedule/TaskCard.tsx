@@ -1,4 +1,4 @@
-import { useFetcher } from "react-router";
+import { useFetcher, Link } from "react-router";
 
 export interface TaskCardProps {
   entryId: string;
@@ -8,6 +8,9 @@ export interface TaskCardProps {
   isCompleted: boolean;
   requiresNarration?: boolean;
   hasNarration?: boolean;
+  subjectId?: string;
+  date?: string;
+  narrationId?: string;
 }
 
 export function TaskCard({
@@ -18,6 +21,9 @@ export function TaskCard({
   isCompleted,
   requiresNarration,
   hasNarration,
+  subjectId,
+  date,
+  narrationId,
 }: TaskCardProps) {
   const fetcher = useFetcher();
   const isSubmitting = fetcher.state !== "idle";
@@ -78,7 +84,23 @@ export function TaskCard({
           {subjectName}
         </span>
       </div>
-      {requiresNarration && (
+      {requiresNarration && subjectId && date && (
+        <Link
+          to={
+            hasNarration && narrationId
+              ? `/narration/${narrationId}`
+              : `/narration/new?subjectId=${subjectId}&date=${date}`
+          }
+          className={`text-xs px-2 py-1 rounded-full transition-colors ${
+            hasNarration
+              ? "bg-green-100 text-green-700 hover:bg-green-200"
+              : "bg-amber-100 text-amber-700 hover:bg-amber-200"
+          }`}
+        >
+          {hasNarration ? "View narration" : "Add narration"}
+        </Link>
+      )}
+      {requiresNarration && (!subjectId || !date) && (
         <span
           className={`text-xs px-2 py-1 rounded-full ${
             hasNarration

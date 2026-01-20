@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format, formatISO } from "date-fns";
 import { ProgressRing } from "./ProgressRing";
 import { TaskCard } from "./TaskCard";
 
@@ -9,6 +9,8 @@ export interface DailyTask {
   isCompleted: boolean;
   requiresNarration?: boolean;
   hasNarration?: boolean;
+  subjectId?: string;
+  narrationId?: string;
 }
 
 export interface DailyFocusProps {
@@ -49,6 +51,9 @@ export function DailyFocus({ date, dayIndex, tasks }: DailyFocusProps) {
             isCompleted={task.isCompleted}
             requiresNarration={task.requiresNarration}
             hasNarration={task.hasNarration}
+            subjectId={task.subjectId}
+            date={formatISO(date, { representation: "date" })}
+            narrationId={task.narrationId}
           />
         ))}
       </div>

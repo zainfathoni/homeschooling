@@ -9,7 +9,8 @@ export interface DuetEntry {
   subjectIcon?: string;
   completedDays: boolean[];
   requiresNarration?: boolean;
-  hasNarration?: boolean;
+  hasNarrationByDay?: Record<number, { hasNarration: boolean; narrationId?: string }>;
+  subjectId?: string;
 }
 
 export interface TabletDuetViewProps {
@@ -37,14 +38,19 @@ export function TabletDuetView({
 
   const selectedDate = addDays(monday, selectedDayIndex);
 
-  const dailyTasks: DailyTask[] = entries.map((entry) => ({
-    entryId: entry.entryId,
-    subjectName: entry.subjectName,
-    subjectIcon: entry.subjectIcon,
-    isCompleted: entry.completedDays[selectedDayIndex] ?? false,
-    requiresNarration: entry.requiresNarration,
-    hasNarration: entry.hasNarration,
-  }));
+  const dailyTasks: DailyTask[] = entries.map((entry) => {
+    const narrationData = entry.hasNarrationByDay?.[selectedDayIndex];
+    return {
+      entryId: entry.entryId,
+      subjectName: entry.subjectName,
+      subjectIcon: entry.subjectIcon,
+      isCompleted: entry.completedDays[selectedDayIndex] ?? false,
+      requiresNarration: entry.requiresNarration,
+      hasNarration: narrationData?.hasNarration ?? false,
+      subjectId: entry.subjectId,
+      narrationId: narrationData?.narrationId,
+    };
+  });
 
   return (
     <div className="hidden md:grid md:grid-cols-2 gap-6 p-6 min-h-screen">

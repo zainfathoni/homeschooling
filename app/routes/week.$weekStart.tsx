@@ -1,6 +1,6 @@
 import type { LoaderFunctionArgs } from "react-router";
 import { useLoaderData } from "react-router";
-import { differenceInDays } from "date-fns";
+import { differenceInDays, addDays, startOfDay, endOfDay } from "date-fns";
 import { prisma } from "~/utils/db.server";
 import { SubjectRow } from "~/components/schedule/SubjectRow";
 import { Pick1Selector } from "~/components/schedule/Pick1Selector";
@@ -94,26 +94,74 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
   interface ScheduleEntryWithSubject {
     id: string;
+    subjectId: string;
     completedDays: string;
     selectedOptionId: string | null;
     subject: {
+      id: string;
       name: string;
       icon: string | null;
       type: string;
+      requiresNarration: boolean;
       options: SubjectOption[];
     };
   }
 
+  const weekEnd = addDays(weekStart, 6);
+  const narrations = await prisma.narration.findMany({
+    where: {
+      studentId: student.id,
+      date: {
+        gte: startOfDay(weekStart),
+        lte: endOfDay(weekEnd),
+      },
+    },
+    select: {
+      id: true,
+      subjectId: true,
+      date: true,
+    },
+  });
+
+  const narrationsBySubjectAndDay = new Map<string, Map<number, string>>();
+  for (const narration of narrations) {
+    const dayIndex = differenceInDays(narration.date, weekStart);
+    if (dayIndex >= 0 && dayIndex <= 6) {
+      if (!narrationsBySubjectAndDay.has(narration.subjectId)) {
+        narrationsBySubjectAndDay.set(narration.subjectId, new Map());
+      }
+      narrationsBySubjectAndDay.get(narration.subjectId)!.set(dayIndex, narration.id);
+    }
+  }
+
   return {
-    entries: schedule.entries.map((entry: ScheduleEntryWithSubject) => ({
-      id: entry.id,
-      subjectName: entry.subject.name,
-      subjectIcon: entry.subject.icon,
-      subjectType: entry.subject.type,
-      completedDays: JSON.parse(entry.completedDays) as boolean[],
-      selectedOptionId: entry.selectedOptionId,
-      options: entry.subject.options,
-    })),
+    entries: schedule.entries.map((entry: ScheduleEntryWithSubject) => {
+      const subjectNarrations = narrationsBySubjectAndDay.get(entry.subjectId);
+      const hasNarrationByDay: Record<number, { hasNarration: boolean; narrationId?: string }> = {};
+      
+      if (entry.subject.requiresNarration) {
+        for (let day = 0; day <= 6; day++) {
+          const narrationId = subjectNarrations?.get(day);
+          hasNarrationByDay[day] = {
+            hasNarration: !!narrationId,
+            narrationId,
+          };
+        }
+      }
+
+      return {
+        id: entry.id,
+        subjectId: entry.subjectId,
+        subjectName: entry.subject.name,
+        subjectIcon: entry.subject.icon,
+        subjectType: entry.subject.type,
+        requiresNarration: entry.subject.requiresNarration,
+        completedDays: JSON.parse(entry.completedDays) as boolean[],
+        selectedOptionId: entry.selectedOptionId,
+        options: entry.subject.options,
+        hasNarrationByDay,
+      };
+    }),
     weekStart: weekStart.toISOString(),
     todayIndex:
       isCurrentWeek && todayIndex >= 0 && todayIndex <= 6 ? todayIndex : null,
@@ -128,12 +176,15 @@ interface Pick1Option {
 
 interface LoaderEntry {
   id: string;
+  subjectId: string;
   subjectName: string;
   subjectIcon: string | null;
   subjectType: string;
+  requiresNarration: boolean;
   completedDays: boolean[];
   selectedOptionId: string | null;
   options: Pick1Option[];
+  hasNarrationByDay: Record<number, { hasNarration: boolean; narrationId?: string }>;
 }
 
 interface LoaderData {
