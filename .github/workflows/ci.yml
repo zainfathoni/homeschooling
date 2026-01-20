@@ -66,8 +66,8 @@ jobs:
     env:
       CI: true
       DATABASE_URL: file:./dev.db
-      SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
-      MAGIC_LINK_SECRET: ${{ secrets.MAGIC_LINK_SECRET }}
+      SESSION_SECRET: ${{ secrets.SESSION_SECRET || 'ci-test-secret-minimum-32-chars' }}
+      MAGIC_LINK_SECRET: ${{ secrets.MAGIC_LINK_SECRET || 'ci-test-magic-link-secret-32ch' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
