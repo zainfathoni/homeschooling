@@ -10,7 +10,8 @@
     "typecheck": "react-router typegen && tsc",
     "test:e2e": "playwright test",
     "test:e2e:dev": "cross-env RUNNING_E2E=true start-server-and-test dev http-get://localhost:3000/ test:e2e",
-    "test:e2e:run": "cross-env RUNNING_E2E=true start-server-and-test start http-get://localhost:3000/ test:e2e"
+    "test:e2e:run": "cross-env RUNNING_E2E=true start-server-and-test start http-get://localhost:3000/ test:e2e",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "^7.2.0",
