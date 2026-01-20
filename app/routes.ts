@@ -13,4 +13,6 @@ export default [
   route("api/save-narration", "routes/api.save-narration.tsx"),
   route("narration/new", "routes/narration.new.tsx"),
   route("narration/:id", "routes/narration.$id.tsx"),
+  route("narrations", "routes/narrations.tsx"),
+  route("narrations/:subjectId", "routes/narrations.$subjectId.tsx"),
 ] satisfies RouteConfig;
