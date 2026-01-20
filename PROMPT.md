@@ -28,4 +28,4 @@ git push
 
 ## Completion Signal
 
-When all tasks are done and pushed, output: **COMPLETE**
+After pushing, run `bd ready` to check for remaining issues. Only output **COMPLETE** if `bd ready` returns no issues. Otherwise, end the session silently (the script will start a new session).
