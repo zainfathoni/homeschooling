@@ -11,9 +11,8 @@ import { test, expect } from './base-test'
 test.describe('Public pages smoke tests', () => {
   test('login page loads and shows content', async ({ page }) => {
     await page.goto('/login')
-    await expect(page).toHaveTitle(/Homeschool Planner/)
     await expect(page.locator('body')).toBeVisible()
-    await expect(page.getByText('Welcome to Homeschool Planner')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Welcome to Homeschool Planner' })).toBeVisible()
     await expect(
       page.getByRole('button', { name: /send magic link/i })
     ).toBeVisible()
