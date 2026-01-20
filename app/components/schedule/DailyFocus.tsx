@@ -1,8 +1,9 @@
 import { format } from "date-fns";
 import { ProgressRing } from "./ProgressRing";
+import { TaskCard } from "./TaskCard";
 
 export interface DailyTask {
-  id: string;
+  entryId: string;
   subjectName: string;
   subjectIcon?: string;
   isCompleted: boolean;
@@ -12,11 +13,11 @@ export interface DailyTask {
 
 export interface DailyFocusProps {
   date: Date;
+  dayIndex: number;
   tasks: DailyTask[];
-  onToggleComplete?: (taskId: string, completed: boolean) => void;
 }
 
-export function DailyFocus({ date, tasks, onToggleComplete }: DailyFocusProps) {
+export function DailyFocus({ date, dayIndex, tasks }: DailyFocusProps) {
   const completedCount = tasks.filter((t) => t.isCompleted).length;
   const totalCount = tasks.length;
   const percentage = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
@@ -39,61 +40,16 @@ export function DailyFocus({ date, tasks, onToggleComplete }: DailyFocusProps) {
 
       <div className="space-y-2">
         {tasks.map((task) => (
-          <div
-            key={task.id}
-            className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
-              task.isCompleted ? "bg-gray-50" : "bg-lavender/50"
-            }`}
-          >
-            <button
-              onClick={() => onToggleComplete?.(task.id, !task.isCompleted)}
-              className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
-                task.isCompleted
-                  ? "bg-coral border-coral text-white"
-                  : "border-gray-300 hover:border-coral"
-              }`}
-              aria-label={task.isCompleted ? "Mark incomplete" : "Mark complete"}
-            >
-              {task.isCompleted && (
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              )}
-            </button>
-            <div className="flex items-center gap-2 flex-1">
-              {task.subjectIcon && (
-                <span className="text-lg">{task.subjectIcon}</span>
-              )}
-              <span
-                className={`font-medium ${
-                  task.isCompleted ? "text-gray-400 line-through" : "text-gray-700"
-                }`}
-              >
-                {task.subjectName}
-              </span>
-            </div>
-            {task.requiresNarration && (
-              <span
-                className={`text-xs px-2 py-1 rounded-full ${
-                  task.hasNarration
-                    ? "bg-green-100 text-green-700"
-                    : "bg-amber-100 text-amber-700"
-                }`}
-              >
-                {task.hasNarration ? "Narrated" : "Needs narration"}
-              </span>
-            )}
-          </div>
+          <TaskCard
+            key={task.entryId}
+            entryId={task.entryId}
+            dayIndex={dayIndex}
+            subjectName={task.subjectName}
+            subjectIcon={task.subjectIcon}
+            isCompleted={task.isCompleted}
+            requiresNarration={task.requiresNarration}
+            hasNarration={task.hasNarration}
+          />
         ))}
       </div>
 
