@@ -10,11 +10,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Tool selection (amp or claude)
 RALPH_TOOL=${RALPH_TOOL:-amp}
+# Mode selection for amp (free, smart, rush)
+RALPH_MODE=${RALPH_MODE:-smart}
 
 # Build command based on tool
 case "$RALPH_TOOL" in
     amp)
-        CMD="amp --dangerously-allow-all"
+        CMD="amp --dangerously-allow-all --mode $RALPH_MODE"
         ;;
     claude)
         CMD="claude -p --dangerously-skip-permissions"
