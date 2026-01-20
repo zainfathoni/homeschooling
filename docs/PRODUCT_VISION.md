@@ -174,7 +174,7 @@ interface Narration {
 
 ### File Structure
 
-```
+```txt
 src/
 ├── components/
 │   ├── layout/
