@@ -35,8 +35,8 @@ env:
     - SESSION_SECRET
 
 volumes:
-  - /var/lib/homeschool-planner/data:/app/data
-  - /var/lib/homeschool-planner/uploads:/app/uploads
+  - /data/homeschool/db:/app/data
+  - /data/homeschool/uploads:/app/uploads
 
 builder:
   arch: amd64

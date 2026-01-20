@@ -40,3 +40,6 @@ npm-debug.log*
 
 # Kamal secrets (never commit)
 .kamal/secrets
+
+# Local uploads
+uploads/

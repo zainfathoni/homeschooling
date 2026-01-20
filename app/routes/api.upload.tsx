@@ -8,7 +8,7 @@ import {
   requireStudentAccess,
 } from "~/utils/permissions.server";
 
-const UPLOAD_DIR = "/data/homeschool/uploads";
+const UPLOAD_DIR = process.env.NODE_ENV === "production" ? "/app/uploads" : "./uploads";
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 const ALLOWED_VOICE_TYPES = ["audio/webm", "audio/mp4", "audio/mpeg", "audio/ogg", "audio/wav"];
 const ALLOWED_PHOTO_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
