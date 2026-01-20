@@ -4,6 +4,7 @@ export default [
   index("routes/home.tsx"),
   route("week", "routes/week.tsx"),
   route("week/:weekStart", "routes/week.$weekStart.tsx"),
+  route("week/:weekStart/settings", "routes/week.$weekStart.settings.tsx"),
   route("login", "routes/login.tsx"),
   route("magic", "routes/magic.tsx"),
   route("logout", "routes/logout.tsx"),
