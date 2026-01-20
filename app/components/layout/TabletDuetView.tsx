@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { WeeklyGrid } from "~/components/schedule/WeeklyGrid";
 import { DailyFocus, type DailyTask } from "~/components/schedule/DailyFocus";
 import { addDays, startOfWeek, isSameDay } from "date-fns";
 

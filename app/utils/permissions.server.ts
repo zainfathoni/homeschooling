@@ -134,11 +134,11 @@ export async function getActiveStudentId(
   return null;
 }
 
-export function canMarkComplete(user: AuthUser): boolean {
+export function canMarkComplete(_user: AuthUser): boolean {
   return true;
 }
 
-export function canAddNarration(user: AuthUser): boolean {
+export function canAddNarration(_user: AuthUser): boolean {
   return true;
 }
 
