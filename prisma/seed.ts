@@ -25,23 +25,56 @@ async function main() {
   });
   console.log(`✓ Created parent: ${parent.name}`);
 
-  // Create students: Najmi (11) and Isa (8)
-  const najmi = await prisma.student.create({
-    data: {
+  // Create student user (Najmi with login)
+  const studentUser = await prisma.user.upsert({
+    where: { email: "najmi@example.com" },
+    update: {},
+    create: {
+      email: "najmi@example.com",
       name: "Najmi",
-      yearLevel: 11,
-      parentId: parent.id,
+      role: "STUDENT",
     },
   });
+  console.log(`✓ Created student user: ${studentUser.name}`);
+
+  // Create students: Najmi (11) and Isa (8)
+  // Use raw SQL upsert since Prisma Student model doesn't have a unique field for upsert
+  const existingNajmi = await prisma.student.findFirst({
+    where: { name: "Najmi", parentId: parent.id },
+  });
+  let najmi;
+  if (existingNajmi) {
+    najmi = await prisma.student.update({
+      where: { id: existingNajmi.id },
+      data: { userId: studentUser.id },
+    });
+  } else {
+    najmi = await prisma.student.create({
+      data: {
+        name: "Najmi",
+        yearLevel: 11,
+        parentId: parent.id,
+        userId: studentUser.id,
+      },
+    });
+  }
   console.log(`✓ Created student: ${najmi.name} (Year ${najmi.yearLevel})`);
 
-  const isa = await prisma.student.create({
-    data: {
-      name: "Isa",
-      yearLevel: 8,
-      parentId: parent.id,
-    },
+  const existingIsa = await prisma.student.findFirst({
+    where: { name: "Isa", parentId: parent.id },
   });
+  let isa;
+  if (existingIsa) {
+    isa = existingIsa;
+  } else {
+    isa = await prisma.student.create({
+      data: {
+        name: "Isa",
+        yearLevel: 8,
+        parentId: parent.id,
+      },
+    });
+  }
   console.log(`✓ Created student: ${isa.name} (Year ${isa.yearLevel})`);
 
   // Common FIXED subjects (daily)

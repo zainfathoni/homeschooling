@@ -59,6 +59,7 @@ async function generateAuthFixture(
 export async function setupAuthFixtures(): Promise<void> {
   const db = new Database(databasePath);
   const parent = db.prepare("SELECT id FROM User WHERE email = ?").get("zain@example.com") as { id: string } | undefined;
+  const student = db.prepare("SELECT id FROM User WHERE email = ?").get("najmi@example.com") as { id: string } | undefined;
   db.close();
 
   if (parent) {
@@ -66,4 +67,15 @@ export async function setupAuthFixtures(): Promise<void> {
   } else {
     console.warn("Parent user not found in database - run `npx prisma db seed` first");
   }
+
+  if (student) {
+    await generateAuthFixture(student.id, "student.local.json");
+  } else {
+    console.warn("Student user not found in database - run `npx prisma db seed` first");
+  }
+}
+
+// Run directly when executed as a script
+if (import.meta.url === `file://${process.argv[1]}`) {
+  setupAuthFixtures();
 }
