@@ -1,11 +1,15 @@
 import "dotenv/config";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-import { PrismaClient } from "../../generated/prisma/client";
+import { createRequire } from "module";
 
-let prisma: PrismaClient;
+const require = createRequire(import.meta.url);
+const { PrismaClient } = require("../../generated/prisma");
+
+type PrismaClientType = InstanceType<typeof PrismaClient>;
+let prisma: PrismaClientType;
 
 declare global {
-  var __db__: PrismaClient | undefined;
+  var __db__: PrismaClientType | undefined;
 }
 
 function createPrismaClient() {

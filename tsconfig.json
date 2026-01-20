@@ -21,6 +21,10 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "resolveJsonModule": true,
-    "rootDirs": [".", "./.react-router/types"]
+    "rootDirs": [".", "./.react-router/types"],
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./app/*"]
+    }
   }
 }
