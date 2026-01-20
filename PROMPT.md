@@ -28,4 +28,4 @@ git push
 
 ## Completion Signal
 
-After pushing, run `bd ready` to check for remaining issues. Only output **COMPLETE** if `bd ready` returns no issues. Otherwise, end the session silently (the script will start a new session).
+After pushing, run `bd ready` to check for remaining issues. Only output `<promise>COMPLETE</promise>` if `bd ready` returns no issues. Otherwise, end the session silently (the script will start a new session).

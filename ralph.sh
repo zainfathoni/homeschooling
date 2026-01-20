@@ -39,7 +39,7 @@ for i in $(seq 1 $MAX_ITERATIONS); do
     OUTPUT=$(cat "$SCRIPT_DIR/PROMPT.md" | $CMD 2>&1 | tee /dev/stderr) || true
 
     # Check for completion signal
-    if echo "$OUTPUT" | grep -q "COMPLETE"; then
+    if echo "$OUTPUT" | grep -q "<promise>COMPLETE</promise>"; then
         echo ""
         echo "Ralph completed all tasks!"
         echo "Completed at iteration $i of $MAX_ITERATIONS"
