@@ -10,8 +10,8 @@ Homeschool Planner - weekly planning app for homeschooling families. Tracks dail
 
 ## Workflow
 
-1. Find work: Run `bd ready` to pick 1 workable issue (check ./LOG.md for context)
-2. Claim it: `bd update <id> --status in_progress`
+1. Resume: Run `bd activity --limit 5` to see recent history, then `bd list --status=in_progress`. If any issue is in progress, resume it and skip to step 3
+2. Find work: Run `bd ready` to pick 1 workable issue, then `bd update <id> --status in_progress` to claim it
 3. Implement: Complete the work with tests
 4. Verify: Run quality gates (`npm run lint --if-present && npm run typecheck && npm run build`, and `npm run test:e2e:run` if UI changed)
 5. Land the plane: Close issue, commit, push to remote
