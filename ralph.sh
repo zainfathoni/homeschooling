@@ -35,8 +35,19 @@ for i in $(seq 1 $MAX_ITERATIONS); do
     echo " Ralph Iteration $i of $MAX_ITERATIONS"
     echo "═══════════════════════════════════════════════════════"
 
-    # Run the selected tool with the prompt
-    OUTPUT=$(cat "$SCRIPT_DIR/PROMPT.md" | $CMD 2>&1 | tee /dev/stderr) || true
+    # Run the selected tool with the prompt (with retry logic)
+    RETRY_COUNT=0
+    MAX_RETRIES=3
+    OUTPUT=""
+
+    while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+        OUTPUT=$(cat "$SCRIPT_DIR/PROMPT.md" | $CMD 2>&1 | tee /dev/stderr) && break
+        RETRY_COUNT=$((RETRY_COUNT + 1))
+        if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+            echo "$RALPH_TOOL failed, retrying ($RETRY_COUNT/$MAX_RETRIES) after 10s..."
+            sleep 10
+        fi
+    done
 
     # Check for completion signal
     if echo "$OUTPUT" | grep -q "<promise>COMPLETE</promise>"; then
@@ -47,7 +58,7 @@ for i in $(seq 1 $MAX_ITERATIONS); do
     fi
 
     echo "Iteration $i complete. Continuing..."
-    sleep 2
+    sleep 5
 done
 
 echo ""
