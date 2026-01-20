@@ -3,6 +3,7 @@ import { useLoaderData } from "react-router";
 import { startOfWeek, differenceInDays } from "date-fns";
 import { prisma } from "~/utils/db.server";
 import { SubjectRow } from "~/components/schedule/SubjectRow";
+import { Pick1Selector } from "~/components/schedule/Pick1Selector";
 
 export function meta() {
   return [
@@ -41,7 +42,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
     include: {
       entries: {
         include: {
-          subject: true,
+          subject: {
+            include: { options: true },
+          },
         },
       },
     },
@@ -61,7 +64,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
       include: {
         entries: {
           include: {
-            subject: true,
+            subject: {
+              include: { options: true },
+            },
           },
         },
       },
@@ -76,10 +81,21 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const todayIndex = differenceInDays(today, monday);
   const isCurrentWeek = weekStart.getTime() === monday.getTime();
 
+  interface SubjectOption {
+    id: string;
+    name: string;
+  }
+
   interface ScheduleEntryWithSubject {
     id: string;
     completedDays: string;
-    subject: { name: string; icon: string | null };
+    selectedOptionId: string | null;
+    subject: {
+      name: string;
+      icon: string | null;
+      type: string;
+      options: SubjectOption[];
+    };
   }
 
   return {
@@ -87,7 +103,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
       id: entry.id,
       subjectName: entry.subject.name,
       subjectIcon: entry.subject.icon,
+      subjectType: entry.subject.type,
       completedDays: JSON.parse(entry.completedDays) as boolean[],
+      selectedOptionId: entry.selectedOptionId,
+      options: entry.subject.options,
     })),
     weekStart: weekStart.toISOString(),
     todayIndex: isCurrentWeek && todayIndex >= 0 && todayIndex <= 6 ? todayIndex : null,
@@ -95,11 +114,19 @@ export async function loader({ request }: LoaderFunctionArgs) {
   };
 }
 
+interface Pick1Option {
+  id: string;
+  name: string;
+}
+
 interface LoaderEntry {
   id: string;
   subjectName: string;
   subjectIcon: string | null;
+  subjectType: string;
   completedDays: boolean[];
+  selectedOptionId: string | null;
+  options: Pick1Option[];
 }
 
 interface LoaderData {
@@ -123,17 +150,31 @@ export default function Home() {
         </div>
       ) : (
         <div className="space-y-3">
-          {entries.map((entry) => (
-            <SubjectRow
-              key={entry.id}
-              entryId={entry.id}
-              subjectName={entry.subjectName}
-              subjectIcon={entry.subjectIcon ?? undefined}
-              completedDays={entry.completedDays}
-              offDays={offDays}
-              todayIndex={todayIndex ?? undefined}
-            />
-          ))}
+          {entries.map((entry) =>
+            entry.subjectType === "PICK1" ? (
+              <Pick1Selector
+                key={entry.id}
+                entryId={entry.id}
+                subjectName={entry.subjectName}
+                subjectIcon={entry.subjectIcon ?? undefined}
+                options={entry.options}
+                selectedOptionId={entry.selectedOptionId}
+                completedDays={entry.completedDays}
+                offDays={offDays}
+                todayIndex={todayIndex ?? undefined}
+              />
+            ) : (
+              <SubjectRow
+                key={entry.id}
+                entryId={entry.id}
+                subjectName={entry.subjectName}
+                subjectIcon={entry.subjectIcon ?? undefined}
+                completedDays={entry.completedDays}
+                offDays={offDays}
+                todayIndex={todayIndex ?? undefined}
+              />
+            )
+          )}
         </div>
       )}
     </main>
