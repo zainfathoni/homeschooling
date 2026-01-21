@@ -101,6 +101,8 @@ test.describe('Subject completion - Multiple days', () => {
     const weeklyGrid = new WeeklyGridPage(page)
     await weeklyGrid.goto()
     await weeklyGrid.expectLoaded()
+    // Wait for hydration before interacting with fetcher forms
+    await page.waitForLoadState('networkidle')
 
     const mathRow = weeklyGrid.getVisibleSubjectRow('📐')
     const buttons = mathRow.getByRole('button', { name: /Mark/ })
@@ -112,10 +114,10 @@ test.describe('Subject completion - Multiple days', () => {
     const secondLabel = await secondButton.getAttribute('aria-label')
 
     await secondButton.click()
-    
+
     // Wait for the toggle to complete - check second button changed state
     const expectedSecondLabel = secondLabel === 'Mark incomplete' ? 'Mark complete' : 'Mark incomplete'
-    await expect(buttons.nth(1)).toHaveAttribute('aria-label', expectedSecondLabel)
+    await expect(buttons.nth(1)).toHaveAttribute('aria-label', expectedSecondLabel, { timeout: 10000 })
 
     // First button should remain unchanged
     await expect(buttons.first()).toHaveAttribute('aria-label', firstLabel!)

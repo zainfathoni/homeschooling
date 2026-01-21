@@ -44,30 +44,45 @@ test.describe('Weekly grid - Page load', () => {
   })
 })
 
+const isMobileProject = (testInfo: { project: { name: string } }) =>
+  ['Pixel 4', 'iPhone 11'].includes(testInfo.project.name)
+
 test.describe('Weekly grid - Subject types', () => {
-  test('shows fixed subjects with daily checkboxes', async ({ page }) => {
+  // SubjectRow with checkboxes is only visible on mobile (inside md:hidden container)
+  // On tablet/desktop, TabletDuetView is shown instead
+  test('shows fixed subjects with daily checkboxes', async ({ page, noscript }, testInfo) => {
+    test.skip(noscript, 'Mobile layout requires JavaScript for hydration')
+    test.skip(!isMobileProject(testInfo), 'SubjectRow is only visible on mobile')
     const weeklyGrid = new WeeklyGridPage(page)
     await weeklyGrid.goto()
-    const mathRow = weeklyGrid.getSubjectRow('📐Math')
+    // On mobile, find subject in the mobile container
+    const mobileContainer = page.locator('.md\\:hidden')
+    const mathRow = mobileContainer.locator('div').filter({ hasText: /📐.*Math/ }).first()
     await expect(mathRow).toBeVisible()
     const checkboxes = mathRow.getByRole('button', { name: /Mark/i })
     await expect(checkboxes.first()).toBeVisible()
   })
 
-  test('shows Pick1 subjects with option buttons', async ({ page }) => {
+  // Pick1Selector is only rendered in mobile section (md:hidden)
+  test('shows Pick1 subjects with option buttons', async ({ page, noscript }, testInfo) => {
+    test.skip(noscript, 'Mobile layout requires JavaScript for hydration')
+    test.skip(!isMobileProject(testInfo), 'Pick1Selector is only visible on mobile')
     const weeklyGrid = new WeeklyGridPage(page)
     await weeklyGrid.goto()
     await expect(weeklyGrid.getPick1Button('Safar Book')).toBeVisible()
     await expect(weeklyGrid.getPick1Button('Quran Recitation')).toBeVisible()
   })
 
-  test('can select Pick1 option', async ({ page, noscript }) => {
+  test('can select Pick1 option', async ({ page, noscript }, testInfo) => {
     test.skip(noscript, 'Requires JavaScript for form submission')
+    test.skip(!isMobileProject(testInfo), 'Pick1Selector is only visible on mobile')
     const weeklyGrid = new WeeklyGridPage(page)
     await weeklyGrid.goto()
+    // Wait for hydration before interacting with fetcher forms
+    await page.waitForLoadState('networkidle')
     const safarButton = weeklyGrid.getPick1Button('Safar Book')
     await safarButton.click()
-    await expect(safarButton).toHaveClass(/bg-coral/)
+    await expect(safarButton).toHaveClass(/bg-coral/, { timeout: 10000 })
   })
 })
 
@@ -76,27 +91,25 @@ test.describe('Weekly grid - Completion toggle', () => {
     test.skip(noscript, 'Requires JavaScript for form submission')
     const weeklyGrid = new WeeklyGridPage(page)
     await weeklyGrid.goto()
-    
+    // Wait for hydration to complete before interacting with fetcher forms
+    await page.waitForLoadState('networkidle')
+
     const mathRow = weeklyGrid.getVisibleSubjectRow('📐')
     const firstButton = mathRow.getByRole('button', { name: /Mark/ }).first()
-    const initiallyComplete = await firstButton.getAttribute('aria-label') === 'Mark incomplete'
-    
+    await expect(firstButton).toBeEnabled()
+    const initialAriaLabel = await firstButton.getAttribute('aria-label')
+    const initiallyComplete = initialAriaLabel === 'Mark incomplete'
+
+    // Toggle and wait for state change using explicit attribute assertion
     await firstButton.click()
-    
-    if (initiallyComplete) {
-      await expect(mathRow.getByRole('button', { name: 'Mark complete' }).first()).toBeVisible()
-    } else {
-      await expect(mathRow.getByRole('button', { name: 'Mark incomplete' }).first()).toBeVisible()
-    }
-    
-    const toggledButton = mathRow.getByRole('button', { name: /Mark/ }).first()
-    await toggledButton.click()
-    
-    if (initiallyComplete) {
-      await expect(mathRow.getByRole('button', { name: 'Mark incomplete' }).first()).toBeVisible()
-    } else {
-      await expect(mathRow.getByRole('button', { name: 'Mark complete' }).first()).toBeVisible()
-    }
+    const expectedLabel = initiallyComplete ? 'Mark complete' : 'Mark incomplete'
+    await expect(mathRow.getByRole('button', { name: /Mark/ }).first())
+      .toHaveAttribute('aria-label', expectedLabel, { timeout: 10000 })
+
+    // Toggle back to restore original state
+    await mathRow.getByRole('button', { name: /Mark/ }).first().click()
+    await expect(mathRow.getByRole('button', { name: /Mark/ }).first())
+      .toHaveAttribute('aria-label', initialAriaLabel!, { timeout: 10000 })
   })
 })
 
@@ -151,11 +164,14 @@ test.describe('Weekly grid - Tablet/Desktop layout', () => {
     viewport: { width: 1024, height: 768 },
   })
 
-  test('shows desktop row layout', async ({ page, noscript }) => {
+  test('shows tablet duet view layout', async ({ page, noscript }, testInfo) => {
     test.skip(noscript, 'Desktop layout requires JavaScript for hydration')
+    test.skip(isMobileProject(testInfo), 'Tablet layout not visible on mobile projects')
     const weeklyGrid = new WeeklyGridPage(page)
     await weeklyGrid.goto()
-    await expect(weeklyGrid.getVisibleSubject('Math')).toBeVisible()
-    await expect(weeklyGrid.getDesktopRow('Math')).toBeVisible()
+    // TabletDuetView shows Weekly Overview and DailyFocus panels
+    await expect(page.getByRole('heading', { name: 'Weekly Overview' })).toBeVisible()
+    // DailyFocus panel shows subjects with Math
+    await expect(page.getByText('Math').first()).toBeVisible()
   })
 })
