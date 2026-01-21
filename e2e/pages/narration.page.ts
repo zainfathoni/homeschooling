@@ -135,6 +135,34 @@ export class NarrationPage {
     await expect(this.textarea).toBeVisible()
   }
 
+  async clickTextTab() {
+    await this.textTab.click()
+  }
+
+  async clickVoiceTab() {
+    await this.voiceTab.click()
+  }
+
+  async clickPhotoTab() {
+    await this.photoTab.click()
+  }
+
+  async expectVoiceTabActive() {
+    await expect(this.voiceTab).toHaveClass(/border-coral/)
+  }
+
+  async expectPhotoTabActive() {
+    await expect(this.photoTab).toHaveClass(/border-coral/)
+  }
+
+  async expectVoiceRecordingInterface() {
+    await expect(this.page.getByRole('button', { name: /Start recording/i })).toBeVisible()
+  }
+
+  async expectPhotoUploadInterface() {
+    await expect(this.page.getByRole('button', { name: /Upload photo from device/i })).toBeVisible()
+  }
+
   async fillContent(content: string) {
     await this.textarea.fill(content)
   }
