@@ -54,7 +54,9 @@ export class WeeklyGridPage {
     const prevHref = await this.prevWeekLink.getAttribute('href')
     await this.prevWeekLink.click()
     if (prevHref) {
-      await this.page.waitForURL(new RegExp(prevHref.replace(/\//g, '\\/')))
+      // Escape all regex special characters in the URL (including ? from query params)
+      const escapedHref = prevHref.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      await this.page.waitForURL(new RegExp(escapedHref))
     }
   }
 
