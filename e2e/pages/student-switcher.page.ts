@@ -40,9 +40,14 @@ export class StudentSwitcherPage {
   }
 
   async selectStudent(studentName: string) {
+    // Wait for the API response that sets the cookie
+    const responsePromise = this.page.waitForResponse(
+      (response) => response.url().includes('/api/select-student') && response.status() === 200
+    )
     await this.switcher.selectOption({ label: studentName })
-    // Wait for fetcher to complete and page to update
-    await this.page.waitForTimeout(500)
+    await responsePromise
+    // Reload to ensure the new cookie is used (WebKit on Linux doesn't revalidate properly)
+    await this.page.reload()
     await this.page.waitForLoadState('networkidle')
   }
 
