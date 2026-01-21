@@ -3,7 +3,8 @@
     "allow": [
       "WebFetch(domain:playwright.dev)",
       "Bash(gh run:*)",
-      "Bash(bd activity:*)"
+      "Bash(bd activity:*)",
+      "Bash(npm pkg:*)"
     ]
   }
 }
