@@ -5,7 +5,7 @@ import { prisma } from "~/utils/db.server";
 import { SubjectRow } from "~/components/schedule/SubjectRow";
 import { Pick1Selector } from "~/components/schedule/Pick1Selector";
 import { WeekNavigation } from "~/components/schedule/WeekNavigation";
-import { AppShell } from "~/components/layout";
+import { AppShell, TabletDuetView } from "~/components/layout";
 import { getWeekStart, getCurrentWeekStart } from "~/utils/week";
 import {
   requireUser,
@@ -240,6 +240,16 @@ export default function WeekView() {
   const weekStartDate = new Date(weekStart);
   const selectedStudentName = students.find((s) => s.id === selectedStudentId)?.name;
 
+  const duetEntries = entries.map((entry) => ({
+    entryId: entry.id,
+    subjectName: entry.subjectName,
+    subjectIcon: entry.subjectIcon ?? undefined,
+    completedDays: entry.completedDays,
+    requiresNarration: entry.requiresNarration,
+    hasNarrationByDay: entry.hasNarrationByDay,
+    subjectId: entry.subjectId,
+  }));
+
   return (
     <AppShell
       userRole={userRole}
@@ -266,33 +276,44 @@ export default function WeekView() {
             </p>
           </div>
         ) : (
-          <div className="space-y-3">
-            {entries.map((entry) =>
-              entry.subjectType === "PICK1" ? (
-                <Pick1Selector
-                  key={entry.id}
-                  entryId={entry.id}
-                  subjectName={entry.subjectName}
-                  subjectIcon={entry.subjectIcon ?? undefined}
-                  options={entry.options}
-                  selectedOptionId={entry.selectedOptionId}
-                  completedDays={entry.completedDays}
-                  offDays={offDays}
-                  todayIndex={todayIndex ?? undefined}
-                />
-              ) : (
-                <SubjectRow
-                  key={entry.id}
-                  entryId={entry.id}
-                  subjectName={entry.subjectName}
-                  subjectIcon={entry.subjectIcon ?? undefined}
-                  completedDays={entry.completedDays}
-                  offDays={offDays}
-                  todayIndex={todayIndex ?? undefined}
-                />
-              )
-            )}
-          </div>
+          <>
+            {/* Tablet/Desktop: Duet view with weekly overview + daily focus */}
+            <TabletDuetView
+              weekStart={weekStartDate}
+              entries={duetEntries}
+              offDays={offDays}
+              studentId={selectedStudentId ?? undefined}
+            />
+
+            {/* Mobile: Standard subject rows */}
+            <div className="space-y-3 md:hidden">
+              {entries.map((entry) =>
+                entry.subjectType === "PICK1" ? (
+                  <Pick1Selector
+                    key={entry.id}
+                    entryId={entry.id}
+                    subjectName={entry.subjectName}
+                    subjectIcon={entry.subjectIcon ?? undefined}
+                    options={entry.options}
+                    selectedOptionId={entry.selectedOptionId}
+                    completedDays={entry.completedDays}
+                    offDays={offDays}
+                    todayIndex={todayIndex ?? undefined}
+                  />
+                ) : (
+                  <SubjectRow
+                    key={entry.id}
+                    entryId={entry.id}
+                    subjectName={entry.subjectName}
+                    subjectIcon={entry.subjectIcon ?? undefined}
+                    completedDays={entry.completedDays}
+                    offDays={offDays}
+                    todayIndex={todayIndex ?? undefined}
+                  />
+                )
+              )}
+            </div>
+          </>
         )}
       </div>
     </AppShell>
