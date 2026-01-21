@@ -1,6 +1,7 @@
 import { redirect } from "react-router";
 import { prisma } from "./db.server";
 import { getUserId, getSelectedStudentId } from "./session.server";
+import { getStudentIdFromRequest } from "./student-url";
 
 type Role = "PARENT" | "STUDENT";
 
@@ -110,15 +111,34 @@ export function getDefaultStudentId(user: AuthUser): string | null {
   return null;
 }
 
+/**
+ * Get the active student ID for the current request.
+ *
+ * Priority order:
+ * 1. URL query parameter `?student=:studentId` (primary)
+ * 2. Cookie-based selection (deprecated, for backwards compatibility)
+ * 3. First owned student (fallback)
+ */
 export async function getActiveStudentId(
   request: Request,
   user: AuthUser
 ): Promise<string | null> {
+  // Students always view their own data
   if (isStudent(user) && user.studentProfile) {
     return user.studentProfile.id;
   }
 
   if (isParent(user)) {
+    // 1. Check URL query parameter (primary method)
+    const urlStudentId = getStudentIdFromRequest(request);
+    if (
+      urlStudentId &&
+      user.ownedStudents.some((s) => s.id === urlStudentId)
+    ) {
+      return urlStudentId;
+    }
+
+    // 2. Fall back to cookie (deprecated)
     const savedStudentId = await getSelectedStudentId(request);
     if (
       savedStudentId &&
@@ -126,6 +146,8 @@ export async function getActiveStudentId(
     ) {
       return savedStudentId;
     }
+
+    // 3. Default to first student
     if (user.ownedStudents.length > 0) {
       return user.ownedStudents[0].id;
     }

@@ -1,9 +1,10 @@
-import { NavLink } from "react-router";
+import { NavLink, useLocation } from "react-router";
 import { useState } from "react";
 import {
   StudentSwitcher,
   type Student,
 } from "~/components/common/StudentSwitcher";
+import { buildStudentUrl } from "~/utils/student-url";
 
 interface NavItem {
   to: string;
@@ -82,19 +83,16 @@ interface AppShellProps {
   userRole?: "PARENT" | "STUDENT";
   students?: Student[];
   selectedStudentId?: string;
-  onStudentChange?: (studentId: string) => void;
 }
 
 function SideNav({
   userRole,
   students,
   selectedStudentId,
-  onStudentChange,
 }: {
   userRole?: "PARENT" | "STUDENT";
   students?: Student[];
   selectedStudentId?: string;
-  onStudentChange?: (studentId: string) => void;
 }) {
   return (
     <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-200 h-screen sticky top-0">
@@ -110,7 +108,6 @@ function SideNav({
           <StudentSwitcher
             students={students}
             selectedStudentId={selectedStudentId}
-            onStudentChange={onStudentChange}
           />
         </div>
       )}
@@ -120,7 +117,7 @@ function SideNav({
           {navItems.map((item) => (
             <li key={item.to}>
               <NavLink
-                to={item.to}
+                to={buildStudentUrl(item.to, selectedStudentId)}
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-3 py-3 rounded-lg transition-colors min-h-[44px] ${
                     isActive
@@ -140,14 +137,14 @@ function SideNav({
   );
 }
 
-function BottomNav() {
+function BottomNav({ selectedStudentId }: { selectedStudentId?: string }) {
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-pb">
       <ul className="flex justify-around">
         {navItems.map((item) => (
           <li key={item.to} className="flex-1">
             <NavLink
-              to={item.to}
+              to={buildStudentUrl(item.to, selectedStudentId)}
               className={({ isActive }) =>
                 `flex flex-col items-center justify-center py-2 min-h-[56px] transition-colors ${
                   isActive ? "text-coral" : "text-gray-500"
@@ -168,12 +165,10 @@ function MobileHeader({
   userRole,
   students,
   selectedStudentId,
-  onStudentChange,
 }: {
   userRole?: "PARENT" | "STUDENT";
   students?: Student[];
   selectedStudentId?: string;
-  onStudentChange?: (studentId: string) => void;
 }) {
   const [showSwitcher, setShowSwitcher] = useState(false);
 
@@ -214,10 +209,6 @@ function MobileHeader({
           <StudentSwitcher
             students={students}
             selectedStudentId={selectedStudentId}
-            onStudentChange={(id) => {
-              onStudentChange?.(id);
-              setShowSwitcher(false);
-            }}
           />
         </div>
       )}
@@ -230,7 +221,6 @@ export function AppShell({
   userRole,
   students,
   selectedStudentId,
-  onStudentChange,
 }: AppShellProps) {
   return (
     <div className="min-h-screen bg-lavender">
@@ -239,7 +229,6 @@ export function AppShell({
           userRole={userRole}
           students={students}
           selectedStudentId={selectedStudentId}
-          onStudentChange={onStudentChange}
         />
 
         <div className="flex-1 flex flex-col min-h-screen">
@@ -247,12 +236,11 @@ export function AppShell({
             userRole={userRole}
             students={students}
             selectedStudentId={selectedStudentId}
-            onStudentChange={onStudentChange}
           />
 
           <main className="flex-1 pb-20 md:pb-0">{children}</main>
 
-          <BottomNav />
+          <BottomNav selectedStudentId={selectedStudentId} />
         </div>
       </div>
     </div>

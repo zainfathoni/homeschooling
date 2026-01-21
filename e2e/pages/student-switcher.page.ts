@@ -40,22 +40,22 @@ export class StudentSwitcherPage {
   }
 
   async selectStudent(studentName: string) {
-    // Wait for the API response that sets the cookie
-    const responsePromise = this.page.waitForResponse(
-      (response) => response.url().includes('/api/select-student') && response.status() === 200
-    )
+    // Student selection now uses URL params instead of cookies
+    // Selecting a student navigates to the same page with ?student=:studentId
     await this.switcher.selectOption({ label: studentName })
-    await responsePromise
-    // Reload to ensure the new cookie is used (WebKit on Linux doesn't revalidate properly)
-    await this.page.reload()
+    // Wait for URL to update with student param
+    await this.page.waitForURL(/[?&]student=/)
     await this.page.waitForLoadState('networkidle')
   }
 
   async expectStudentSelected(studentName: string) {
-    // The select should show the selected student's name
-    const selectedOption = await this.switcher.inputValue()
-    const optionText = await this.switcher.locator(`option[value="${selectedOption}"]`).textContent()
-    expect(optionText).toBe(studentName)
+    // Wait for the dropdown to have an option with the expected student name selected
+    // After URL-based navigation, we need to verify the select reflects the new selection
+    await expect(async () => {
+      const selectedOption = await this.switcher.inputValue()
+      const optionText = await this.switcher.locator(`option[value="${selectedOption}"]`).textContent()
+      expect(optionText).toBe(studentName)
+    }).toPass({ timeout: 5000 })
   }
 
   async expectHeadingContains(text: string) {

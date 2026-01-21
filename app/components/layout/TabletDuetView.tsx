@@ -16,12 +16,14 @@ export interface TabletDuetViewProps {
   weekStart: Date;
   entries: DuetEntry[];
   offDays?: number[];
+  studentId?: string;
 }
 
 export function TabletDuetView({
   weekStart,
   entries,
   offDays = [5, 6],
+  studentId,
 }: TabletDuetViewProps) {
   const monday = startOfWeek(weekStart, { weekStartsOn: 1 });
   const today = new Date();
@@ -68,6 +70,7 @@ export function TabletDuetView({
           date={selectedDate}
           dayIndex={selectedDayIndex}
           tasks={dailyTasks}
+          studentId={studentId}
         />
       </div>
     </div>

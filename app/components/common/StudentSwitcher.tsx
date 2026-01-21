@@ -1,4 +1,5 @@
-import { useFetcher } from "react-router";
+import { useNavigate, useLocation } from "react-router";
+import { updateStudentInUrl } from "~/utils/student-url";
 
 export interface Student {
   id: string;
@@ -9,24 +10,23 @@ export interface Student {
 interface StudentSwitcherProps {
   students: Student[];
   selectedStudentId?: string;
-  onStudentChange?: (studentId: string) => void;
   variant?: "dropdown" | "tabs";
 }
 
 export function StudentSwitcher({
   students,
   selectedStudentId,
-  onStudentChange,
   variant = "dropdown",
 }: StudentSwitcherProps) {
-  const fetcher = useFetcher();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleChange = (studentId: string) => {
-    fetcher.submit(
-      { studentId },
-      { method: "post", action: "/api/select-student" }
-    );
-    onStudentChange?.(studentId);
+    // Build full URL from current location
+    const currentUrl = new URL(location.pathname + location.search, window.location.origin);
+    const newUrl = updateStudentInUrl(currentUrl, studentId);
+    // Navigate to the new URL with updated student param
+    navigate(newUrl.pathname + newUrl.search);
   };
 
   if (students.length === 0) {

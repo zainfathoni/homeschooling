@@ -7,12 +7,14 @@ import {
   isCurrentWeek,
   isFutureWeek,
 } from "~/utils/week";
+import { buildStudentUrl } from "~/utils/student-url";
 
 interface WeekNavigationProps {
   weekStart: Date;
+  studentId?: string;
 }
 
-export function WeekNavigation({ weekStart }: WeekNavigationProps) {
+export function WeekNavigation({ weekStart, studentId }: WeekNavigationProps) {
   const prevWeek = getPreviousWeek(weekStart);
   const nextWeek = getNextWeek(weekStart);
   const showCurrentWeek = !isCurrentWeek(weekStart);
@@ -23,7 +25,7 @@ export function WeekNavigation({ weekStart }: WeekNavigationProps) {
   return (
     <nav className="flex items-center justify-between bg-white rounded-lg p-3 shadow-sm mb-4">
       <Link
-        to={`/week/${formatWeekParam(prevWeek)}`}
+        to={buildStudentUrl(`/week/${formatWeekParam(prevWeek)}`, studentId)}
         className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-lavender rounded-md transition-colors min-w-[44px] min-h-[44px] justify-center"
         aria-label="Previous week"
       >
@@ -37,14 +39,14 @@ export function WeekNavigation({ weekStart }: WeekNavigationProps) {
         </span>
         {showCurrentWeek && (
           <Link
-            to="/week"
+            to={buildStudentUrl("/week", studentId)}
             className="text-xs px-2 py-1 text-coral hover:text-coral/80 underline"
           >
             Today
           </Link>
         )}
         <Link
-          to={`/week/${formatWeekParam(weekStart)}/settings`}
+          to={buildStudentUrl(`/week/${formatWeekParam(weekStart)}/settings`, studentId)}
           className="flex items-center justify-center w-8 h-8 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
           aria-label="Week settings"
         >
@@ -71,7 +73,7 @@ export function WeekNavigation({ weekStart }: WeekNavigationProps) {
 
       {canGoNext ? (
         <Link
-          to={`/week/${formatWeekParam(nextWeek)}`}
+          to={buildStudentUrl(`/week/${formatWeekParam(nextWeek)}`, studentId)}
           className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-lavender rounded-md transition-colors min-w-[44px] min-h-[44px] justify-center"
           aria-label="Next week"
         >

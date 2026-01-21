@@ -1,3 +1,15 @@
+/**
+ * @deprecated This API endpoint is deprecated.
+ *
+ * Student selection has been refactored to use URL query parameters (?student=:studentId)
+ * instead of cookies. This provides:
+ * - Shareable links to specific student views
+ * - Proper browser back/forward navigation
+ * - Fixes for React Router revalidation issues (especially on WebKit/Linux)
+ *
+ * This endpoint remains for backwards compatibility but will be removed in a future version.
+ * The StudentSwitcher component now uses client-side navigation instead of posting here.
+ */
 import type { ActionFunctionArgs } from "react-router";
 import { data } from "react-router";
 import {

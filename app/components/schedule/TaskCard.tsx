@@ -1,4 +1,5 @@
 import { useFetcher, Link } from "react-router";
+import { buildStudentUrl } from "~/utils/student-url";
 
 export interface TaskCardProps {
   entryId: string;
@@ -11,6 +12,7 @@ export interface TaskCardProps {
   subjectId?: string;
   date?: string;
   narrationId?: string;
+  studentId?: string;
 }
 
 export function TaskCard({
@@ -24,6 +26,7 @@ export function TaskCard({
   subjectId,
   date,
   narrationId,
+  studentId,
 }: TaskCardProps) {
   const fetcher = useFetcher();
   const isSubmitting = fetcher.state !== "idle";
@@ -88,8 +91,8 @@ export function TaskCard({
         <Link
           to={
             hasNarration && narrationId
-              ? `/narration/${narrationId}`
-              : `/narration/new?subjectId=${subjectId}&date=${date}`
+              ? buildStudentUrl(`/narration/${narrationId}`, studentId)
+              : buildStudentUrl(`/narration/new?subjectId=${subjectId}&date=${date}`, studentId)
           }
           className={`text-xs px-2 py-1 rounded-full transition-colors ${
             hasNarration

@@ -17,9 +17,10 @@ export interface DailyFocusProps {
   date: Date;
   dayIndex: number;
   tasks: DailyTask[];
+  studentId?: string;
 }
 
-export function DailyFocus({ date, dayIndex, tasks }: DailyFocusProps) {
+export function DailyFocus({ date, dayIndex, tasks, studentId }: DailyFocusProps) {
   const completedCount = tasks.filter((t) => t.isCompleted).length;
   const totalCount = tasks.length;
   const percentage = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
@@ -54,6 +55,7 @@ export function DailyFocus({ date, dayIndex, tasks }: DailyFocusProps) {
             subjectId={task.subjectId}
             date={formatISO(date, { representation: "date" })}
             narrationId={task.narrationId}
+            studentId={studentId}
           />
         ))}
       </div>
