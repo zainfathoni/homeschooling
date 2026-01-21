@@ -23,9 +23,17 @@ export class DailyFocusPage {
   }
 
   async goto(weekDate?: string) {
+    // Use legacy route which redirects to nested /students/:studentId/week/:weekStart
     const path = weekDate ? `/week/${weekDate}` : '/week'
     await this.page.goto(path)
+    // Wait for redirect to complete
+    await this.page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await this.page.waitForLoadState('networkidle')
+  }
+
+  getStudentIdFromUrl(): string | null {
+    const match = this.page.url().match(/\/students\/([^/]+)\//)
+    return match ? match[1] : null
   }
 
   async expectDuetViewVisible() {

@@ -19,8 +19,21 @@ export class WeekSettingsPage {
   async goto(weekStart?: Date) {
     const weekDate = weekStart ?? startOfWeek(new Date(), { weekStartsOn: 1 })
     const weekParam = format(weekDate, 'yyyy-MM-dd')
-    await this.page.goto(`/week/${weekParam}/settings`)
+    // First navigate to week to get studentId via redirect
+    await this.page.goto('/week')
+    await this.page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
+    const studentId = this.getStudentIdFromUrl()
+    if (studentId) {
+      await this.page.goto(`/students/${studentId}/week/${weekParam}/settings`)
+    } else {
+      await this.page.goto(`/week/${weekParam}/settings`)
+    }
     await this.page.waitForLoadState('networkidle')
+  }
+
+  getStudentIdFromUrl(): string | null {
+    const match = this.page.url().match(/\/students\/([^/]+)\//)
+    return match ? match[1] : null
   }
 
   async expectLoaded() {

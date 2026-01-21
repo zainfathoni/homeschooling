@@ -12,8 +12,15 @@ export class StudentSwitcherPage {
   }
 
   async goto() {
+    // Use legacy route which redirects to nested /students/:studentId/week/:weekStart
     await this.page.goto('/week')
+    await this.page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await this.page.waitForLoadState('networkidle')
+  }
+
+  getStudentIdFromUrl(): string | null {
+    const match = this.page.url().match(/\/students\/([^/]+)\//)
+    return match ? match[1] : null
   }
 
   async expectSwitcherVisible() {
@@ -40,17 +47,15 @@ export class StudentSwitcherPage {
   }
 
   async selectStudent(studentName: string) {
-    // Student selection now uses URL params instead of cookies
-    // Selecting a student navigates to the same page with ?student=:studentId
+    // Student selection now uses nested routes - selecting navigates to /students/:newStudentId/...
     await this.switcher.selectOption({ label: studentName })
-    // Wait for URL to update with student param
-    await this.page.waitForURL(/[?&]student=/)
+    // Wait for URL to update with new studentId in path
+    await this.page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await this.page.waitForLoadState('networkidle')
   }
 
   async expectStudentSelected(studentName: string) {
     // Wait for the dropdown to have an option with the expected student name selected
-    // After URL-based navigation, we need to verify the select reflects the new selection
     await expect(async () => {
       const selectedOption = await this.switcher.inputValue()
       const optionText = await this.switcher.locator(`option[value="${selectedOption}"]`).textContent()

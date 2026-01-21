@@ -18,8 +18,28 @@ export class WeeklyGridPage {
   }
 
   async goto(weekDate?: string) {
+    // Use legacy route which redirects to nested /students/:studentId/week/:weekStart
     const path = weekDate ? `/week/${weekDate}` : '/week'
     await this.page.goto(path)
+    // Wait for redirect to complete
+    await this.page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
+    await this.page.waitForLoadState('networkidle')
+  }
+
+  async gotoWithStudentId(studentId: string, weekDate?: string) {
+    const path = weekDate
+      ? `/students/${studentId}/week/${weekDate}`
+      : `/students/${studentId}/week`
+    await this.page.goto(path)
+    // If no weekDate, it redirects to current week
+    if (!weekDate) {
+      await this.page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
+    }
+  }
+
+  getStudentIdFromUrl(): string | null {
+    const match = this.page.url().match(/\/students\/([^/]+)\//)
+    return match ? match[1] : null
   }
 
   async expectLoaded() {
@@ -51,13 +71,10 @@ export class WeeklyGridPage {
   }
 
   async navigateToPreviousWeek() {
-    const prevHref = await this.prevWeekLink.getAttribute('href')
     await this.prevWeekLink.click()
-    if (prevHref) {
-      // Escape all regex special characters in the URL (including ? from query params)
-      const escapedHref = prevHref.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-      await this.page.waitForURL(new RegExp(escapedHref))
-    }
+    // Wait for navigation to any nested student week route
+    await this.page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
+    await this.page.waitForLoadState('networkidle')
   }
 
   async navigateToToday() {

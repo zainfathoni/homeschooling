@@ -24,6 +24,8 @@ test.describe('Mobile layout (< 768px)', () => {
     test.skip(noscript, 'Requires JavaScript for component rendering')
     test.skip(!isMobileProject(testInfo), 'This test is for mobile viewports')
     await page.goto('/week')
+    // Wait for redirect to nested route
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
     // Bottom nav should be visible on mobile
@@ -39,6 +41,7 @@ test.describe('Mobile layout (< 768px)', () => {
     test.skip(noscript, 'Requires JavaScript for component rendering')
     test.skip(!isMobileProject(testInfo), 'This test is for mobile viewports')
     await page.goto('/week')
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
     // Mobile header should be visible
@@ -51,6 +54,7 @@ test.describe('Mobile layout (< 768px)', () => {
     test.skip(noscript, 'Requires JavaScript for component rendering')
     test.skip(!isMobileProject(testInfo), 'This test is for mobile viewports')
     await page.goto('/week')
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
     const bottomNav = page.locator('nav.md\\:hidden.fixed.bottom-0')
@@ -63,6 +67,7 @@ test.describe('Mobile layout (< 768px)', () => {
     test.skip(noscript, 'Requires JavaScript for component rendering')
     test.skip(!isMobileProject(testInfo), 'This test is for mobile viewports')
     await page.goto('/week')
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
     // Duet view should be hidden on mobile
@@ -84,6 +89,7 @@ test.describe('Tablet layout (>= 768px)', () => {
     test.skip(noscript, 'Requires JavaScript for component rendering')
     test.skip(isMobileProject(testInfo), 'This test is for tablet/desktop viewports')
     await page.goto('/week')
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
     // Side nav should be visible on tablet
@@ -99,6 +105,7 @@ test.describe('Tablet layout (>= 768px)', () => {
     test.skip(noscript, 'Requires JavaScript for component rendering')
     test.skip(isMobileProject(testInfo), 'This test is for tablet/desktop viewports')
     await page.goto('/week')
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
     // Mobile header should be hidden on tablet
@@ -110,6 +117,7 @@ test.describe('Tablet layout (>= 768px)', () => {
     test.skip(noscript, 'Requires JavaScript for component rendering')
     test.skip(isMobileProject(testInfo), 'This test is for tablet/desktop viewports')
     await page.goto('/week')
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
     const sideNav = page.locator('aside.hidden.md\\:flex')
@@ -122,6 +130,7 @@ test.describe('Tablet layout (>= 768px)', () => {
     test.skip(noscript, 'Requires JavaScript for component rendering')
     test.skip(isMobileProject(testInfo), 'This test is for tablet/desktop viewports')
     await page.goto('/week')
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
     // Duet view should be visible on tablet
@@ -133,6 +142,7 @@ test.describe('Tablet layout (>= 768px)', () => {
     test.skip(noscript, 'Requires JavaScript for component rendering')
     test.skip(isMobileProject(testInfo), 'This test is for tablet/desktop viewports')
     await page.goto('/week')
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
     const sideNav = page.locator('aside.hidden.md\\:flex')
@@ -149,6 +159,7 @@ test.describe('Touch targets - Mobile (>= 44px)', () => {
     test.skip(noscript, 'Requires JavaScript for component rendering')
     test.skip(!isMobileProject(testInfo), 'This test is for mobile viewports')
     await page.goto('/week')
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
     // Bottom nav links have min-h-[56px] class
@@ -168,6 +179,7 @@ test.describe('Touch targets - Mobile (>= 44px)', () => {
     test.skip(noscript, 'Requires JavaScript for component rendering')
     test.skip(!isMobileProject(testInfo), 'This test is for mobile viewports')
     await page.goto('/week')
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
     // Mobile header button (student switcher) has min-h-[44px] class
@@ -190,6 +202,7 @@ test.describe('Touch targets - Tablet (>= 44px)', () => {
     test.skip(noscript, 'Requires JavaScript for component rendering')
     test.skip(isMobileProject(testInfo), 'This test is for tablet/desktop viewports')
     await page.goto('/week')
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
     // Side nav links have min-h-[44px] class
@@ -216,6 +229,7 @@ test.describe('Design tokens - Mobile', () => {
     test.skip(noscript, 'Requires JavaScript for component rendering')
     test.skip(!isMobileProject(testInfo), 'This test is for mobile viewports')
     await page.goto('/week')
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
     // Main container has bg-lavender class
@@ -227,6 +241,7 @@ test.describe('Design tokens - Mobile', () => {
     test.skip(noscript, 'Requires JavaScript for component rendering')
     test.skip(!isMobileProject(testInfo), 'This test is for mobile viewports')
     await page.goto('/week')
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
     // Find the active Schedule link in bottom nav (it should be active on /week)
@@ -247,6 +262,7 @@ test.describe('Design tokens - Tablet', () => {
     test.skip(noscript, 'Requires JavaScript for component rendering')
     test.skip(isMobileProject(testInfo), 'This test is for tablet/desktop viewports')
     await page.goto('/week')
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
     // Main container has bg-lavender class
@@ -258,9 +274,10 @@ test.describe('Design tokens - Tablet', () => {
     test.skip(noscript, 'Requires JavaScript for component rendering')
     test.skip(isMobileProject(testInfo), 'This test is for tablet/desktop viewports')
     await page.goto('/week')
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
-    // Find the active Schedule link in side nav (it should be active on /week with bg-coral class)
+    // Find the active Schedule link in side nav (it should be active on nested week route with bg-coral class)
     const sideNav = page.locator('aside.hidden.md\\:flex')
     const activeScheduleLink = sideNav.locator('a.bg-coral')
     await expect(activeScheduleLink).toBeVisible()
@@ -271,6 +288,7 @@ test.describe('Design tokens - Tablet', () => {
     test.skip(noscript, 'Requires JavaScript for component rendering')
     test.skip(isMobileProject(testInfo), 'This test is for tablet/desktop viewports')
     await page.goto('/week')
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
     // Cards in duet view have bg-white class
@@ -288,22 +306,24 @@ test.describe('Navigation functionality - Mobile', () => {
     test.skip(noscript, 'Requires JavaScript for navigation')
     test.skip(!isMobileProject(testInfo), 'This test is for mobile viewports')
     await page.goto('/week')
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
     const bottomNav = page.locator('nav.md\\:hidden.fixed.bottom-0')
     await bottomNav.getByRole('link', { name: /narrations/i }).click()
-    await page.waitForURL(/\/narrations/)
+    await page.waitForURL(/\/students\/[^/]+\/narrations/)
   })
 
   test('mobile bottom nav navigates to settings', async ({ page, noscript }, testInfo) => {
     test.skip(noscript, 'Requires JavaScript for navigation')
     test.skip(!isMobileProject(testInfo), 'This test is for mobile viewports')
     await page.goto('/week')
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
     const bottomNav = page.locator('nav.md\\:hidden.fixed.bottom-0')
     await bottomNav.getByRole('link', { name: /settings/i }).click()
-    await page.waitForURL(/\/settings/)
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}\/settings/)
   })
 })
 
@@ -317,21 +337,23 @@ test.describe('Navigation functionality - Tablet', () => {
     test.skip(noscript, 'Requires JavaScript for navigation')
     test.skip(isMobileProject(testInfo), 'This test is for tablet/desktop viewports')
     await page.goto('/week')
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
     const sideNav = page.locator('aside.hidden.md\\:flex')
     await sideNav.getByRole('link', { name: /narrations/i }).click()
-    await page.waitForURL(/\/narrations/)
+    await page.waitForURL(/\/students\/[^/]+\/narrations/)
   })
 
   test('tablet side nav navigates to settings', async ({ page, noscript }, testInfo) => {
     test.skip(noscript, 'Requires JavaScript for navigation')
     test.skip(isMobileProject(testInfo), 'This test is for tablet/desktop viewports')
     await page.goto('/week')
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
     const sideNav = page.locator('aside.hidden.md\\:flex')
     await sideNav.getByRole('link', { name: /settings/i }).click()
-    await page.waitForURL(/\/settings/)
+    await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}\/settings/)
   })
 })

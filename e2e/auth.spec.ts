@@ -64,7 +64,8 @@ test.describe('Auth - Logout', () => {
 
   test('authenticated user can access week page', async ({ page }) => {
     await page.goto('/week')
-    await expect(page).toHaveURL(/\/week\//)
+    // Legacy /week redirects to nested route
+    await expect(page).toHaveURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
   })
 
   test('logout endpoint returns redirect response', async ({ request }) => {

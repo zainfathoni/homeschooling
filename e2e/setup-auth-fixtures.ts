@@ -58,8 +58,8 @@ async function generateAuthFixture(
 
 export async function setupAuthFixtures(): Promise<void> {
   const db = new Database(databasePath);
-  const parent = db.prepare("SELECT id FROM User WHERE email = ?").get("zain@example.com") as { id: string } | undefined;
-  const student = db.prepare("SELECT id FROM User WHERE email = ?").get("najmi@example.com") as { id: string } | undefined;
+  const parent = db.prepare("SELECT id FROM User WHERE email = ?").get("zain@zavi.family") as { id: string } | undefined;
+  const student = db.prepare("SELECT id FROM User WHERE email = ?").get("najmi@zavi.family") as { id: string } | undefined;
   db.close();
 
   if (parent) {

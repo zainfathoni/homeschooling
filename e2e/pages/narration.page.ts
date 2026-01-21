@@ -33,9 +33,14 @@ export class NarrationPage {
     const dateStr = format(monday, 'yyyy-MM-dd')
     const weekDateStr = format(monday, 'yyyy-MM-dd')
 
-    // Navigate to weekly grid to get subject data
+    // Navigate to weekly grid via legacy route (redirects to nested route)
     await this.page.goto(`/week/${weekDateStr}`)
+    // Wait for redirect to nested route
+    await this.page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await this.page.waitForLoadState('networkidle')
+
+    // Extract studentId from URL for later use
+    const studentId = this.page.url().match(/\/students\/([^/]+)\//)?.[1]
 
     // Give time for hydration
     await this.page.waitForTimeout(500)
@@ -118,8 +123,12 @@ export class NarrationPage {
       throw new Error('Could not find a subject ID from the page')
     }
 
-    // Navigate to the new narration page
-    await this.page.goto(`/narration/new?subjectId=${subjectId}&date=${dateStr}`)
+    // Navigate to the new narration page using nested route if studentId available
+    if (studentId) {
+      await this.page.goto(`/students/${studentId}/narration/new?subjectId=${subjectId}&date=${dateStr}`)
+    } else {
+      await this.page.goto(`/narration/new?subjectId=${subjectId}&date=${dateStr}`)
+    }
 
     // Wait for page to load
     await this.page.waitForLoadState('networkidle')

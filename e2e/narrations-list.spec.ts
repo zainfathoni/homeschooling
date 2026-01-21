@@ -19,7 +19,7 @@ test.describe('Narrations index page', () => {
     const narrationsPage = new NarrationsListPage(page)
     await narrationsPage.goto()
     await narrationsPage.expectLoaded()
-    await expect(page).toHaveURL('/narrations')
+    await expect(page).toHaveURL(/\/students\/[^/]+\/narrations$/)
   })
 
   test('displays subjects grouped with narrations', async ({ page, noscript }) => {
@@ -127,8 +127,8 @@ test.describe('Subject-specific narrations page', () => {
     await narrationsPage.expectViewAllLinkVisible()
     await narrationsPage.clickViewAllForFirstSubject()
 
-    // Should navigate to subject-specific page
-    await expect(page).toHaveURL(/\/narrations\/c[a-z0-9]+$/)
+    // Should navigate to subject-specific page (nested route)
+    await expect(page).toHaveURL(/\/students\/[^/]+\/narrations\/c[a-z0-9]+$/)
   })
 
   test('subject page shows back link and subject name', async ({ page, noscript }) => {
@@ -193,8 +193,8 @@ test.describe('Subject-specific narrations page', () => {
     await subjectPage.expectLoaded()
     await subjectPage.clickBackLink()
 
-    // Should navigate back (using history.back())
-    await expect(page).toHaveURL('/narrations')
+    // Should navigate back (using history.back()) to nested narrations route
+    await expect(page).toHaveURL(/\/students\/[^/]+\/narrations$/)
   })
 
   test('subject page shows all narrations without limit', async ({ page, noscript }) => {

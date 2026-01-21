@@ -18,8 +18,16 @@ export class NarrationsListPage {
   }
 
   async goto() {
+    // Use legacy route which redirects to nested /students/:studentId/narrations
     await this.page.goto('/narrations')
+    // Wait for redirect to complete
+    await this.page.waitForURL(/\/students\/[^/]+\/narrations/)
     await this.page.waitForLoadState('networkidle')
+  }
+
+  getStudentIdFromUrl(): string | null {
+    const match = this.page.url().match(/\/students\/([^/]+)\//)
+    return match ? match[1] : null
   }
 
   async expectLoaded() {
@@ -82,8 +90,21 @@ export class SubjectNarrationsPage {
   }
 
   async goto(subjectId: string) {
-    await this.page.goto(`/narrations/${subjectId}`)
+    // First go to narrations index to get studentId via redirect
+    await this.page.goto('/narrations')
+    await this.page.waitForURL(/\/students\/[^/]+\/narrations/)
+    const studentId = this.getStudentIdFromUrl()
+    if (studentId) {
+      await this.page.goto(`/students/${studentId}/narrations/${subjectId}`)
+    } else {
+      await this.page.goto(`/narrations/${subjectId}`)
+    }
     await this.page.waitForLoadState('networkidle')
+  }
+
+  getStudentIdFromUrl(): string | null {
+    const match = this.page.url().match(/\/students\/([^/]+)\//)
+    return match ? match[1] : null
   }
 
   async expectLoaded() {

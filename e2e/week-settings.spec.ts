@@ -179,6 +179,7 @@ test.describe('Week settings - Navigation', () => {
     await settingsPage.expectLoaded()
 
     await settingsPage.backLink.click()
-    await expect(page).toHaveURL(/\/week\/\d{4}-\d{2}-\d{2}$/)
+    // Back link goes to nested week route
+    await expect(page).toHaveURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}$/)
   })
 })

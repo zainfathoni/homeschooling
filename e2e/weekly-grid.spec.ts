@@ -14,10 +14,10 @@ test.use({
 })
 
 test.describe('Weekly grid - Page load', () => {
-  test('redirects /week to current week', async ({ page }) => {
+  test('redirects /week to nested student route with current week', async ({ page }) => {
     const weeklyGrid = new WeeklyGridPage(page)
     await weeklyGrid.goto()
-    await expect(page).toHaveURL(/\/week\/\d{4}-\d{2}-\d{2}/)
+    await expect(page).toHaveURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
   })
 
   test('displays weekly schedule header', async ({ page }) => {
@@ -154,7 +154,8 @@ test.describe('Weekly grid - Mobile layout', () => {
 
   test('bottom navigation is visible on mobile', async ({ page, noscript }) => {
     test.skip(noscript, 'Mobile layout requires JavaScript for hydration')
-    await page.goto('/week')
+    const weeklyGrid = new WeeklyGridPage(page)
+    await weeklyGrid.goto()
     await expect(page.getByRole('navigation').first()).toBeVisible()
   })
 })
