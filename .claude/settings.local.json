@@ -4,7 +4,9 @@
       "WebFetch(domain:playwright.dev)",
       "Bash(gh run:*)",
       "Bash(bd activity:*)",
-      "Bash(npm pkg:*)"
+      "Bash(npm pkg:*)",
+      "Bash(npm run test:e2e:*)",
+      "Bash(bd dep remove:*)"
     ]
   }
 }
