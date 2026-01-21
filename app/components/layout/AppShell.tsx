@@ -4,17 +4,16 @@ import {
   StudentSwitcher,
   type Student,
 } from "~/components/common/StudentSwitcher";
-import { buildStudentUrl } from "~/utils/student-url";
 
 interface NavItem {
-  to: string;
+  path: string;
   label: string;
   icon: React.ReactNode;
 }
 
 const navItems: NavItem[] = [
   {
-    to: "/week",
+    path: "week",
     label: "Schedule",
     icon: (
       <svg
@@ -33,7 +32,7 @@ const navItems: NavItem[] = [
     ),
   },
   {
-    to: "/narrations",
+    path: "narrations",
     label: "Narrations",
     icon: (
       <svg
@@ -52,7 +51,7 @@ const navItems: NavItem[] = [
     ),
   },
   {
-    to: "/settings",
+    path: "settings",
     label: "Settings",
     icon: (
       <svg
@@ -114,23 +113,28 @@ function SideNav({
 
       <nav className="flex-1 p-4">
         <ul className="space-y-2">
-          {navItems.map((item) => (
-            <li key={item.to}>
-              <NavLink
-                to={buildStudentUrl(item.to, selectedStudentId)}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-3 rounded-lg transition-colors min-h-[44px] ${
-                    isActive
-                      ? "bg-coral text-white"
-                      : "text-gray-600 hover:bg-gray-100"
-                  }`
-                }
-              >
-                {item.icon}
-                <span className="font-medium">{item.label}</span>
-              </NavLink>
-            </li>
-          ))}
+          {navItems.map((item) => {
+            const to = selectedStudentId
+              ? `/students/${selectedStudentId}/${item.path}`
+              : `/${item.path}`;
+            return (
+              <li key={item.path}>
+                <NavLink
+                  to={to}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-3 py-3 rounded-lg transition-colors min-h-[44px] ${
+                      isActive
+                        ? "bg-coral text-white"
+                        : "text-gray-600 hover:bg-gray-100"
+                    }`
+                  }
+                >
+                  {item.icon}
+                  <span className="font-medium">{item.label}</span>
+                </NavLink>
+              </li>
+            );
+          })}
         </ul>
       </nav>
     </aside>
@@ -141,21 +145,26 @@ function BottomNav({ selectedStudentId }: { selectedStudentId?: string }) {
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-pb">
       <ul className="flex justify-around">
-        {navItems.map((item) => (
-          <li key={item.to} className="flex-1">
-            <NavLink
-              to={buildStudentUrl(item.to, selectedStudentId)}
-              className={({ isActive }) =>
-                `flex flex-col items-center justify-center py-2 min-h-[56px] transition-colors ${
-                  isActive ? "text-coral" : "text-gray-500"
-                }`
-              }
-            >
-              {item.icon}
-              <span className="text-xs mt-1">{item.label}</span>
-            </NavLink>
-          </li>
-        ))}
+        {navItems.map((item) => {
+          const to = selectedStudentId
+            ? `/students/${selectedStudentId}/${item.path}`
+            : `/${item.path}`;
+          return (
+            <li key={item.path} className="flex-1">
+              <NavLink
+                to={to}
+                className={({ isActive }) =>
+                  `flex flex-col items-center justify-center py-2 min-h-[56px] transition-colors ${
+                    isActive ? "text-coral" : "text-gray-500"
+                  }`
+                }
+              >
+                {item.icon}
+                <span className="text-xs mt-1">{item.label}</span>
+              </NavLink>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );

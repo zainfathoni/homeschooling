@@ -1,123 +1,25 @@
 import type { LoaderFunctionArgs } from "react-router";
-import { useLoaderData, Link, useNavigate } from "react-router";
-import { prisma } from "~/utils/db.server";
-import { requireUser, getActiveStudentId } from "~/utils/permissions.server";
-import { AppShell } from "~/components/layout";
-import { NarrationList, type SubjectWithNarrations } from "~/components/narration";
-
-export function meta() {
-  return [
-    { title: "Subject Narrations | Homeschool Planner" },
-    { name: "description", content: "View narrations for a subject" },
-  ];
-}
+import { redirect } from "react-router";
+import {
+  requireUser,
+  getDefaultStudentId,
+} from "~/utils/permissions.server";
+import { getStudentIdFromRequest } from "~/utils/student-url";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const user = await requireUser(request);
-  const subjectId = params.subjectId;
+  const { subjectId } = params;
 
   if (!subjectId) {
-    throw new Response("Missing subject ID", { status: 400 });
+    throw new Response("Subject ID required", { status: 400 });
   }
 
-  const activeStudentId = await getActiveStudentId(request, user);
-  if (!activeStudentId) {
-    throw new Response("No student selected", { status: 400 });
+  const studentId =
+    getStudentIdFromRequest(request) ?? getDefaultStudentId(user);
+
+  if (!studentId) {
+    throw new Response("No student available", { status: 400 });
   }
 
-  const studentSubject = await prisma.studentSubject.findFirst({
-    where: {
-      studentId: activeStudentId,
-      subjectId,
-    },
-  });
-
-  if (!studentSubject) {
-    throw new Response("Subject not found for this student", { status: 404 });
-  }
-
-  const subject = await prisma.subject.findUnique({
-    where: { id: subjectId },
-    include: {
-      narrations: {
-        where: { studentId: activeStudentId },
-        orderBy: { date: "desc" },
-      },
-    },
-  });
-
-  if (!subject) {
-    throw new Response("Subject not found", { status: 404 });
-  }
-
-  const subjectData: SubjectWithNarrations = {
-    id: subject.id,
-    name: subject.name,
-    icon: subject.icon,
-    narrations: subject.narrations.map(
-      (n: (typeof subject.narrations)[number]) => ({
-        id: n.id,
-        type: n.type,
-        content: n.content,
-        date: n.date.toISOString(),
-        createdAt: n.createdAt.toISOString(),
-      })
-    ),
-  };
-
-  return {
-    subject: subjectData,
-    userRole: user.role,
-    students: user.ownedStudents,
-    selectedStudentId: activeStudentId,
-  };
-}
-
-interface LoaderData {
-  subject: SubjectWithNarrations;
-  userRole: "PARENT" | "STUDENT";
-  students: { id: string; name: string }[];
-  selectedStudentId: string;
-}
-
-export default function SubjectNarrations() {
-  const { subject, userRole, students, selectedStudentId } =
-    useLoaderData<LoaderData>();
-  const navigate = useNavigate();
-
-  return (
-    <AppShell
-      userRole={userRole}
-      students={students}
-      selectedStudentId={selectedStudentId}
-    >
-      <div className="p-4 md:p-6 max-w-2xl mx-auto">
-        <div className="mb-6">
-          <Link
-            to="/narrations"
-            onClick={(e) => {
-              e.preventDefault();
-              navigate(-1);
-            }}
-            className="text-coral hover:text-coral/80 text-sm font-medium"
-          >
-            ← Back to all narrations
-          </Link>
-        </div>
-
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-            {subject.icon && <span>{subject.icon}</span>}
-            {subject.name}
-          </h1>
-          <p className="text-sm text-gray-500 mt-1">
-            {subject.narrations.length} narration
-            {subject.narrations.length !== 1 ? "s" : ""}
-          </p>
-        </div>
-
-        <NarrationList subjects={[subject]} showViewAll={false} />
-      </div>
-    </AppShell>
-  );
+  return redirect(`/students/${studentId}/narrations/${subjectId}`);
 }

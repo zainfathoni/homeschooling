@@ -1,5 +1,4 @@
 import { useNavigate, useLocation } from "react-router";
-import { updateStudentInUrl } from "~/utils/student-url";
 
 export interface Student {
   id: string;
@@ -21,12 +20,16 @@ export function StudentSwitcher({
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleChange = (studentId: string) => {
-    // Build full URL from current location
-    const currentUrl = new URL(location.pathname + location.search, window.location.origin);
-    const newUrl = updateStudentInUrl(currentUrl, studentId);
-    // Navigate to the new URL with updated student param
-    navigate(newUrl.pathname + newUrl.search);
+  const handleChange = (newStudentId: string) => {
+    if (selectedStudentId && location.pathname.includes(`/students/${selectedStudentId}`)) {
+      const newPath = location.pathname.replace(
+        `/students/${selectedStudentId}`,
+        `/students/${newStudentId}`
+      );
+      navigate(newPath + location.search);
+    } else {
+      navigate(`/students/${newStudentId}/week`);
+    }
   };
 
   if (students.length === 0) {
