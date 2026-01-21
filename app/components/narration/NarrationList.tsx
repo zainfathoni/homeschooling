@@ -11,11 +11,13 @@ export interface SubjectWithNarrations {
 interface NarrationListProps {
   subjects: SubjectWithNarrations[];
   showViewAll?: boolean;
+  studentId?: string;
 }
 
 export function NarrationList({
   subjects,
   showViewAll = true,
+  studentId,
 }: NarrationListProps) {
   if (subjects.length === 0) {
     return (
@@ -53,7 +55,7 @@ export function NarrationList({
               </h2>
               {showViewAll && subject.narrations.length > 3 && (
                 <Link
-                  to={`/narrations/${subject.id}`}
+                  to={studentId ? `/students/${studentId}/narrations/${subject.id}` : `/narrations/${subject.id}`}
                   className="text-sm text-coral hover:text-coral/80 font-medium"
                 >
                   View all →
