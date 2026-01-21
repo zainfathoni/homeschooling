@@ -6,7 +6,9 @@
       "Bash(bd activity:*)",
       "Bash(npm pkg:*)",
       "Bash(npm run test:e2e:*)",
-      "Bash(bd dep remove:*)"
+      "Bash(bd dep remove:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run dev:*)"
     ]
   }
 }
