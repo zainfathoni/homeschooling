@@ -143,20 +143,19 @@ test.describe('Duet view - Task cards', () => {
 
     // Get initial state
     const mathToggle = dailyFocus.getTaskToggleButton('Math')
-    const initiallyComplete = await mathToggle.getAttribute('aria-label') === 'Mark incomplete'
+    const initialAriaLabel = await mathToggle.getAttribute('aria-label')
+    const initiallyComplete = initialAriaLabel === 'Mark incomplete'
 
-    // Toggle task
-    await dailyFocus.toggleTask('Math')
+    // Toggle task and wait for state change
+    await mathToggle.click()
 
-    // Verify state changed
-    if (initiallyComplete) {
-      await dailyFocus.expectTaskIncomplete('Math')
-    } else {
-      await dailyFocus.expectTaskComplete('Math')
-    }
+    // Wait for the aria-label to change (more reliable than networkidle)
+    const expectedLabel = initiallyComplete ? 'Mark complete' : 'Mark incomplete'
+    await expect(dailyFocus.getTaskToggleButton('Math')).toHaveAttribute('aria-label', expectedLabel, { timeout: 10000 })
 
     // Toggle back to restore original state
-    await dailyFocus.toggleTask('Math')
+    await dailyFocus.getTaskToggleButton('Math').click()
+    await expect(dailyFocus.getTaskToggleButton('Math')).toHaveAttribute('aria-label', initialAriaLabel!, { timeout: 10000 })
   })
 })
 
@@ -237,6 +236,10 @@ test.describe('Duet view - Mobile layout', () => {
 
     // Mobile should still show subjects but in standard layout
     await expect(page.getByRole('heading', { name: /Weekly Schedule/i })).toBeVisible()
-    await expect(page.getByText('Math')).toBeVisible()
+    // On mobile, subjects appear in SubjectRow cards with visible checkboxes
+    // The mobile section has nested md:hidden - outer container and inner SubjectRow mobile div
+    // Target the innermost mobile section which contains the subject name without 'truncate' class
+    const mobileSubjectSpan = page.locator('.space-y-3.md\\:hidden .md\\:hidden span.font-medium').filter({ hasText: 'Math' }).first()
+    await expect(mobileSubjectSpan).toBeVisible()
   })
 })
