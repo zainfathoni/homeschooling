@@ -116,10 +116,10 @@ async function seedDemoData(subjectIds: string[]) {
 
   // Create parent user (Zain)
   const parent = await prisma.user.upsert({
-    where: { email: "zain@example.com" },
+    where: { email: "zain@zavi.family" },
     update: {},
     create: {
-      email: "zain@example.com",
+      email: "zain@zavi.family",
       name: "Zain Fathoni",
       role: "PARENT",
     },
@@ -127,16 +127,28 @@ async function seedDemoData(subjectIds: string[]) {
   console.log(`  ✓ Parent: ${parent.name}`);
 
   // Create student user (Najmi with login)
-  const studentUser = await prisma.user.upsert({
-    where: { email: "najmi@example.com" },
+  const najmiUser = await prisma.user.upsert({
+    where: { email: "najmi@zavi.family" },
     update: {},
     create: {
-      email: "najmi@example.com",
+      email: "najmi@zavi.family",
       name: "Najmi",
       role: "STUDENT",
     },
   });
-  console.log(`  ✓ Student user: ${studentUser.name}`);
+  console.log(`  ✓ Student user: ${najmiUser.name}`);
+
+  // Create student user (Isa with login)
+  const isaUser = await prisma.user.upsert({
+    where: { email: "isa@zavi.family" },
+    update: {},
+    create: {
+      email: "isa@zavi.family",
+      name: "Isa",
+      role: "STUDENT",
+    },
+  });
+  console.log(`  ✓ Student user: ${isaUser.name}`);
 
   // Create students: Najmi (11) and Isa (8)
   // Use findFirst + update/create pattern since Student doesn't have unique name constraint
@@ -147,7 +159,7 @@ async function seedDemoData(subjectIds: string[]) {
   if (existingNajmi) {
     najmi = await prisma.student.update({
       where: { id: existingNajmi.id },
-      data: { userId: studentUser.id, yearLevel: 11 },
+      data: { userId: najmiUser.id, yearLevel: 11 },
     });
   } else {
     najmi = await prisma.student.create({
@@ -155,7 +167,7 @@ async function seedDemoData(subjectIds: string[]) {
         name: "Najmi",
         yearLevel: 11,
         parentId: parent.id,
-        userId: studentUser.id,
+        userId: najmiUser.id,
       },
     });
   }
@@ -168,7 +180,7 @@ async function seedDemoData(subjectIds: string[]) {
   if (existingIsa) {
     isa = await prisma.student.update({
       where: { id: existingIsa.id },
-      data: { yearLevel: 8 },
+      data: { userId: isaUser.id, yearLevel: 8 },
     });
   } else {
     isa = await prisma.student.create({
@@ -176,6 +188,7 @@ async function seedDemoData(subjectIds: string[]) {
         name: "Isa",
         yearLevel: 8,
         parentId: parent.id,
+        userId: isaUser.id,
       },
     });
   }

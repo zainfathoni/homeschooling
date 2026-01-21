@@ -17,7 +17,7 @@ export function generateMagicLink(email: string): { token: string; url: string }
 
   magicLinks.set(token, { token, email, expiresAt });
 
-  const baseUrl = process.env.APP_URL ?? "http://localhost:5173";
+  const baseUrl = process.env.APP_URL ?? "http://localhost:3000";
   const url = `${baseUrl}/magic?token=${token}`;
 
   return { token, url };
