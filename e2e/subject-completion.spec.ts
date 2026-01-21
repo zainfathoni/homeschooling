@@ -112,10 +112,13 @@ test.describe('Subject completion - Multiple days', () => {
     const secondLabel = await secondButton.getAttribute('aria-label')
 
     await secondButton.click()
+    
+    // Wait for the toggle to complete - check second button changed state
     const expectedSecondLabel = secondLabel === 'Mark incomplete' ? 'Mark complete' : 'Mark incomplete'
-    await expect(mathRow.getByRole('button', { name: expectedSecondLabel }).nth(1)).toBeVisible()
+    await expect(buttons.nth(1)).toHaveAttribute('aria-label', expectedSecondLabel)
 
-    await expect(mathRow.getByRole('button', { name: firstLabel! }).first()).toBeVisible()
+    // First button should remain unchanged
+    await expect(buttons.first()).toHaveAttribute('aria-label', firstLabel!)
   })
 })
 

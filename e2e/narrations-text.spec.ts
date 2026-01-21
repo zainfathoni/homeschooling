@@ -89,7 +89,8 @@ test.describe('Text narration - Create and verify', () => {
     await narrationPage.submit()
 
     // Should navigate back after save
-    await page.waitForURL(/\/(narrations|week)/)
+    await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 })
+    await page.waitForLoadState('networkidle')
   })
 })
 

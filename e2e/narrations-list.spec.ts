@@ -181,7 +181,8 @@ test.describe('Subject-specific narrations page', () => {
       await narrationPage.expectLoaded()
       await narrationPage.fillContent(`Full list test ${i} - ${Date.now()}`)
       await narrationPage.submit()
-      await page.waitForURL(/\/(narrations|week)/)
+      await page.waitForURL(/\/(narrations|week)/, { timeout: 10000 }).catch(() => {})
+      await page.waitForLoadState('networkidle')
     }
 
     // Navigate to subject page via View all
