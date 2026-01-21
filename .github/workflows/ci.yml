@@ -104,7 +104,7 @@ jobs:
 
       - run: npm run build
       - name: Run E2E tests (shard ${{ matrix.shard }}/4)
-        run: cross-env RUNNING_E2E=true start-server-and-test start http-get://localhost:3000/ 'playwright test --shard=${{ matrix.shard }}/4'
+        run: npx cross-env RUNNING_E2E=true start-server-and-test start http-get://localhost:3000/ 'playwright test --shard=${{ matrix.shard }}/4'
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
