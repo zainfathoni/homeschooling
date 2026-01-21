@@ -41,11 +41,16 @@ export class StudentSwitcherPage {
 
   async selectStudent(studentName: string) {
     await this.switcher.selectOption({ label: studentName })
+    // Wait for fetcher to complete and page to update
+    await this.page.waitForTimeout(500)
     await this.page.waitForLoadState('networkidle')
   }
 
   async expectStudentSelected(studentName: string) {
-    await expect(this.switcher).toContainText(studentName)
+    // The select should show the selected student's name
+    const selectedOption = await this.switcher.inputValue()
+    const optionText = await this.switcher.locator(`option[value="${selectedOption}"]`).textContent()
+    expect(optionText).toBe(studentName)
   }
 
   async expectHeadingContains(text: string) {

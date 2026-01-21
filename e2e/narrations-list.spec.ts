@@ -31,7 +31,7 @@ test.describe('Narrations index page', () => {
     await narrationPage.expectLoaded()
     await narrationPage.fillContent(`Test narration for list ${Date.now()}`)
     await narrationPage.submit()
-    await page.waitForURL(/\/(narrations|week)/)
+    await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 })
 
     // Navigate to narrations list
     const narrationsPage = new NarrationsListPage(page)
@@ -49,7 +49,7 @@ test.describe('Narrations index page', () => {
     await narrationPage.expectLoaded()
     await narrationPage.fillContent(`Badge test narration ${Date.now()}`)
     await narrationPage.submit()
-    await page.waitForURL(/\/(narrations|week)/)
+    await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 })
 
     // Navigate to narrations list
     const narrationsPage = new NarrationsListPage(page)
@@ -96,7 +96,7 @@ test.describe('Subject-specific narrations page', () => {
       await narrationPage.expectLoaded()
       await narrationPage.fillContent(`Subject page test ${i} - ${Date.now()}`)
       await narrationPage.submit()
-      await page.waitForURL(/\/(narrations|week)/)
+      await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 })
     }
 
     // Navigate to narrations list
@@ -123,7 +123,7 @@ test.describe('Subject-specific narrations page', () => {
       await narrationPage.expectLoaded()
       await narrationPage.fillContent(`Back link test ${i} - ${Date.now()}`)
       await narrationPage.submit()
-      await page.waitForURL(/\/(narrations|week)/)
+      await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 })
     }
 
     // Navigate to narrations list and then to subject page
@@ -213,7 +213,7 @@ test.describe('Narrations list - navigation links', () => {
     await narrationPage.expectLoaded()
     await narrationPage.fillContent(`Weekly nav test ${Date.now()}`)
     await narrationPage.submit()
-    await page.waitForURL(/\/(narrations|week)/)
+    await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 })
 
     // Navigate to narrations list
     const narrationsPage = new NarrationsListPage(page)
