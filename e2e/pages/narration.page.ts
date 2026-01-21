@@ -172,7 +172,16 @@ export class NarrationPage {
   }
 
   async submit() {
-    await this.submitButton.click()
+    // Wait for both the click and the API response to complete
+    // This ensures the form submission has finished before returning
+    await Promise.all([
+      this.page.waitForResponse(
+        (response) =>
+          response.url().includes('/api/save-narration') &&
+          response.status() === 200
+      ),
+      this.submitButton.click(),
+    ])
   }
 
   async expectSubmitEnabled() {
@@ -213,6 +222,16 @@ export class NarrationViewPage {
   }
 
   async delete() {
-    await this.deleteButton.click()
+    // Wait for both the click and the action response to complete
+    // This ensures the deletion has finished before returning
+    await Promise.all([
+      this.page.waitForResponse(
+        (response) =>
+          response.url().includes('/narration/') &&
+          response.request().method() === 'POST' &&
+          response.status() === 200
+      ),
+      this.deleteButton.click(),
+    ])
   }
 }

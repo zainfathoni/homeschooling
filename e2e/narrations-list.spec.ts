@@ -31,7 +31,12 @@ test.describe('Narrations index page', () => {
     await narrationPage.expectLoaded()
     await narrationPage.fillContent(`Test narration for list ${Date.now()}`)
     await narrationPage.submit()
-    await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 })
+    // WebKit may cancel navigation - use catch and wait for network idle instead
+    await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 }).catch(() => {})
+    await page.waitForLoadState('networkidle')
+
+    // Ensure we're on a valid page before starting new navigation (WebKit fix)
+    await page.waitForLoadState('load')
 
     // Navigate to narrations list
     const narrationsPage = new NarrationsListPage(page)
@@ -49,7 +54,12 @@ test.describe('Narrations index page', () => {
     await narrationPage.expectLoaded()
     await narrationPage.fillContent(`Badge test narration ${Date.now()}`)
     await narrationPage.submit()
-    await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 })
+    // WebKit may cancel navigation - use catch and wait for network idle instead
+    await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 }).catch(() => {})
+    await page.waitForLoadState('networkidle')
+
+    // Ensure we're on a valid page before starting new navigation (WebKit fix)
+    await page.waitForLoadState('load')
 
     // Navigate to narrations list
     const narrationsPage = new NarrationsListPage(page)
@@ -68,8 +78,12 @@ test.describe('Narrations index page', () => {
     await narrationPage.expectLoaded()
     await narrationPage.fillContent(`Navigation test narration ${Date.now()}`)
     await narrationPage.submit()
-    await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 })
+    // WebKit may cancel navigation - use catch and wait for network idle instead
+    await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 }).catch(() => {})
     await page.waitForLoadState('networkidle')
+
+    // Ensure we're on a valid page before starting new navigation (WebKit fix)
+    await page.waitForLoadState('load')
 
     // Navigate to narrations list
     const narrationsPage = new NarrationsListPage(page)
@@ -96,8 +110,13 @@ test.describe('Subject-specific narrations page', () => {
       await narrationPage.expectLoaded()
       await narrationPage.fillContent(`Subject page test ${i} - ${Date.now()}`)
       await narrationPage.submit()
-      await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 })
+      // WebKit may cancel navigation - use catch and wait for network idle instead
+      await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 }).catch(() => {})
+      await page.waitForLoadState('networkidle')
     }
+
+    // Ensure we're on a valid page before starting new navigation (WebKit fix)
+    await page.waitForLoadState('load')
 
     // Navigate to narrations list
     const narrationsPage = new NarrationsListPage(page)
@@ -123,8 +142,13 @@ test.describe('Subject-specific narrations page', () => {
       await narrationPage.expectLoaded()
       await narrationPage.fillContent(`Back link test ${i} - ${Date.now()}`)
       await narrationPage.submit()
-      await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 })
+      // WebKit may cancel navigation - use catch and wait for network idle instead
+      await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 }).catch(() => {})
+      await page.waitForLoadState('networkidle')
     }
+
+    // Ensure we're on a valid page before starting new navigation (WebKit fix)
+    await page.waitForLoadState('load')
 
     // Navigate to narrations list and then to subject page
     const narrationsPage = new NarrationsListPage(page)
@@ -153,6 +177,9 @@ test.describe('Subject-specific narrations page', () => {
       await page.waitForURL(/\/(narrations|week)/, { timeout: 10000 }).catch(() => {})
       await page.waitForLoadState('networkidle')
     }
+
+    // Ensure we're on a valid page before starting new navigation (WebKit fix)
+    await page.waitForLoadState('load')
 
     // Navigate to subject page
     const narrationsPage = new NarrationsListPage(page)
@@ -186,6 +213,9 @@ test.describe('Subject-specific narrations page', () => {
       await page.waitForLoadState('networkidle')
     }
 
+    // Ensure we're on a valid page before starting new navigation (WebKit fix)
+    await page.waitForLoadState('load')
+
     // Navigate to subject page via View all
     const narrationsPage = new NarrationsListPage(page)
     await narrationsPage.goto()
@@ -213,7 +243,12 @@ test.describe('Narrations list - navigation links', () => {
     await narrationPage.expectLoaded()
     await narrationPage.fillContent(`Weekly nav test ${Date.now()}`)
     await narrationPage.submit()
-    await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 })
+    // WebKit may cancel navigation - use catch and wait for network idle instead
+    await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 }).catch(() => {})
+    await page.waitForLoadState('networkidle')
+
+    // Ensure we're on a valid page before starting new navigation (WebKit fix)
+    await page.waitForLoadState('load')
 
     // Navigate to narrations list
     const narrationsPage = new NarrationsListPage(page)
