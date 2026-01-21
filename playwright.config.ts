@@ -5,6 +5,7 @@ import type { Fixtures } from './e2e/base-test'
 const config: PlaywrightTestConfig<Fixtures> = {
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
   testDir: './e2e',
   globalSetup: './playwright-global-setup.ts',
   globalTimeout: 10 * 60 * 1000,
