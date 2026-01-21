@@ -6,25 +6,32 @@ import { StudentSwitcherPage } from './pages/student-switcher.page'
  * Tests parent can see dropdown, switch students, and verify persistence.
  * Tests student user sees no switcher.
  *
+ * Note: Student switcher is only visible in desktop sidebar (hidden on mobile).
+ * These tests skip mobile viewports.
+ *
  * Usage:
  *   npm run test:e2e -- student-switcher.spec.ts
  */
 
+const isMobileProject = (testInfo: { project: { name: string } }) =>
+  ['Pixel 4', 'iPhone 11'].includes(testInfo.project.name)
+
 test.describe('Student switcher - Parent access', () => {
   test.use({
     storageState: 'e2e/fixtures/auth/parent.local.json',
-    viewport: { width: 1024, height: 768 },
   })
 
-  test('parent sees student dropdown in sidebar', async ({ page, noscript }) => {
+  test('parent sees student dropdown in sidebar', async ({ page, noscript }, testInfo) => {
     test.skip(noscript, 'Requires JavaScript for page rendering')
+    test.skip(isMobileProject(testInfo), 'Switcher only visible on desktop sidebar')
     const switcherPage = new StudentSwitcherPage(page)
     await switcherPage.goto()
     await switcherPage.expectSwitcherVisible()
   })
 
-  test('dropdown shows multiple students', async ({ page, noscript }) => {
+  test('dropdown shows multiple students', async ({ page, noscript }, testInfo) => {
     test.skip(noscript, 'Requires JavaScript for page rendering')
+    test.skip(isMobileProject(testInfo), 'Switcher only visible on desktop sidebar')
     const switcherPage = new StudentSwitcherPage(page)
     await switcherPage.goto()
     await switcherPage.expectSwitcherVisible()
@@ -35,8 +42,9 @@ test.describe('Student switcher - Parent access', () => {
     expect(options).toContain('Isa')
   })
 
-  test('can switch between students', async ({ page, noscript }) => {
+  test('can switch between students', async ({ page, noscript }, testInfo) => {
     test.skip(noscript, 'Requires JavaScript for form submission')
+    test.skip(isMobileProject(testInfo), 'Switcher only visible on desktop sidebar')
     const switcherPage = new StudentSwitcherPage(page)
     await switcherPage.goto()
     await switcherPage.expectSwitcherVisible()
@@ -54,8 +62,9 @@ test.describe('Student switcher - Parent access', () => {
     await switcherPage.expectStudentSelected('Najmi')
   })
 
-  test('switching student updates displayed content', async ({ page, noscript }) => {
+  test('switching student updates displayed content', async ({ page, noscript }, testInfo) => {
     test.skip(noscript, 'Requires JavaScript for form submission')
+    test.skip(isMobileProject(testInfo), 'Switcher only visible on desktop sidebar')
     const switcherPage = new StudentSwitcherPage(page)
     await switcherPage.goto()
     await switcherPage.expectSwitcherVisible()
@@ -73,11 +82,11 @@ test.describe('Student switcher - Parent access', () => {
 test.describe('Student switcher - Selection persistence', () => {
   test.use({
     storageState: 'e2e/fixtures/auth/parent.local.json',
-    viewport: { width: 1024, height: 768 },
   })
 
-  test('selection persists across page navigation', async ({ page, noscript }) => {
+  test('selection persists across page navigation', async ({ page, noscript }, testInfo) => {
     test.skip(noscript, 'Requires JavaScript for form submission')
+    test.skip(isMobileProject(testInfo), 'Switcher only visible on desktop sidebar')
     const switcherPage = new StudentSwitcherPage(page)
     await switcherPage.goto()
     await switcherPage.expectSwitcherVisible()
@@ -101,8 +110,9 @@ test.describe('Student switcher - Selection persistence', () => {
     await switcherPage.selectStudent('Najmi')
   })
 
-  test('selection persists after page refresh', async ({ page, noscript }) => {
+  test('selection persists after page refresh', async ({ page, noscript }, testInfo) => {
     test.skip(noscript, 'Requires JavaScript for form submission')
+    test.skip(isMobileProject(testInfo), 'Switcher only visible on desktop sidebar')
     const switcherPage = new StudentSwitcherPage(page)
     await switcherPage.goto()
     await switcherPage.expectSwitcherVisible()
@@ -126,11 +136,11 @@ test.describe('Student switcher - Selection persistence', () => {
 test.describe('Student switcher - Student access', () => {
   test.use({
     storageState: 'e2e/fixtures/auth/student.local.json',
-    viewport: { width: 1024, height: 768 },
   })
 
-  test('student sees no switcher dropdown', async ({ page, noscript }) => {
+  test('student sees no switcher dropdown', async ({ page, noscript }, testInfo) => {
     test.skip(noscript, 'Requires JavaScript for page rendering')
+    test.skip(isMobileProject(testInfo), 'Switcher only visible on desktop sidebar')
     const switcherPage = new StudentSwitcherPage(page)
     await switcherPage.goto()
 
@@ -142,11 +152,11 @@ test.describe('Student switcher - Student access', () => {
 test.describe('Student switcher - Mobile layout', () => {
   test.use({
     storageState: 'e2e/fixtures/auth/parent.local.json',
-    viewport: { width: 375, height: 667 },
   })
 
-  test('switcher not visible in mobile sidebar (sidebar hidden)', async ({ page, noscript }) => {
+  test('switcher not visible in mobile sidebar (sidebar hidden)', async ({ page, noscript }, testInfo) => {
     test.skip(noscript, 'Requires JavaScript for page rendering')
+    test.skip(!isMobileProject(testInfo), 'This test is specifically for mobile viewports')
     const switcherPage = new StudentSwitcherPage(page)
     await switcherPage.goto()
 

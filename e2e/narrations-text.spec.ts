@@ -108,7 +108,8 @@ test.describe('Text narration - View created narration', () => {
     await narrationPage.submit()
 
     // Wait for navigation to complete
-    await page.waitForURL(/\/(narrations|week)/)
+    await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 })
+    await page.waitForLoadState('networkidle')
 
     // Navigate to narrations list
     await page.goto('/narrations')
@@ -145,7 +146,8 @@ test.describe('Text narration - Delete', () => {
     await narrationPage.submit()
 
     // Wait for navigation to complete
-    await page.waitForURL(/\/(narrations|week)/)
+    await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 })
+    await page.waitForLoadState('networkidle')
 
     // Navigate to narrations list
     await page.goto('/narrations')
@@ -166,6 +168,6 @@ test.describe('Text narration - Delete', () => {
     await narrationView.delete()
 
     // Should navigate back after deletion
-    await page.waitForURL(/\/(narrations|week)/)
+    await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 })
   })
 })

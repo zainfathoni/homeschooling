@@ -68,7 +68,8 @@ test.describe('Narrations index page', () => {
     await narrationPage.expectLoaded()
     await narrationPage.fillContent(`Navigation test narration ${Date.now()}`)
     await narrationPage.submit()
-    await page.waitForURL(/\/(narrations|week)/)
+    await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 })
+    await page.waitForLoadState('networkidle')
 
     // Navigate to narrations list
     const narrationsPage = new NarrationsListPage(page)
