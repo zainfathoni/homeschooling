@@ -54,6 +54,7 @@ export class StudentSwitcherPage {
   }
 
   async expectHeadingContains(text: string) {
-    await expect(this.page.getByRole('heading', { name: new RegExp(text, 'i') })).toBeVisible()
+    // The UI shows "Viewing: {studentName}" in a span, not in a heading
+    await expect(this.page.getByText(new RegExp(`Viewing:\\s*${text}`, 'i'))).toBeVisible()
   }
 }

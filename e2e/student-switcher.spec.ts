@@ -99,8 +99,8 @@ test.describe('Student switcher - Selection persistence', () => {
     await page.getByRole('link', { name: /narrations/i }).click()
     await page.waitForLoadState('networkidle')
 
-    // Navigate back to week
-    await page.getByRole('link', { name: /week/i }).click()
+    // Navigate back to week using sidebar navigation
+    await page.getByRole('link', { name: /schedule/i }).click()
     await page.waitForLoadState('networkidle')
 
     // Verify Isa is still selected
