@@ -4,14 +4,18 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "react-router dev",
+    "dev": "npm run db:setup && react-router dev",
+    "dev:skip-db": "react-router dev",
     "build": "react-router build",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "test:e2e": "playwright test",
     "test:e2e:dev": "cross-env RUNNING_E2E=true start-server-and-test dev http-get://localhost:3000/ test:e2e",
     "test:e2e:run": "cross-env RUNNING_E2E=true start-server-and-test start http-get://localhost:3000/ test:e2e",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "db:setup": "npx tsx scripts/db-setup.ts",
+    "db:seed": "npx tsx prisma/seed.ts",
+    "db:reset": "rm -f dev.db && npm run db:setup"
   },
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "^7.2.0",

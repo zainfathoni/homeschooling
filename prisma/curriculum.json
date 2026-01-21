@@ -1,0 +1,105 @@
+{
+  "version": "2024.1",
+  "subjects": [
+    {
+      "id": "math",
+      "name": "Math",
+      "icon": "📐",
+      "type": "FIXED",
+      "requiresNarration": false,
+      "order": 1
+    },
+    {
+      "id": "handwriting",
+      "name": "Handwriting",
+      "icon": "✍️",
+      "type": "FIXED",
+      "requiresNarration": false,
+      "order": 2
+    },
+    {
+      "id": "reading",
+      "name": "Reading",
+      "icon": "📖",
+      "type": "FIXED",
+      "requiresNarration": true,
+      "order": 3
+    },
+    {
+      "id": "spelling",
+      "name": "Spelling",
+      "icon": "🔤",
+      "type": "FIXED",
+      "requiresNarration": false,
+      "order": 4
+    },
+    {
+      "id": "coding",
+      "name": "Coding",
+      "icon": "💻",
+      "type": "SCHEDULED",
+      "scheduledDays": [0, 1, 2, 3],
+      "requiresNarration": false,
+      "order": 5
+    },
+    {
+      "id": "art",
+      "name": "Art",
+      "icon": "🎨",
+      "type": "SCHEDULED",
+      "scheduledDays": [4],
+      "requiresNarration": false,
+      "order": 6
+    },
+    {
+      "id": "pe",
+      "name": "PE",
+      "icon": "🏃",
+      "type": "SCHEDULED",
+      "scheduledDays": [1, 3],
+      "requiresNarration": false,
+      "order": 7
+    },
+    {
+      "id": "islamic-study",
+      "name": "Islamic Study",
+      "icon": "🕌",
+      "type": "PICK1",
+      "requiresNarration": true,
+      "order": 8,
+      "options": [
+        { "id": "safar-book", "name": "Safar Book" },
+        { "id": "quran-recitation", "name": "Quran Recitation" },
+        { "id": "hadith-study", "name": "Hadith Study" },
+        { "id": "seerah", "name": "Seerah" }
+      ]
+    },
+    {
+      "id": "science",
+      "name": "Science",
+      "icon": "🔬",
+      "type": "PICK1",
+      "requiresNarration": true,
+      "order": 9,
+      "options": [
+        { "id": "biology", "name": "Biology" },
+        { "id": "chemistry", "name": "Chemistry" },
+        { "id": "physics", "name": "Physics" },
+        { "id": "nature-study", "name": "Nature Study" }
+      ]
+    },
+    {
+      "id": "history",
+      "name": "History",
+      "icon": "🏛️",
+      "type": "PICK1",
+      "requiresNarration": true,
+      "order": 10,
+      "options": [
+        { "id": "world-history", "name": "World History" },
+        { "id": "islamic-history", "name": "Islamic History" },
+        { "id": "indonesian-history", "name": "Indonesian History" }
+      ]
+    }
+  ]
+}
