@@ -5,9 +5,13 @@ import { WeeklyGridPage } from './pages/weekly-grid.page'
  * E2E tests for subject completion flow.
  * Tests completion toggle, persistence, and behavior across subject types.
  *
+ * These tests run serially to avoid shared state conflicts in the completion database.
+ *
  * Usage:
  *   npm run test:e2e -- subject-completion.spec.ts
  */
+
+test.describe.configure({ mode: 'serial' })
 
 test.use({
   storageState: 'e2e/fixtures/auth/parent.local.json',
@@ -75,23 +79,49 @@ test.describe('Subject completion - Persistence', () => {
     const weeklyGrid = new WeeklyGridPage(page)
     await weeklyGrid.goto()
     await weeklyGrid.expectLoaded()
+    await page.waitForLoadState('networkidle')
 
     const mathRow = weeklyGrid.getVisibleSubjectRow('📐')
     const toggleButton = mathRow.getByRole('button', { name: /Mark/ }).first()
+    const initialLabel = await toggleButton.getAttribute('aria-label')
 
-    await toggleButton.click()
-    await page.waitForTimeout(200)
+    // First toggle - wait for API response
+    await Promise.all([
+      page.waitForResponse(
+        (response) =>
+          response.url().includes('/api/toggle-completion') &&
+          response.status() === 200
+      ),
+      toggleButton.click(),
+    ])
+
+    // Wait for UI to update after first toggle
+    const expectedAfterFirst = initialLabel === 'Mark complete' ? 'Mark incomplete' : 'Mark complete'
+    await expect(mathRow.getByRole('button', { name: expectedAfterFirst }).first()).toBeVisible()
+
+    // Second toggle - wait for API response
     const buttonAfterFirst = mathRow.getByRole('button', { name: /Mark/ }).first()
-    await buttonAfterFirst.click()
-    await page.waitForTimeout(200)
-    const buttonAfterSecond = mathRow.getByRole('button', { name: /Mark/ }).first()
-    const finalLabel = await buttonAfterSecond.getAttribute('aria-label')
+    await Promise.all([
+      page.waitForResponse(
+        (response) =>
+          response.url().includes('/api/toggle-completion') &&
+          response.status() === 200
+      ),
+      buttonAfterFirst.click(),
+    ])
+
+    // Wait for UI to update after second toggle - should be back to initial state
+    await expect(mathRow.getByRole('button', { name: initialLabel! }).first()).toBeVisible()
+
+    // Wait for network to settle before reload to ensure data is persisted
+    await page.waitForLoadState('networkidle')
 
     await page.reload()
     await weeklyGrid.expectLoaded()
 
+    // After reload, should match the final state (which is back to initial)
     const mathRowAfterReload = weeklyGrid.getVisibleSubjectRow('📐')
-    await expect(mathRowAfterReload.getByRole('button', { name: finalLabel! }).first()).toBeVisible()
+    await expect(mathRowAfterReload.getByRole('button', { name: initialLabel! }).first()).toBeVisible()
   })
 })
 
@@ -107,9 +137,10 @@ test.describe('Subject completion - Multiple days', () => {
     const mathRow = weeklyGrid.getVisibleSubjectRow('📐')
     const buttons = mathRow.getByRole('button', { name: /Mark/ })
 
-    // Get initial state of first button
+    // Capture initial state of first button before any action
     const firstLabel = await buttons.first().getAttribute('aria-label')
-    const secondLabel = await buttons.nth(1).getAttribute('aria-label')
+    const secondButton = buttons.nth(1)
+    const secondLabel = await secondButton.getAttribute('aria-label')
 
     // Click second button and wait for API response to complete
     await Promise.all([
@@ -118,16 +149,15 @@ test.describe('Subject completion - Multiple days', () => {
           response.url().includes('/api/toggle-completion') &&
           response.status() === 200
       ),
-      buttons.nth(1).click(),
+      secondButton.click(),
     ])
 
     // Wait for the toggle to complete - check second button changed state
     const expectedSecondLabel = secondLabel === 'Mark incomplete' ? 'Mark complete' : 'Mark incomplete'
-    await expect(buttons.nth(1)).toHaveAttribute('aria-label', expectedSecondLabel, { timeout: 10000 })
+    await expect(secondButton).toHaveAttribute('aria-label', expectedSecondLabel, { timeout: 10000 })
 
-    // First button should remain unchanged - re-fetch current state and compare
-    const firstLabelAfter = await buttons.first().getAttribute('aria-label')
-    expect(firstLabelAfter).toBe(firstLabel)
+    // First button should remain unchanged - verify using aria-label expectation
+    await expect(buttons.first()).toHaveAttribute('aria-label', firstLabel!, { timeout: 5000 })
   })
 })
 

@@ -94,9 +94,21 @@ export class DailyFocusPage {
   }
 
   async toggleTask(subjectName: string) {
-    await this.getTaskToggleButton(subjectName).click()
-    // Wait for form submission
-    await this.page.waitForLoadState('networkidle')
+    const button = this.getTaskToggleButton(subjectName)
+    const wasComplete = (await button.getAttribute('aria-label')) === 'Mark incomplete'
+    
+    await Promise.all([
+      this.page.waitForResponse(
+        (response) =>
+          response.url().includes('/api/toggle-completion') &&
+          response.status() === 200
+      ),
+      button.click(),
+    ])
+    
+    // Wait for UI to update
+    const expectedLabel = wasComplete ? 'Mark complete' : 'Mark incomplete'
+    await expect(button).toHaveAttribute('aria-label', expectedLabel)
   }
 
   async getProgressPercentage(): Promise<number> {

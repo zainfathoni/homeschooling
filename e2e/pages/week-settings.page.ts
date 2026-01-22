@@ -58,8 +58,21 @@ export class WeekSettingsPage {
 
   async toggleDay(dayName: string) {
     const button = this.getDayButton(dayName)
-    await button.click()
-    await this.page.waitForTimeout(100)
+    const wasPressed = (await button.getAttribute('aria-pressed')) === 'true'
+    
+    await Promise.all([
+      this.page.waitForResponse(
+        (response) =>
+          response.url().includes('/settings') &&
+          response.request().method() === 'POST' &&
+          response.status() === 200
+      ),
+      button.click(),
+    ])
+    
+    // Wait for UI to update
+    const expectedPressed = wasPressed ? 'false' : 'true'
+    await expect(button).toHaveAttribute('aria-pressed', expectedPressed)
   }
 
   async expectDayEnabled(dayName: string) {
