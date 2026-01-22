@@ -106,6 +106,8 @@ test.describe('Subject-specific narrations page', () => {
 
     // Create 4 narrations to ensure View all link appears (shows when > 3)
     for (let i = 0; i < 4; i++) {
+      // WebKit fix: ensure page is in stable state before navigation
+      await page.waitForLoadState('load')
       await narrationPage.gotoNewNarration()
       await narrationPage.expectLoaded()
       await narrationPage.fillContent(`Subject page test ${i} - ${Date.now()}`)
@@ -139,6 +141,8 @@ test.describe('Subject-specific narrations page', () => {
     const narrationPage = new NarrationPage(page)
 
     for (let i = 0; i < 4; i++) {
+      // WebKit fix: ensure page is in stable state before navigation
+      await page.waitForLoadState('load')
       await narrationPage.gotoNewNarration()
       await narrationPage.expectLoaded()
       await narrationPage.fillContent(`Back link test ${i} - ${Date.now()}`)
@@ -170,6 +174,8 @@ test.describe('Subject-specific narrations page', () => {
     const narrationPage = new NarrationPage(page)
 
     for (let i = 0; i < 4; i++) {
+      // WebKit fix: ensure page is in stable state before navigation
+      await page.waitForLoadState('load')
       await narrationPage.gotoNewNarration()
       await narrationPage.expectLoaded()
       await narrationPage.fillContent(`Back nav test ${i} - ${Date.now()}`)
@@ -206,6 +212,8 @@ test.describe('Subject-specific narrations page', () => {
     const narrationCount = 5
 
     for (let i = 0; i < narrationCount; i++) {
+      // WebKit fix: ensure page is in stable state before navigation
+      await page.waitForLoadState('load')
       await narrationPage.gotoNewNarration()
       await narrationPage.expectLoaded()
       await narrationPage.fillContent(`Full list test ${i} - ${Date.now()}`)

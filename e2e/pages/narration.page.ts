@@ -40,8 +40,9 @@ export class NarrationPage {
 
     // First navigate to /week to establish browser history
     // This ensures navigate(-1) after save has somewhere to go back to
-    await this.page.goto('/week')
-    await this.page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
+    // Use catch for WebKit "about:blank" navigation interruption
+    await this.page.goto('/week').catch(() => {})
+    await this.page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/, { timeout: 15000 })
     await this.page.waitForLoadState('networkidle')
 
     // Navigate to the new narration page

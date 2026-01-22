@@ -113,8 +113,9 @@ test.describe('Text narration - View created narration', () => {
     await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 }).catch(() => {})
     await page.waitForLoadState('networkidle')
 
-    // Navigate to narrations list
-    await page.goto('/narrations')
+    // Navigate to narrations list (use catch for WebKit navigation interruption)
+    await page.goto('/narrations').catch(() => {})
+    await page.waitForURL(/\/students\/[^/]+\/narrations/, { timeout: 15000 })
     await page.waitForLoadState('networkidle')
 
     // Check that we have at least one narration card
@@ -152,8 +153,9 @@ test.describe('Text narration - Delete', () => {
     await page.waitForURL(/\/(narrations|week)/, { timeout: 15000 }).catch(() => {})
     await page.waitForLoadState('networkidle')
 
-    // Navigate to narrations list
-    await page.goto('/narrations')
+    // Navigate to narrations list (use catch for WebKit navigation interruption)
+    await page.goto('/narrations').catch(() => {})
+    await page.waitForURL(/\/students\/[^/]+\/narrations/, { timeout: 15000 })
     await page.waitForLoadState('networkidle')
 
     // Find any narration card

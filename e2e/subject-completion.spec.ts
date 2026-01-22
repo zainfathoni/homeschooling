@@ -107,20 +107,27 @@ test.describe('Subject completion - Multiple days', () => {
     const mathRow = weeklyGrid.getVisibleSubjectRow('📐')
     const buttons = mathRow.getByRole('button', { name: /Mark/ })
 
-    const firstButton = buttons.first()
-    const firstLabel = await firstButton.getAttribute('aria-label')
+    // Get initial state of first button
+    const firstLabel = await buttons.first().getAttribute('aria-label')
+    const secondLabel = await buttons.nth(1).getAttribute('aria-label')
 
-    const secondButton = buttons.nth(1)
-    const secondLabel = await secondButton.getAttribute('aria-label')
-
-    await secondButton.click()
+    // Click second button and wait for API response to complete
+    await Promise.all([
+      page.waitForResponse(
+        (response) =>
+          response.url().includes('/api/toggle-completion') &&
+          response.status() === 200
+      ),
+      buttons.nth(1).click(),
+    ])
 
     // Wait for the toggle to complete - check second button changed state
     const expectedSecondLabel = secondLabel === 'Mark incomplete' ? 'Mark complete' : 'Mark incomplete'
     await expect(buttons.nth(1)).toHaveAttribute('aria-label', expectedSecondLabel, { timeout: 10000 })
 
-    // First button should remain unchanged
-    await expect(buttons.first()).toHaveAttribute('aria-label', firstLabel!)
+    // First button should remain unchanged - re-fetch current state and compare
+    const firstLabelAfter = await buttons.first().getAttribute('aria-label')
+    expect(firstLabelAfter).toBe(firstLabel)
   })
 })
 

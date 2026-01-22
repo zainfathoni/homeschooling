@@ -19,9 +19,16 @@ export class NarrationsListPage {
 
   async goto() {
     // Use legacy route which redirects to nested /students/:studentId/narrations
-    await this.page.goto('/narrations')
+    // First go to a stable page to ensure browser history is established (WebKit fix)
+    // Use catch for WebKit "about:blank" navigation interruption
+    await this.page.goto('/week').catch(() => {})
+    await this.page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/, { timeout: 15000 })
+    await this.page.waitForLoadState('networkidle')
+
+    // Now navigate to narrations
+    await this.page.goto('/narrations').catch(() => {})
     // Wait for redirect to complete
-    await this.page.waitForURL(/\/students\/[^/]+\/narrations/)
+    await this.page.waitForURL(/\/students\/[^/]+\/narrations/, { timeout: 15000 })
     await this.page.waitForLoadState('networkidle')
   }
 
