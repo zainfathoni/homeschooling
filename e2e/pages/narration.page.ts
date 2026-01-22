@@ -25,6 +25,9 @@ export class NarrationPage {
   /**
    * Navigate to new narration page for a subject.
    * Uses "reading" subject which has requiresNarration=true in curriculum.json.
+   *
+   * First navigates to /week to establish history, then to the narration page.
+   * This ensures navigate(-1) after save has somewhere to go back to.
    */
   async gotoNewNarration() {
     // Get current week's Monday for the date
@@ -34,6 +37,12 @@ export class NarrationPage {
 
     // Use "reading" subject ID from curriculum.json (has requiresNarration=true)
     const subjectId = 'reading'
+
+    // First navigate to /week to establish browser history
+    // This ensures navigate(-1) after save has somewhere to go back to
+    await this.page.goto('/week')
+    await this.page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
+    await this.page.waitForLoadState('networkidle')
 
     // Navigate to the new narration page
     await this.page.goto(`/narration/new?subjectId=${subjectId}&date=${dateStr}`)

@@ -128,7 +128,8 @@ test.describe('Subject-specific narrations page', () => {
     await narrationsPage.clickViewAllForFirstSubject()
 
     // Should navigate to subject-specific page (nested route)
-    await expect(page).toHaveURL(/\/students\/[^/]+\/narrations\/c[a-z0-9]+$/)
+    // Subject IDs can be string identifiers (like "reading") or CUIDs
+    await expect(page).toHaveURL(/\/students\/[^/]+\/narrations\/[a-z0-9-]+$/)
   })
 
   test('subject page shows back link and subject name', async ({ page, noscript }) => {
