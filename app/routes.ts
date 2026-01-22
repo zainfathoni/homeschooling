@@ -19,6 +19,8 @@ export default [
       "week/:weekStart/settings",
       "routes/students.$studentId.week.$weekStart.settings.tsx"
     ),
+    // Settings redirect (redirects to current week's settings)
+    route("settings", "routes/students.$studentId.settings.tsx"),
     // Narration routes
     route("narrations", "routes/students.$studentId.narrations._index.tsx"),
     route(

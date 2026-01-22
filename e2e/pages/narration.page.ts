@@ -24,113 +24,19 @@ export class NarrationPage {
 
   /**
    * Navigate to new narration page for a subject.
-   * Uses page script content to extract subject IDs from React Router hydration data.
+   * Uses "reading" subject which has requiresNarration=true in curriculum.json.
    */
   async gotoNewNarration() {
     // Get current week's Monday for the date
     const today = new Date()
     const monday = startOfWeek(today, { weekStartsOn: 1 })
     const dateStr = format(monday, 'yyyy-MM-dd')
-    const weekDateStr = format(monday, 'yyyy-MM-dd')
 
-    // Navigate to weekly grid via legacy route (redirects to nested route)
-    await this.page.goto(`/week/${weekDateStr}`)
-    // Wait for redirect to nested route
-    await this.page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
-    await this.page.waitForLoadState('networkidle')
+    // Use "reading" subject ID from curriculum.json (has requiresNarration=true)
+    const subjectId = 'reading'
 
-    // Extract studentId from URL for later use
-    const studentId = this.page.url().match(/\/students\/([^/]+)\//)?.[1]
-
-    // Give time for hydration
-    await this.page.waitForTimeout(500)
-
-    // Extract subject ID by looking at scripts for the hydration data
-    const subjectId = await this.page.evaluate(() => {
-      // Get all script tags
-      const scripts = Array.from(document.querySelectorAll('script'))
-
-      for (const script of scripts) {
-        const text = script.textContent || ''
-
-        // Look for the hydration data script which contains loader data
-        // React Router uses JSON.parse with a specific pattern
-        if (text.includes('staticRouterHydrationData')) {
-          // The data is double-escaped JSON, need to carefully extract
-          // Format: window.__staticRouterHydrationData = JSON.parse("...")
-
-          // Find the JSON string content
-          const jsonStart = text.indexOf('JSON.parse("') + 'JSON.parse("'.length
-          const jsonEnd = text.lastIndexOf('")')
-
-          if (jsonStart > 0 && jsonEnd > jsonStart) {
-            let jsonStr = text.substring(jsonStart, jsonEnd)
-
-            // Unescape the JSON string
-            jsonStr = jsonStr
-              .replace(/\\"/g, '"')
-              .replace(/\\\\/g, '\\')
-
-            try {
-              const data = JSON.parse(jsonStr)
-
-              // Navigate to loaderData to find entries with subjectId
-              if (data?.loaderData) {
-                for (const key of Object.keys(data.loaderData)) {
-                  const loaderData = data.loaderData[key]
-                  if (loaderData?.entries && Array.isArray(loaderData.entries)) {
-                    // Find entry with requiresNarration
-                    for (const entry of loaderData.entries) {
-                      if (entry.requiresNarration && entry.subjectId) {
-                        return entry.subjectId
-                      }
-                    }
-                    // Fallback: return any subjectId if no requiresNarration found
-                    // This allows tests to work even if the subject structure changes
-                    if (loaderData.entries.length > 0 && loaderData.entries[0].subjectId) {
-                      return loaderData.entries[0].subjectId
-                    }
-                  }
-                }
-              }
-            } catch {
-              // JSON parsing failed, try another approach
-            }
-          }
-        }
-      }
-
-      // Fallback: simple regex on full HTML
-      const html = document.documentElement.innerHTML
-      // Look for pattern "subjectId":"c..." in various encodings
-      const patterns = [
-        /"subjectId":"(c[a-z0-9]+)"/i,
-        /\\"subjectId\\":\\"(c[a-z0-9]+)\\"/i,
-        /subjectId[^c]+(c[a-z0-9]{20,})/i,
-      ]
-
-      for (const pattern of patterns) {
-        const match = html.match(pattern)
-        if (match && match[1]?.startsWith('c')) {
-          return match[1]
-        }
-      }
-
-      return null
-    })
-
-    if (!subjectId) {
-      throw new Error('Could not find a subject ID from the page')
-    }
-
-    // Navigate to the new narration page using nested route if studentId available
-    if (studentId) {
-      await this.page.goto(`/students/${studentId}/narration/new?subjectId=${subjectId}&date=${dateStr}`)
-    } else {
-      await this.page.goto(`/narration/new?subjectId=${subjectId}&date=${dateStr}`)
-    }
-
-    // Wait for page to load
+    // Navigate to the new narration page
+    await this.page.goto(`/narration/new?subjectId=${subjectId}&date=${dateStr}`)
     await this.page.waitForLoadState('networkidle')
   }
 

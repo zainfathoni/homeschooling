@@ -119,11 +119,18 @@ test.describe('Weekly grid - Navigation', () => {
     const weeklyGrid = new WeeklyGridPage(page)
     await weeklyGrid.goto()
     await weeklyGrid.expectLoaded()
-    const currentUrl = page.url()
+    
+    // Extract week date from URL before navigation
+    const currentWeekMatch = page.url().match(/\/week\/(\d{4}-\d{2}-\d{2})/)
+    const currentWeekDate = currentWeekMatch?.[1]
 
     await weeklyGrid.navigateToPreviousWeek()
 
-    expect(page.url()).not.toBe(currentUrl)
+    // Extract week date after navigation - should be different
+    const newWeekMatch = page.url().match(/\/week\/(\d{4}-\d{2}-\d{2})/)
+    const newWeekDate = newWeekMatch?.[1]
+    
+    expect(newWeekDate).not.toBe(currentWeekDate)
     await expect(weeklyGrid.todayLink).toBeVisible()
   })
 

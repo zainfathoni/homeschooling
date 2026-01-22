@@ -71,9 +71,12 @@ export class WeeklyGridPage {
   }
 
   async navigateToPreviousWeek() {
+    const currentUrl = this.page.url()
     await this.prevWeekLink.click()
-    // Wait for navigation to any nested student week route
-    await this.page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
+    // Wait for URL to change (not just match pattern, but actually change)
+    await expect(async () => {
+      expect(this.page.url()).not.toBe(currentUrl)
+    }).toPass({ timeout: 10000 })
     await this.page.waitForLoadState('networkidle')
   }
 
