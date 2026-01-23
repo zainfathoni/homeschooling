@@ -1,5 +1,7 @@
 import type { ActionFunctionArgs } from "react-router";
-import { prisma } from "~/utils/db.server";
+import { eq } from "drizzle-orm";
+import { db } from "~/utils/db.server";
+import { scheduleEntries } from "~/db/schema";
 import {
   requireUser,
   requireScheduleEntryAccess,
@@ -17,11 +19,11 @@ export async function action({ request }: ActionFunctionArgs) {
 
   await requireScheduleEntryAccess(user, entryId);
 
-  const entry = await prisma.scheduleEntry.findUnique({
-    where: { id: entryId },
-    include: {
+  const entry = await db.query.scheduleEntries.findFirst({
+    where: eq(scheduleEntries.id, entryId),
+    with: {
       subject: {
-        include: { options: true },
+        with: { options: true },
       },
     },
   });
@@ -41,10 +43,10 @@ export async function action({ request }: ActionFunctionArgs) {
     return new Response("Invalid option for this subject", { status: 400 });
   }
 
-  await prisma.scheduleEntry.update({
-    where: { id: entryId },
-    data: { selectedOptionId },
-  });
+  await db
+    .update(scheduleEntries)
+    .set({ selectedOptionId })
+    .where(eq(scheduleEntries.id, entryId));
 
   return { success: true, selectedOptionId };
 }

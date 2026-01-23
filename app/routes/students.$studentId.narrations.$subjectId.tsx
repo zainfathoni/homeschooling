@@ -1,6 +1,8 @@
 import type { LoaderFunctionArgs } from "react-router";
 import { useLoaderData, Link, useNavigate, useParams } from "react-router";
-import { prisma } from "~/utils/db.server";
+import { eq, and, desc } from "drizzle-orm";
+import { db } from "~/utils/db.server";
+import { subjects, studentSubjects, narrations } from "~/db/schema";
 import { NarrationList, type SubjectWithNarrations } from "~/components/narration";
 
 export function meta() {
@@ -21,23 +23,23 @@ export async function loader({ params }: LoaderFunctionArgs) {
     throw new Response("Subject ID required", { status: 400 });
   }
 
-  const studentSubject = await prisma.studentSubject.findFirst({
-    where: {
-      studentId,
-      subjectId,
-    },
+  const studentSubject = await db.query.studentSubjects.findFirst({
+    where: and(
+      eq(studentSubjects.studentId, studentId),
+      eq(studentSubjects.subjectId, subjectId)
+    ),
   });
 
   if (!studentSubject) {
     throw new Response("Subject not found for this student", { status: 404 });
   }
 
-  const subject = await prisma.subject.findUnique({
-    where: { id: subjectId },
-    include: {
+  const subject = await db.query.subjects.findFirst({
+    where: eq(subjects.id, subjectId),
+    with: {
       narrations: {
-        where: { studentId },
-        orderBy: { date: "desc" },
+        where: eq(narrations.studentId, studentId),
+        orderBy: desc(narrations.date),
       },
     },
   });
@@ -50,15 +52,13 @@ export async function loader({ params }: LoaderFunctionArgs) {
     id: subject.id,
     name: subject.name,
     icon: subject.icon,
-    narrations: subject.narrations.map(
-      (n: (typeof subject.narrations)[number]) => ({
-        id: n.id,
-        type: n.type,
-        content: n.content,
-        date: n.date.toISOString(),
-        createdAt: n.createdAt.toISOString(),
-      })
-    ),
+    narrations: subject.narrations.map((n) => ({
+      id: n.id,
+      type: n.type,
+      content: n.content,
+      date: n.date.toISOString(),
+      createdAt: n.createdAt.toISOString(),
+    })),
   };
 
   return { subject: subjectData };

@@ -26,9 +26,8 @@ async function main() {
 
   console.log("🗄️  Setting up database...\n");
 
-  run("npx prisma generate", "Generating Prisma client");
-  run("npx prisma db push", "Creating database schema");
-  run("npx prisma db seed", "Seeding database");
+  run("bun run db:push", "Creating database schema");
+  run("bun run db:seed", "Seeding database");
 
   console.log("\n🎉 Database setup complete!");
 }

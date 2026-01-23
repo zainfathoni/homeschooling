@@ -1,7 +1,9 @@
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router";
 import { useLoaderData, Link, useNavigate, useFetcher } from "react-router";
 import { format } from "date-fns";
-import { prisma } from "~/utils/db.server";
+import { eq } from "drizzle-orm";
+import { db } from "~/utils/db.server";
+import { narrations } from "~/db/schema";
 import {
   requireUser,
   requireNarrationAccess,
@@ -25,11 +27,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   await requireNarrationAccess(user, narrationId);
 
-  const narration = await prisma.narration.findUnique({
-    where: { id: narrationId },
-    include: {
-      subject: { select: { id: true, name: true, icon: true } },
-      student: { select: { name: true } },
+  const narration = await db.query.narrations.findFirst({
+    where: eq(narrations.id, narrationId),
+    with: {
+      subject: { columns: { id: true, name: true, icon: true } },
+      student: { columns: { name: true } },
     },
   });
 
@@ -66,9 +68,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   await requireNarrationAccess(user, narrationId);
 
   if (intent === "delete") {
-    await prisma.narration.delete({
-      where: { id: narrationId },
-    });
+    await db.delete(narrations).where(eq(narrations.id, narrationId));
     return { deleted: true };
   }
 
