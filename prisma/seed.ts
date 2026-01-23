@@ -1,6 +1,6 @@
 import "dotenv/config";
-import Database from "better-sqlite3";
-import { drizzle } from "drizzle-orm/better-sqlite3";
+import { drizzle } from "drizzle-orm/libsql";
+import { createClient } from "@libsql/client";
 import { eq, and, notInArray } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
 import { readFileSync } from "fs";
@@ -11,7 +11,6 @@ import * as relations from "../app/db/relations";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// Load curriculum configuration
 interface CurriculumOption {
   id: string;
   name: string;
@@ -39,9 +38,8 @@ const curriculum: CurriculumConfig = JSON.parse(
 );
 
 const connectionString = process.env.DATABASE_URL ?? "file:./dev.db";
-const dbPath = connectionString.replace(/^file:/, "");
-const sqlite = new Database(dbPath);
-const db = drizzle(sqlite, { schema: { ...schema, ...relations } });
+const client = createClient({ url: connectionString });
+const db = drizzle(client, { schema: { ...schema, ...relations } });
 
 async function seedSubjects() {
   console.log(`📚 Seeding ${curriculum.subjects.length} subjects from curriculum v${curriculum.version}...`);
@@ -269,5 +267,5 @@ main()
     process.exit(1);
   })
   .finally(() => {
-    sqlite.close();
+    client.close();
   });
