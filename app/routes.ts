@@ -12,6 +12,9 @@ export default [
     route("narrations", "routes/students.$studentId.narrations._index.tsx"),
   ]),
 
+  // Redirect routes
+  route("week", "routes/week.tsx"),
+
   // Narration routes (top-level for cleaner URLs)
   route("narration/new", "routes/narration.new.tsx"),
   route("narration/:id", "routes/narration.$id.tsx"),

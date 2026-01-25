@@ -126,7 +126,7 @@ test.describe('Text narration - View created narration', () => {
     await expect(loadedList).toBeVisible({ timeout: 5000 })
 
     // Check that we have at least one narration card
-    const narrationCards = page.locator('a[href^="/narration/c"]')
+    const narrationCards = page.locator('a[href^="/narration/"]')
     const count = await narrationCards.count()
     expect(count).toBeGreaterThan(0)
 
@@ -134,7 +134,7 @@ test.describe('Text narration - View created narration', () => {
     await narrationCards.first().click()
 
     // Verify we're on the narration view page
-    await expect(page).toHaveURL(/\/narration\/c[a-z0-9]+$/)
+    await expect(page).toHaveURL(/\/narration\/[a-z0-9]+$/)
 
     const narrationView = new NarrationViewPage(page)
     await narrationView.expectLoaded()
@@ -173,12 +173,12 @@ test.describe('Text narration - Delete', () => {
     await expect(loadedList).toBeVisible({ timeout: 5000 })
 
     // Find any narration card
-    const narrationCard = page.locator('a[href^="/narration/c"]').first()
+    const narrationCard = page.locator('a[href^="/narration/"]').first()
     await expect(narrationCard).toBeVisible({ timeout: 10000 })
     await narrationCard.click()
 
     // Verify we're on the narration view page
-    await expect(page).toHaveURL(/\/narration\/c[a-z0-9]+$/)
+    await expect(page).toHaveURL(/\/narration\/[a-z0-9]+$/)
 
     const narrationView = new NarrationViewPage(page)
     await narrationView.expectLoaded()
