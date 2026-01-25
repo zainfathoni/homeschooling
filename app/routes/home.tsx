@@ -1,6 +1,10 @@
 import type { LoaderFunctionArgs } from "react-router";
 import { redirect } from "react-router";
-import { requireUser } from "~/utils/permissions.server";
+import { formatWeekParam, getCurrentWeekStart } from "~/utils/week";
+import {
+  requireUser,
+  getDefaultStudentId,
+} from "~/utils/permissions.server";
 
 export function meta() {
   return [
@@ -10,8 +14,18 @@ export function meta() {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  await requireUser(request);
-  return redirect("/week");
+  const user = await requireUser(request);
+  const currentWeek = getCurrentWeekStart();
+
+  const studentId = getDefaultStudentId(user);
+
+  if (!studentId) {
+    throw new Response("No student available", { status: 400 });
+  }
+
+  return redirect(
+    `/students/${studentId}/week/${formatWeekParam(currentWeek)}`
+  );
 }
 
 export default function Home() {
