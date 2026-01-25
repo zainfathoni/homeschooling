@@ -35,27 +35,19 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
 
   return {
-    userRole: user.role,
-    students: user.ownedStudents,
     selectedStudentId: studentId,
   };
 }
 
 interface LoaderData {
-  userRole: "PARENT" | "STUDENT";
-  students: { id: string; name: string }[];
   selectedStudentId: string;
 }
 
 export default function StudentLayout() {
-  const { userRole, students, selectedStudentId } = useLoaderData<LoaderData>();
+  const { selectedStudentId } = useLoaderData<LoaderData>();
 
   return (
-    <AppShell
-      userRole={userRole}
-      students={students}
-      selectedStudentId={selectedStudentId}
-    >
+    <AppShell selectedStudentId={selectedStudentId}>
       <Outlet />
     </AppShell>
   );

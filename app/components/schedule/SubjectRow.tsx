@@ -23,7 +23,7 @@ export function SubjectRow({
       <div className="hidden md:flex items-center gap-2">
         <div className="flex items-center gap-2 min-w-[160px]">
           {subjectIcon && <span className="text-xl">{subjectIcon}</span>}
-          <span className="font-medium text-gray-700 truncate">
+          <span className="font-medium text-dark-gray truncate">
             {subjectName}
           </span>
         </div>
@@ -45,14 +45,14 @@ export function SubjectRow({
       <div className="md:hidden">
         <div className="flex items-center gap-2 mb-3">
           {subjectIcon && <span className="text-xl">{subjectIcon}</span>}
-          <span className="font-medium text-gray-700">{subjectName}</span>
+          <span className="font-medium text-dark-gray">{subjectName}</span>
         </div>
         <div className="flex gap-2 flex-wrap">
           {completedDays.map((isCompleted, dayIndex) => {
             if (offDays.includes(dayIndex)) return null;
             return (
               <div key={dayIndex} className="flex flex-col items-center gap-1">
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-medium-gray">
                   {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][dayIndex]}
                 </span>
                 <DayColumn

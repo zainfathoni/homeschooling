@@ -44,17 +44,17 @@ export function WeeklyGrid({
             className={`
               rounded-lg p-3 min-h-[120px] transition-colors
               ${day.isOffDay
-                ? "bg-gray-200 text-gray-400"
+                ? "bg-light-gray text-medium-gray"
                 : "bg-white shadow-sm"
               }
               ${day.isToday && !day.isOffDay ? "ring-2 ring-coral" : ""}
             `}
           >
             <div className="text-center mb-2">
-              <div className={`font-semibold ${day.isOffDay ? "text-gray-400" : "text-gray-700"}`}>
+              <div className={`font-semibold ${day.isOffDay ? "text-medium-gray" : "text-dark-gray"}`}>
                 {day.dayName}
               </div>
-              <div className={`text-sm ${day.isOffDay ? "text-gray-400" : "text-gray-500"}`}>
+              <div className={`text-sm ${day.isOffDay ? "text-medium-gray" : "text-medium-gray"}`}>
                 {day.dateLabel}
               </div>
             </div>
@@ -76,8 +76,8 @@ export function WeeklyGrid({
               `}
             >
               <div className="flex items-center gap-2 mb-3">
-                <span className="font-semibold text-gray-700">{day.dayName}</span>
-                <span className="text-sm text-gray-500">{day.dateLabel}</span>
+                <span className="font-semibold text-dark-gray">{day.dayName}</span>
+                <span className="text-sm text-medium-gray">{day.dateLabel}</span>
                 {day.isToday && (
                   <span className="ml-auto text-xs bg-coral text-white px-2 py-0.5 rounded-full">
                     Today

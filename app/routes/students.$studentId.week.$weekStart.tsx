@@ -1,14 +1,11 @@
 import type { LoaderFunctionArgs } from "react-router";
-import { useLoaderData, useParams } from "react-router";
+import { useLoaderData } from "react-router";
 import { differenceInDays, addDays, startOfDay, endOfDay } from "date-fns";
 import { createId } from "@paralleldrive/cuid2";
 import { eq, and, gte, lte } from "drizzle-orm";
 import { db } from "~/utils/db.server";
 import { students, weeklySchedules, scheduleEntries, narrations } from "~/db/schema";
 import { SubjectRow } from "~/components/schedule/SubjectRow";
-import { Pick1Selector } from "~/components/schedule/Pick1Selector";
-import { WeekNavigation } from "~/components/schedule/WeekNavigation";
-import { TabletDuetView } from "~/components/layout";
 import { getWeekStart, getCurrentWeekStart } from "~/utils/week";
 
 export function meta() {
@@ -190,11 +187,6 @@ export async function loader({ params }: LoaderFunctionArgs) {
   };
 }
 
-interface Pick1Option {
-  id: string;
-  name: string;
-}
-
 interface LoaderEntry {
   id: string;
   subjectId: string;
@@ -204,7 +196,6 @@ interface LoaderEntry {
   requiresNarration: boolean;
   completedDays: boolean[];
   selectedOptionId: string | null;
-  options: Pick1Option[];
   hasNarrationByDay: Record<number, { hasNarration: boolean; narrationId?: string }>;
 }
 
@@ -217,75 +208,35 @@ interface LoaderData {
 }
 
 export default function StudentWeekView() {
-  const { entries, weekStart, todayIndex, offDays } = useLoaderData<LoaderData>();
-  const { studentId } = useParams();
-
-  const weekStartDate = new Date(weekStart);
-
-  const duetEntries = entries.map((entry) => ({
-    entryId: entry.id,
-    subjectName: entry.subjectName,
-    subjectIcon: entry.subjectIcon ?? undefined,
-    completedDays: entry.completedDays,
-    requiresNarration: entry.requiresNarration,
-    hasNarrationByDay: entry.hasNarrationByDay,
-    subjectId: entry.subjectId,
-  }));
+  const { entries, todayIndex, offDays } = useLoaderData<LoaderData>();
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-gray-800">Weekly Schedule</h1>
+        <h1 className="text-2xl font-bold text-dark-gray">Weekly Schedule</h1>
       </div>
 
-      <WeekNavigation weekStart={weekStartDate} studentId={studentId} />
-
       {entries.length === 0 ? (
-        <div className="text-center text-gray-500 py-12">
+        <div className="text-center text-medium-gray py-12">
           <p>No subjects configured yet.</p>
           <p className="text-sm mt-2">
             Add students and subjects to get started.
           </p>
         </div>
       ) : (
-        <>
-          {/* Tablet/Desktop: Duet view with weekly overview + daily focus */}
-          <TabletDuetView
-            weekStart={weekStartDate}
-            entries={duetEntries}
-            offDays={offDays}
-            studentId={studentId}
-          />
-
-          {/* Mobile: Standard subject rows */}
-          <div className="space-y-3 md:hidden">
-            {entries.map((entry) =>
-              entry.subjectType === "PICK1" ? (
-                <Pick1Selector
-                  key={entry.id}
-                  entryId={entry.id}
-                  subjectName={entry.subjectName}
-                  subjectIcon={entry.subjectIcon ?? undefined}
-                  options={entry.options}
-                  selectedOptionId={entry.selectedOptionId}
-                  completedDays={entry.completedDays}
-                  offDays={offDays}
-                  todayIndex={todayIndex ?? undefined}
-                />
-              ) : (
-                <SubjectRow
-                  key={entry.id}
-                  entryId={entry.id}
-                  subjectName={entry.subjectName}
-                  subjectIcon={entry.subjectIcon ?? undefined}
-                  completedDays={entry.completedDays}
-                  offDays={offDays}
-                  todayIndex={todayIndex ?? undefined}
-                />
-              )
-            )}
-          </div>
-        </>
+        <div className="space-y-3">
+          {entries.map((entry) => (
+            <SubjectRow
+              key={entry.id}
+              entryId={entry.id}
+              subjectName={entry.subjectName}
+              subjectIcon={entry.subjectIcon ?? undefined}
+              completedDays={entry.completedDays}
+              offDays={offDays}
+              todayIndex={todayIndex ?? undefined}
+            />
+          ))}
+        </div>
       )}
     </div>
   );

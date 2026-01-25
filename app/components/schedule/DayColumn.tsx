@@ -6,6 +6,7 @@ export interface DayColumnProps {
   isCompleted: boolean;
   isOffDay?: boolean;
   isToday?: boolean;
+  subjectSlug?: string;
 }
 
 export function DayColumn({
@@ -14,6 +15,7 @@ export function DayColumn({
   isCompleted,
   isOffDay = false,
   isToday = false,
+  subjectSlug,
 }: DayColumnProps) {
   const fetcher = useFetcher();
   const isSubmitting = fetcher.state !== "idle";
@@ -24,7 +26,7 @@ export function DayColumn({
   if (isOffDay) {
     return (
       <div className="w-11 h-11 flex items-center justify-center">
-        <span className="text-gray-300">—</span>
+        <span className="text-light-gray">—</span>
       </div>
     );
   }
@@ -41,6 +43,7 @@ export function DayColumn({
       <button
         type="submit"
         disabled={isSubmitting}
+        data-testid={subjectSlug ? `subject-${subjectSlug}-day-${dayIndex}` : undefined}
         className={`
           w-11 h-11 rounded-lg border-2 flex items-center justify-center
           transition-all duration-150 ease-in-out
@@ -49,7 +52,7 @@ export function DayColumn({
           ${
             optimisticCompleted
               ? "bg-coral border-coral text-white"
-              : "bg-white border-gray-300 hover:border-coral hover:bg-coral/10"
+              : "bg-white border-medium-gray hover:border-coral hover:bg-coral/10"
           }
         `}
         aria-label={optimisticCompleted ? "Mark incomplete" : "Mark complete"}
