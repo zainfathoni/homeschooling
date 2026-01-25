@@ -96,18 +96,22 @@ test.describe('Tracer Bullet - Mobile Weekly View Flow', () => {
 test.describe('Tracer Bullet - Desktop Weekly View', () => {
   test.use({ viewport: { width: 1024, height: 768 } })
 
-  test('weekly schedule displays on desktop viewport', async ({ page }) => {
+  test('tablet duet view displays on desktop viewport', async ({ page }) => {
     // Navigate to weekly schedule
     await page.goto('/')
     await page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await page.waitForLoadState('networkidle')
 
-    // Verify heading is visible
-    const heading = page.getByRole('heading', { name: /Weekly Schedule/i })
-    await expect(heading).toBeVisible()
+    // Verify Duet View is visible (shows "Weekly Overview" on left panel)
+    const weeklyOverviewHeading = page.getByRole('heading', { name: /Weekly Overview/i })
+    await expect(weeklyOverviewHeading).toBeVisible()
 
-    // Verify subject rows are visible
-    const subjectRow = page.locator('div').filter({ hasText: /📐/ }).first()
-    await expect(subjectRow).toBeVisible()
+    // Verify day selector buttons are visible
+    const dayButton = page.getByRole('button', { name: /Mon|Tue|Wed|Thu|Fri/i }).first()
+    await expect(dayButton).toBeVisible()
+
+    // Verify DailyFocus panel shows the day name (e.g., "Monday", "Tuesday", etc.)
+    const dayNameHeading = page.getByRole('heading', { name: /Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday/i })
+    await expect(dayNameHeading).toBeVisible()
   })
 })
