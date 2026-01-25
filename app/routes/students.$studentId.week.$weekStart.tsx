@@ -1,11 +1,12 @@
 import type { LoaderFunctionArgs } from "react-router";
-import { useLoaderData } from "react-router";
+import { useLoaderData, useParams } from "react-router";
 import { differenceInDays, addDays, startOfDay, endOfDay } from "date-fns";
 import { createId } from "@paralleldrive/cuid2";
 import { eq, and, gte, lte } from "drizzle-orm";
 import { db } from "~/utils/db.server";
 import { students, weeklySchedules, scheduleEntries, narrations } from "~/db/schema";
 import { SubjectRow } from "~/components/schedule/SubjectRow";
+import { TabletDuetView, type DuetEntry } from "~/components/schedule/TabletDuetView";
 import { getWeekStart, getCurrentWeekStart } from "~/utils/week";
 
 export function meta() {
@@ -208,36 +209,58 @@ interface LoaderData {
 }
 
 export default function StudentWeekView() {
-  const { entries, todayIndex, offDays } = useLoaderData<LoaderData>();
+  const { entries, weekStart, todayIndex, offDays } = useLoaderData<LoaderData>();
+  const { studentId } = useParams();
+
+  const duetEntries: DuetEntry[] = entries.map((entry) => ({
+    entryId: entry.id,
+    subjectName: entry.subjectName,
+    subjectIcon: entry.subjectIcon ?? undefined,
+    completedDays: entry.completedDays,
+    requiresNarration: entry.requiresNarration,
+    hasNarrationByDay: entry.hasNarrationByDay,
+    subjectId: entry.subjectId,
+  }));
 
   return (
-    <div className="p-4 md:p-6 max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-dark-gray">Weekly Schedule</h1>
-      </div>
+    <>
+      {/* Tablet/Desktop: Duet View */}
+      <TabletDuetView
+        weekStart={new Date(weekStart)}
+        entries={duetEntries}
+        offDays={offDays}
+        studentId={studentId}
+      />
 
-      {entries.length === 0 ? (
-        <div className="text-center text-medium-gray py-12">
-          <p>No subjects configured yet.</p>
-          <p className="text-sm mt-2">
-            Add students and subjects to get started.
-          </p>
+      {/* Mobile: Subject rows */}
+      <div className="md:hidden p-4 max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold text-dark-gray">Weekly Schedule</h1>
         </div>
-      ) : (
-        <div className="space-y-3">
-          {entries.map((entry) => (
-            <SubjectRow
-              key={entry.id}
-              entryId={entry.id}
-              subjectName={entry.subjectName}
-              subjectIcon={entry.subjectIcon ?? undefined}
-              completedDays={entry.completedDays}
-              offDays={offDays}
-              todayIndex={todayIndex ?? undefined}
-            />
-          ))}
-        </div>
-      )}
-    </div>
+
+        {entries.length === 0 ? (
+          <div className="text-center text-medium-gray py-12">
+            <p>No subjects configured yet.</p>
+            <p className="text-sm mt-2">
+              Add students and subjects to get started.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {entries.map((entry) => (
+              <SubjectRow
+                key={entry.id}
+                entryId={entry.id}
+                subjectName={entry.subjectName}
+                subjectIcon={entry.subjectIcon ?? undefined}
+                completedDays={entry.completedDays}
+                offDays={offDays}
+                todayIndex={todayIndex ?? undefined}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </>
   );
 }

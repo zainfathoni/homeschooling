@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { DailyFocus, type DailyTask } from "~/components/schedule/DailyFocus";
+import { DailyFocus, type DailyTask } from "./DailyFocus";
 import { addDays, startOfWeek, isSameDay } from "date-fns";
 
 export interface DuetEntry {

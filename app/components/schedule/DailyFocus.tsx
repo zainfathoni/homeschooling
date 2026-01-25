@@ -1,6 +1,6 @@
 import { format, formatISO } from "date-fns";
-import { ProgressRing } from "./ProgressRing";
-import { TaskCard } from "./TaskCard";
+import { ProgressRing } from "~/components/schedule/ProgressRing";
+import { TaskCard } from "~/components/schedule/TaskCard";
 
 export interface DailyTask {
   entryId: string;
