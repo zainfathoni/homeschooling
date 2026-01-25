@@ -1,13 +1,11 @@
 import type { Config } from "tailwindcss";
+import styles from "./app/styles/styles.json";
 
 export default {
   content: ["./app/**/{**,.client,.server}/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
-      colors: {
-        lavender: "#E8E4F0",
-        coral: "#F08080",
-      },
+      colors: styles.colors,
     },
   },
   plugins: [],

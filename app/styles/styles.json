@@ -1,0 +1,28 @@
+{
+  "colors": {
+    "lavender": "#E8E4F0",
+    "coral": "#F08080",
+    "coral-hover": "#D76060",
+    "white": "#FFFFFF",
+    "dark-gray": "#333333",
+    "medium-gray": "#666666",
+    "light-gray": "#E5E5E5"
+  },
+  "semantic": {
+    "background": "lavender",
+    "card": "white",
+    "text-primary": "dark-gray",
+    "text-secondary": "medium-gray",
+    "border": "light-gray",
+    "accent": "coral",
+    "accent-hover": "coral-hover"
+  },
+  "spacing": {
+    "touch-target": "44px"
+  },
+  "contrast": {
+    "dark-gray-on-white": "12.6:1",
+    "medium-gray-on-white": "5.7:1",
+    "coral-on-white": "3.1:1"
+  }
+}
