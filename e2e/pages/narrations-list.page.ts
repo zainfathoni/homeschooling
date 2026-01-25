@@ -41,7 +41,7 @@ export class NarrationsListPage {
     await expect(this.heading).toBeVisible()
     // Wait for either loaded list or empty state (data-dependent elements)
     const loadedList = this.page.getByTestId('narration-list-loaded')
-    const emptyState = this.page.getByText(/No narrations yet/i)
+    const emptyState = this.page.getByTestId('narration-list-empty')
     await expect(loadedList.or(emptyState)).toBeVisible({ timeout: 15000 })
   }
 

@@ -21,7 +21,7 @@ export function NarrationList({
 }: NarrationListProps) {
   if (subjects.length === 0) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-12" data-testid="narration-list-empty">
         <p className="text-gray-500">No narrations yet</p>
       </div>
     );
@@ -30,7 +30,7 @@ export function NarrationList({
   const hasNarrations = subjects.some((s) => s.narrations.length > 0);
   if (!hasNarrations) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-12" data-testid="narration-list-empty">
         <p className="text-gray-500">No narrations yet</p>
         <p className="text-sm text-gray-400 mt-2">
           Add narrations from the daily schedule view
