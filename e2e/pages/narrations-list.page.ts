@@ -39,6 +39,10 @@ export class NarrationsListPage {
 
   async expectLoaded() {
     await expect(this.heading).toBeVisible()
+    // Wait for either loaded list or empty state (data-dependent elements)
+    const loadedList = this.page.getByTestId('narration-list-loaded')
+    const emptyState = this.page.getByText(/No narrations yet/i)
+    await expect(loadedList.or(emptyState)).toBeVisible({ timeout: 15000 })
   }
 
   async expectSubjectsGrouped() {

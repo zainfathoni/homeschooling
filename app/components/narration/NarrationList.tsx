@@ -40,7 +40,7 @@ export function NarrationList({
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" data-testid="narration-list-loaded">
       {subjects
         .filter((subject) => subject.narrations.length > 0)
         .map((subject) => (
