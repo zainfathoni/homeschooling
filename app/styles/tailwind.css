@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+@theme {
+  /* Design System Colors from styles.json */
+  --color-lavender: #E8E4F0;
+  --color-coral: #F08080;
+  --color-coral-hover: #D76060;
+  --color-dark-gray: #333333;
+  --color-medium-gray: #666666;
+  --color-light-gray: #E5E5E5;
+}
+
 @layer utilities {
   .safe-area-pb {
     padding-bottom: env(safe-area-inset-bottom, 0px);
