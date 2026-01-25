@@ -1,9 +1,4 @@
 import { NavLink } from "react-router";
-import { useState } from "react";
-import {
-  StudentSwitcher,
-  type Student,
-} from "~/components/common/StudentSwitcher";
 
 interface NavItem {
   path: string;
@@ -31,85 +26,19 @@ const navItems: NavItem[] = [
       </svg>
     ),
   },
-  {
-    path: "narrations",
-    label: "Narrations",
-    icon: (
-      <svg
-        className="w-6 h-6"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-        />
-      </svg>
-    ),
-  },
-  {
-    path: "settings",
-    label: "Settings",
-    icon: (
-      <svg
-        className="w-6 h-6"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-        />
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-        />
-      </svg>
-    ),
-  },
 ];
 
 interface AppShellProps {
   children: React.ReactNode;
-  userRole?: "PARENT" | "STUDENT";
-  students?: Student[];
   selectedStudentId?: string;
 }
 
-function SideNav({
-  userRole,
-  students,
-  selectedStudentId,
-}: {
-  userRole?: "PARENT" | "STUDENT";
-  students?: Student[];
-  selectedStudentId?: string;
-}) {
+function SideNav({ selectedStudentId }: { selectedStudentId?: string }) {
   return (
-    <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-200 h-screen sticky top-0">
-      <div className="p-4 border-b border-gray-200">
-        <h1 className="text-xl font-bold text-gray-800">Homeschool Planner</h1>
+    <aside className="hidden md:flex flex-col w-64 bg-white border-r border-light-gray h-screen sticky top-0">
+      <div className="p-4 border-b border-light-gray">
+        <h1 className="text-xl font-bold text-dark-gray">Homeschool Planner</h1>
       </div>
-
-      {userRole === "PARENT" && students && students.length > 0 && (
-        <div className="p-4 border-b border-gray-200">
-          <label className="block text-xs font-medium text-gray-500 mb-2">
-            Viewing as
-          </label>
-          <StudentSwitcher
-            students={students}
-            selectedStudentId={selectedStudentId}
-          />
-        </div>
-      )}
 
       <nav className="flex-1 p-4">
         <ul className="space-y-2">
@@ -125,7 +54,7 @@ function SideNav({
                     `flex items-center gap-3 px-3 py-3 rounded-lg transition-colors min-h-[44px] ${
                       isActive
                         ? "bg-coral text-white"
-                        : "text-gray-600 hover:bg-gray-100"
+                        : "text-medium-gray hover:bg-lavender"
                     }`
                   }
                 >
@@ -143,7 +72,7 @@ function SideNav({
 
 function BottomNav({ selectedStudentId }: { selectedStudentId?: string }) {
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-pb">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-light-gray safe-area-pb">
       <ul className="flex justify-around">
         {navItems.map((item) => {
           const to = selectedStudentId
@@ -155,7 +84,7 @@ function BottomNav({ selectedStudentId }: { selectedStudentId?: string }) {
                 to={to}
                 className={({ isActive }) =>
                   `flex flex-col items-center justify-center py-2 min-h-[56px] transition-colors ${
-                    isActive ? "text-coral" : "text-gray-500"
+                    isActive ? "text-coral" : "text-medium-gray"
                   }`
                 }
               >
@@ -170,82 +99,24 @@ function BottomNav({ selectedStudentId }: { selectedStudentId?: string }) {
   );
 }
 
-function MobileHeader({
-  userRole,
-  students,
-  selectedStudentId,
-}: {
-  userRole?: "PARENT" | "STUDENT";
-  students?: Student[];
-  selectedStudentId?: string;
-}) {
-  const [showSwitcher, setShowSwitcher] = useState(false);
-
-  const showStudentSwitcher =
-    userRole === "PARENT" && students && students.length > 1;
-
+function MobileHeader() {
   return (
-    <header className="md:hidden sticky top-0 bg-white border-b border-gray-200 z-10">
+    <header className="md:hidden sticky top-0 bg-white border-b border-light-gray z-10">
       <div className="flex items-center justify-between p-4">
-        <h1 className="text-lg font-bold text-gray-800">Homeschool Planner</h1>
-        {showStudentSwitcher && (
-          <button
-            onClick={() => setShowSwitcher(!showSwitcher)}
-            className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-lg text-sm min-h-[44px]"
-          >
-            <span>
-              {students.find((s) => s.id === selectedStudentId)?.name ??
-                students[0]?.name}
-            </span>
-            <svg
-              className={`w-4 h-4 transition-transform ${showSwitcher ? "rotate-180" : ""}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </button>
-        )}
+        <h1 className="text-lg font-bold text-dark-gray">Homeschool Planner</h1>
       </div>
-      {showSwitcher && showStudentSwitcher && (
-        <div className="px-4 pb-4">
-          <StudentSwitcher
-            students={students}
-            selectedStudentId={selectedStudentId}
-          />
-        </div>
-      )}
     </header>
   );
 }
 
-export function AppShell({
-  children,
-  userRole,
-  students,
-  selectedStudentId,
-}: AppShellProps) {
+export function AppShell({ children, selectedStudentId }: AppShellProps) {
   return (
     <div className="min-h-screen bg-lavender">
       <div className="flex">
-        <SideNav
-          userRole={userRole}
-          students={students}
-          selectedStudentId={selectedStudentId}
-        />
+        <SideNav selectedStudentId={selectedStudentId} />
 
         <div className="flex-1 flex flex-col min-h-screen">
-          <MobileHeader
-            userRole={userRole}
-            students={students}
-            selectedStudentId={selectedStudentId}
-          />
+          <MobileHeader />
 
           <main className="flex-1 pb-20 md:pb-0">{children}</main>
 
