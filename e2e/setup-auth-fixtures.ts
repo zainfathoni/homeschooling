@@ -65,13 +65,13 @@ export async function setupAuthFixtures(): Promise<void> {
   if (parent) {
     await generateAuthFixture(parent.id, "parent.local.json");
   } else {
-    console.warn("Parent user not found in database - run `npx prisma db seed` first");
+    console.warn("Parent user not found in database - run `bun run db:seed` first");
   }
 
   if (student) {
     await generateAuthFixture(student.id, "student.local.json");
   } else {
-    console.warn("Student user not found in database - run `npx prisma db seed` first");
+    console.warn("Student user not found in database - run `bun run db:seed` first");
   }
 }
 

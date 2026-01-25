@@ -1,6 +1,8 @@
 import type { LoaderFunctionArgs } from "react-router";
 import { useLoaderData, useParams } from "react-router";
-import { prisma } from "~/utils/db.server";
+import { eq, desc, asc } from "drizzle-orm";
+import { db } from "~/utils/db.server";
+import { studentSubjects, narrations } from "~/db/schema";
 import { NarrationList, type SubjectWithNarrations } from "~/components/narration";
 
 export function meta() {
@@ -17,38 +19,37 @@ export async function loader({ params }: LoaderFunctionArgs) {
     throw new Response("Student ID required", { status: 400 });
   }
 
-  const studentSubjects = await prisma.studentSubject.findMany({
-    where: { studentId },
-    include: {
+  const studentSubjectRecords = await db.query.studentSubjects.findMany({
+    where: eq(studentSubjects.studentId, studentId),
+    with: {
       subject: {
-        include: {
+        with: {
           narrations: {
-            where: { studentId },
-            orderBy: { date: "desc" },
-            take: 10,
+            where: eq(narrations.studentId, studentId),
+            orderBy: desc(narrations.date),
+            limit: 10,
           },
         },
       },
     },
-    orderBy: { subject: { order: "asc" } },
+    orderBy: asc(studentSubjects.id),
   });
 
-  const subjects: SubjectWithNarrations[] = studentSubjects.map(
-    (ss: (typeof studentSubjects)[number]) => ({
-      id: ss.subject.id,
-      name: ss.subject.name,
-      icon: ss.subject.icon,
-      narrations: ss.subject.narrations.map(
-        (n: (typeof ss.subject.narrations)[number]) => ({
-          id: n.id,
-          type: n.type,
-          content: n.content,
-          date: n.date.toISOString(),
-          createdAt: n.createdAt.toISOString(),
-        })
-      ),
-    })
-  );
+  // Sort by subject order
+  studentSubjectRecords.sort((a, b) => a.subject.order - b.subject.order);
+
+  const subjects: SubjectWithNarrations[] = studentSubjectRecords.map((ss) => ({
+    id: ss.subject.id,
+    name: ss.subject.name,
+    icon: ss.subject.icon,
+    narrations: ss.subject.narrations.map((n) => ({
+      id: n.id,
+      type: n.type,
+      content: n.content,
+      date: n.date.toISOString(),
+      createdAt: n.createdAt.toISOString(),
+    })),
+  }));
 
   return { subjects };
 }

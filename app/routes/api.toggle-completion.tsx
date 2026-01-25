@@ -1,5 +1,7 @@
 import type { ActionFunctionArgs } from "react-router";
-import { prisma } from "~/utils/db.server";
+import { eq } from "drizzle-orm";
+import { db } from "~/utils/db.server";
+import { scheduleEntries } from "~/db/schema";
 import {
   requireUser,
   requireScheduleEntryAccess,
@@ -18,8 +20,8 @@ export async function action({ request }: ActionFunctionArgs) {
 
   await requireScheduleEntryAccess(user, entryId);
 
-  const entry = await prisma.scheduleEntry.findUnique({
-    where: { id: entryId },
+  const entry = await db.query.scheduleEntries.findFirst({
+    where: eq(scheduleEntries.id, entryId),
   });
 
   if (!entry) {
@@ -29,10 +31,10 @@ export async function action({ request }: ActionFunctionArgs) {
   const completedDays: boolean[] = JSON.parse(entry.completedDays);
   completedDays[dayIndex] = completed;
 
-  await prisma.scheduleEntry.update({
-    where: { id: entryId },
-    data: { completedDays: JSON.stringify(completedDays) },
-  });
+  await db
+    .update(scheduleEntries)
+    .set({ completedDays: JSON.stringify(completedDays) })
+    .where(eq(scheduleEntries.id, entryId));
 
   return { success: true, completedDays };
 }

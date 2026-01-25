@@ -1,5 +1,8 @@
 import crypto from "crypto";
-import { prisma } from "./db.server";
+import { createId } from "@paralleldrive/cuid2";
+import { eq } from "drizzle-orm";
+import { db } from "./db.server";
+import { users } from "../db/schema";
 
 type MagicLink = {
   token: string;
@@ -40,8 +43,8 @@ export function verifyMagicLink(token: string): { valid: true; email: string } |
 }
 
 export async function getUserByEmail(email: string) {
-  return prisma.user.findUnique({
-    where: { email },
+  return db.query.users.findFirst({
+    where: eq(users.email, email),
   });
 }
 
@@ -51,17 +54,21 @@ export async function getOrCreateUserByEmail(email: string, name?: string) {
     return existingUser;
   }
 
-  return prisma.user.create({
-    data: {
+  const [newUser] = await db
+    .insert(users)
+    .values({
+      id: createId(),
       email,
       name: name ?? email.split("@")[0],
       role: "PARENT",
-    },
-  });
+    })
+    .returning();
+
+  return newUser;
 }
 
 export async function getUserById(id: string) {
-  return prisma.user.findUnique({
-    where: { id },
+  return db.query.users.findFirst({
+    where: eq(users.id, id),
   });
 }

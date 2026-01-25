@@ -2,7 +2,9 @@ import type { LoaderFunctionArgs } from "react-router";
 import { useLoaderData, Link, useNavigate, useSearchParams } from "react-router";
 import { format, parseISO } from "date-fns";
 import { useState } from "react";
-import { prisma } from "~/utils/db.server";
+import { eq } from "drizzle-orm";
+import { db } from "~/utils/db.server";
+import { subjects } from "~/db/schema";
 import { requireUser, getActiveStudentId } from "~/utils/permissions.server";
 import { AppShell } from "~/components/layout";
 import { TextInput, VoiceRecorder, PhotoCapture } from "~/components/narration";
@@ -29,9 +31,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
     throw new Response("No student selected", { status: 400 });
   }
 
-  const subject = await prisma.subject.findUnique({
-    where: { id: subjectId },
-    select: { id: true, name: true, icon: true },
+  const subject = await db.query.subjects.findFirst({
+    where: eq(subjects.id, subjectId),
+    columns: { id: true, name: true, icon: true },
   });
 
   if (!subject) {

@@ -1,5 +1,7 @@
 import { redirect } from "react-router";
-import { prisma } from "./db.server";
+import { eq } from "drizzle-orm";
+import { db } from "./db.server";
+import { users, scheduleEntries, narrations } from "../db/schema";
 import { getUserId, getSelectedStudentId } from "./session.server";
 import { getStudentIdFromRequest } from "./student-url";
 
@@ -22,11 +24,11 @@ export async function requireUser(request: Request): Promise<AuthUser> {
     throw redirect(`/login?${searchParams}`);
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: {
-      studentProfile: { select: { id: true } },
-      ownedStudents: { select: { id: true, name: true } },
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, userId),
+    with: {
+      studentProfile: { columns: { id: true } },
+      ownedStudents: { columns: { id: true, name: true } },
     },
   });
 
@@ -34,7 +36,7 @@ export async function requireUser(request: Request): Promise<AuthUser> {
     throw redirect("/login");
   }
 
-  return user;
+  return user as AuthUser;
 }
 
 export function isParent(user: AuthUser): boolean {
@@ -71,10 +73,10 @@ export async function requireScheduleEntryAccess(
   user: AuthUser,
   entryId: string
 ): Promise<void> {
-  const entry = await prisma.scheduleEntry.findUnique({
-    where: { id: entryId },
-    include: {
-      schedule: { select: { studentId: true } },
+  const entry = await db.query.scheduleEntries.findFirst({
+    where: eq(scheduleEntries.id, entryId),
+    with: {
+      schedule: { columns: { studentId: true } },
     },
   });
 
@@ -89,9 +91,9 @@ export async function requireNarrationAccess(
   user: AuthUser,
   narrationId: string
 ): Promise<void> {
-  const narration = await prisma.narration.findUnique({
-    where: { id: narrationId },
-    select: { studentId: true },
+  const narration = await db.query.narrations.findFirst({
+    where: eq(narrations.id, narrationId),
+    columns: { studentId: true },
   });
 
   if (!narration) {

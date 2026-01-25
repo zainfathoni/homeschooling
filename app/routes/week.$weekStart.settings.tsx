@@ -1,6 +1,9 @@
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router";
 import { useLoaderData, Link, useFetcher } from "react-router";
-import { prisma } from "~/utils/db.server";
+import { createId } from "@paralleldrive/cuid2";
+import { eq, and, inArray } from "drizzle-orm";
+import { db } from "~/utils/db.server";
+import { students, weeklySchedules } from "~/db/schema";
 import { getWeekStart, formatWeekParam } from "~/utils/week";
 import { format } from "date-fns";
 import {
@@ -38,8 +41,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     };
   }
 
-  const student = await prisma.student.findFirst({
-    where: { id: { in: accessibleStudentIds } },
+  const student = await db.query.students.findFirst({
+    where: inArray(students.id, accessibleStudentIds),
   });
 
   if (!student) {
@@ -50,23 +53,24 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     };
   }
 
-  let schedule = await prisma.weeklySchedule.findUnique({
-    where: {
-      studentId_weekStart: {
-        studentId: student.id,
-        weekStart,
-      },
-    },
+  let schedule = await db.query.weeklySchedules.findFirst({
+    where: and(
+      eq(weeklySchedules.studentId, student.id),
+      eq(weeklySchedules.weekStart, weekStart)
+    ),
   });
 
   if (!schedule) {
-    schedule = await prisma.weeklySchedule.create({
-      data: {
+    const [newSchedule] = await db
+      .insert(weeklySchedules)
+      .values({
+        id: createId(),
         studentId: student.id,
         weekStart,
         schoolDays: JSON.stringify([0, 1, 2, 3, 4]),
-      },
-    });
+      })
+      .returning();
+    schedule = newSchedule;
   }
 
   const schoolDays = JSON.parse(schedule.schoolDays) as number[];
@@ -96,9 +100,9 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   const accessibleStudentIds = getAccessibleStudentIds(user);
-  const schedule = await prisma.weeklySchedule.findUnique({
-    where: { id: scheduleId },
-    select: { studentId: true },
+  const schedule = await db.query.weeklySchedules.findFirst({
+    where: eq(weeklySchedules.id, scheduleId),
+    columns: { studentId: true },
   });
 
   if (!schedule || !accessibleStudentIds.includes(schedule.studentId)) {
@@ -116,10 +120,10 @@ export async function action({ request }: ActionFunctionArgs) {
     return new Response("Invalid school days", { status: 400 });
   }
 
-  await prisma.weeklySchedule.update({
-    where: { id: scheduleId },
-    data: { schoolDays: JSON.stringify(schoolDays) },
-  });
+  await db
+    .update(weeklySchedules)
+    .set({ schoolDays: JSON.stringify(schoolDays) })
+    .where(eq(weeklySchedules.id, scheduleId));
 
   return { success: true, schoolDays };
 }

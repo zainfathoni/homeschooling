@@ -1,7 +1,10 @@
 import type { LoaderFunctionArgs } from "react-router";
 import { useLoaderData, useParams } from "react-router";
 import { differenceInDays, addDays, startOfDay, endOfDay } from "date-fns";
-import { prisma } from "~/utils/db.server";
+import { createId } from "@paralleldrive/cuid2";
+import { eq, and, gte, lte } from "drizzle-orm";
+import { db } from "~/utils/db.server";
+import { students, weeklySchedules, scheduleEntries, narrations } from "~/db/schema";
 import { SubjectRow } from "~/components/schedule/SubjectRow";
 import { Pick1Selector } from "~/components/schedule/Pick1Selector";
 import { WeekNavigation } from "~/components/schedule/WeekNavigation";
@@ -24,11 +27,11 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
   const weekStart = getWeekStart(weekStartParam ?? "");
 
-  const student = await prisma.student.findUnique({
-    where: { id: studentId },
-    include: {
+  const student = await db.query.students.findFirst({
+    where: eq(students.id, studentId),
+    with: {
       subjects: {
-        include: {
+        with: {
           subject: true,
         },
       },
@@ -39,18 +42,16 @@ export async function loader({ params }: LoaderFunctionArgs) {
     throw new Response("Student not found", { status: 404 });
   }
 
-  let schedule = await prisma.weeklySchedule.findUnique({
-    where: {
-      studentId_weekStart: {
-        studentId: student.id,
-        weekStart,
-      },
-    },
-    include: {
+  let schedule = await db.query.weeklySchedules.findFirst({
+    where: and(
+      eq(weeklySchedules.studentId, student.id),
+      eq(weeklySchedules.weekStart, weekStart)
+    ),
+    with: {
       entries: {
-        include: {
+        with: {
           subject: {
-            include: { options: true },
+            with: { options: true },
           },
         },
       },
@@ -58,26 +59,44 @@ export async function loader({ params }: LoaderFunctionArgs) {
   });
 
   if (!schedule) {
-    schedule = await prisma.weeklySchedule.create({
-      data: {
+    // Create the schedule
+    const [newSchedule] = await db
+      .insert(weeklySchedules)
+      .values({
+        id: createId(),
         studentId: student.id,
         weekStart,
+      })
+      .returning();
+
+    // Create entries for all student subjects
+    if (student.subjects.length > 0) {
+      await db.insert(scheduleEntries).values(
+        student.subjects.map((ss) => ({
+          id: createId(),
+          scheduleId: newSchedule.id,
+          subjectId: ss.subjectId,
+        }))
+      );
+    }
+
+    // Re-fetch the schedule with entries
+    schedule = await db.query.weeklySchedules.findFirst({
+      where: eq(weeklySchedules.id, newSchedule.id),
+      with: {
         entries: {
-          create: student.subjects.map((ss: { subjectId: string }) => ({
-            subjectId: ss.subjectId,
-          })),
-        },
-      },
-      include: {
-        entries: {
-          include: {
+          with: {
             subject: {
-              include: { options: true },
+              with: { options: true },
             },
           },
         },
       },
     });
+  }
+
+  if (!schedule) {
+    throw new Response("Failed to create schedule", { status: 500 });
   }
 
   const schoolDaysArray = JSON.parse(schedule.schoolDays) as number[];
@@ -111,15 +130,13 @@ export async function loader({ params }: LoaderFunctionArgs) {
   }
 
   const weekEnd = addDays(weekStart, 6);
-  const narrations = await prisma.narration.findMany({
-    where: {
-      studentId: student.id,
-      date: {
-        gte: startOfDay(weekStart),
-        lte: endOfDay(weekEnd),
-      },
-    },
-    select: {
+  const narrationsData = await db.query.narrations.findMany({
+    where: and(
+      eq(narrations.studentId, student.id),
+      gte(narrations.date, startOfDay(weekStart)),
+      lte(narrations.date, endOfDay(weekEnd))
+    ),
+    columns: {
       id: true,
       subjectId: true,
       date: true,
@@ -127,7 +144,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
   });
 
   const narrationsBySubjectAndDay = new Map<string, Map<number, string>>();
-  for (const narration of narrations) {
+  for (const narration of narrationsData) {
     const dayIndex = differenceInDays(narration.date, weekStart);
     if (dayIndex >= 0 && dayIndex <= 6) {
       if (!narrationsBySubjectAndDay.has(narration.subjectId)) {
@@ -141,7 +158,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
     entries: schedule.entries.map((entry: ScheduleEntryWithSubject) => {
       const subjectNarrations = narrationsBySubjectAndDay.get(entry.subjectId);
       const hasNarrationByDay: Record<number, { hasNarration: boolean; narrationId?: string }> = {};
-      
+
       if (entry.subject.requiresNarration) {
         for (let day = 0; day <= 6; day++) {
           const narrationId = subjectNarrations?.get(day);

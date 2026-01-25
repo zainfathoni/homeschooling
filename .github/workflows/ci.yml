@@ -7,61 +7,57 @@ on:
     branches: [main]
 
 jobs:
-  cache-npm:
+  cache-bun:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version: 20
-          cache: 'npm'
-      - run: npm ci
+          bun-version: latest
+      - run: bun install --frozen-lockfile
 
   typecheck:
     runs-on: ubuntu-latest
-    needs: [cache-npm]
+    needs: [cache-bun]
     env:
       DATABASE_URL: file:./dev.db
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version: 20
-          cache: 'npm'
-      - run: npm ci
-      - run: npx prisma generate
-      - run: npm run typecheck
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bun run db:setup
+      - run: bun run typecheck
 
   lint:
     runs-on: ubuntu-latest
-    needs: [cache-npm]
+    needs: [cache-bun]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version: 20
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run lint
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bun run lint
 
   build:
     runs-on: ubuntu-latest
-    needs: [cache-npm]
+    needs: [cache-bun]
     env:
       DATABASE_URL: file:./dev.db
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version: 20
-          cache: 'npm'
-      - run: npm ci
-      - run: npx prisma generate
-      - run: npm run build
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bun run db:setup
+      - run: bun run build
 
   e2e-test:
     runs-on: ubuntu-latest
-    needs: [cache-npm]
+    needs: [cache-bun]
     if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push'
     strategy:
       fail-fast: false
@@ -74,18 +70,16 @@ jobs:
       MAGIC_LINK_SECRET: ${{ secrets.MAGIC_LINK_SECRET || 'ci-test-magic-link-secret-32ch' }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version: 20
-          cache: 'npm'
-      - run: npm ci
-      - run: npx prisma generate
-      - run: npx prisma db push
-      - run: npx prisma db seed
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bun run db:setup
+      - run: bun run db:seed
 
       - name: Get Playwright version
         id: playwright-version
-        run: echo "version=$(npm ls @playwright/test --json | jq -r '.dependencies["@playwright/test"].version')" >> $GITHUB_OUTPUT
+        run: echo "version=$(bun pm ls @playwright/test 2>/dev/null | grep @playwright/test | sed 's/.*@//')" >> $GITHUB_OUTPUT
 
       - name: Cache Playwright browsers
         uses: actions/cache@v4
@@ -96,15 +90,15 @@ jobs:
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
+        run: bunx playwright install --with-deps
 
       - name: Install Playwright dependencies (cache hit)
         if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps
+        run: bunx playwright install-deps
 
-      - run: npm run build
+      - run: bun run build
       - name: Run E2E tests (shard ${{ matrix.shard }}/4)
-        run: npx cross-env RUNNING_E2E=true start-server-and-test start http-get://localhost:3000/ 'playwright test --shard=${{ matrix.shard }}/4'
+        run: bunx cross-env RUNNING_E2E=true start-server-and-test start http-get://localhost:3000/ 'playwright test --shard=${{ matrix.shard }}/4'
 
       - name: Upload test results
         uses: actions/upload-artifact@v4

@@ -116,7 +116,14 @@ test.describe('Text narration - View created narration', () => {
     // Navigate to narrations list (use catch for WebKit navigation interruption)
     await page.goto('/narrations').catch(() => {})
     await page.waitForURL(/\/students\/[^/]+\/narrations/, { timeout: 15000 })
-    await page.waitForLoadState('networkidle')
+
+    // Wait for narration list to be fully rendered (either with data or empty state)
+    const loadedList = page.getByTestId('narration-list-loaded')
+    const emptyList = page.getByTestId('narration-list-empty')
+    await expect(loadedList.or(emptyList)).toBeVisible({ timeout: 15000 })
+
+    // Ensure we have the loaded list with narrations (not empty)
+    await expect(loadedList).toBeVisible({ timeout: 5000 })
 
     // Check that we have at least one narration card
     const narrationCards = page.locator('a[href^="/narration/c"]')
@@ -156,7 +163,14 @@ test.describe('Text narration - Delete', () => {
     // Navigate to narrations list (use catch for WebKit navigation interruption)
     await page.goto('/narrations').catch(() => {})
     await page.waitForURL(/\/students\/[^/]+\/narrations/, { timeout: 15000 })
-    await page.waitForLoadState('networkidle')
+
+    // Wait for narration list to be fully rendered (either with data or empty state)
+    const loadedList = page.getByTestId('narration-list-loaded')
+    const emptyList = page.getByTestId('narration-list-empty')
+    await expect(loadedList.or(emptyList)).toBeVisible({ timeout: 15000 })
+
+    // Ensure we have the loaded list with narrations (not empty)
+    await expect(loadedList).toBeVisible({ timeout: 5000 })
 
     // Find any narration card
     const narrationCard = page.locator('a[href^="/narration/c"]').first()
