@@ -31,7 +31,7 @@ export function NarrationCard({ narration }: NarrationCardProps) {
   return (
     <Link
       to={`/narration/${narration.id}`}
-      className="block bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow"
+      className="block bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow min-h-[44px]"
     >
       <div className="flex items-start gap-3">
         <span className="text-xl" aria-label={typeLabels[narration.type]}>
@@ -39,12 +39,12 @@ export function NarrationCard({ narration }: NarrationCardProps) {
         </span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-lavender text-gray-600">
+            <span className="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-lavender text-medium-gray">
               {typeLabels[narration.type]}
             </span>
-            <span className="text-xs text-gray-400">{dateFormatted}</span>
+            <span className="text-xs text-medium-gray">{dateFormatted}</span>
           </div>
-          <p className="text-sm text-gray-700 line-clamp-2">
+          <p className="text-sm text-dark-gray line-clamp-2">
             {narration.type === "TEXT"
               ? narration.content
               : narration.type === "VOICE"
@@ -53,7 +53,7 @@ export function NarrationCard({ narration }: NarrationCardProps) {
           </p>
         </div>
         <svg
-          className="w-5 h-5 text-gray-400 flex-shrink-0"
+          className="w-5 h-5 text-medium-gray flex-shrink-0"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"

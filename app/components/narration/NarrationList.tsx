@@ -22,7 +22,7 @@ export function NarrationList({
   if (subjects.length === 0) {
     return (
       <div className="text-center py-12" data-testid="narration-list-empty">
-        <p className="text-gray-500">No narrations yet</p>
+        <p className="text-medium-gray">No narrations yet</p>
       </div>
     );
   }
@@ -31,8 +31,8 @@ export function NarrationList({
   if (!hasNarrations) {
     return (
       <div className="text-center py-12" data-testid="narration-list-empty">
-        <p className="text-gray-500">No narrations yet</p>
-        <p className="text-sm text-gray-400 mt-2">
+        <p className="text-medium-gray">No narrations yet</p>
+        <p className="text-sm text-medium-gray mt-2">
           Add narrations from the daily schedule view
         </p>
       </div>
@@ -46,17 +46,17 @@ export function NarrationList({
         .map((subject) => (
           <section key={subject.id}>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-dark-gray flex items-center gap-2">
                 {subject.icon && <span>{subject.icon}</span>}
                 {subject.name}
-                <span className="text-sm font-normal text-gray-500">
+                <span className="text-sm font-normal text-medium-gray">
                   ({subject.narrations.length})
                 </span>
               </h2>
               {showViewAll && subject.narrations.length > 3 && (
                 <Link
                   to={studentId ? `/students/${studentId}/narrations/${subject.id}` : `/narrations/${subject.id}`}
-                  className="text-sm text-coral hover:text-coral/80 font-medium"
+                  className="text-sm text-coral hover:text-coral-hover font-medium min-h-[44px] flex items-center"
                 >
                   View all →
                 </Link>

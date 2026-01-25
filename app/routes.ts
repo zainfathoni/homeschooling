@@ -8,7 +8,14 @@ export default [
     // Week routes
     route("week", "routes/students.$studentId.week._index.tsx"),
     route("week/:weekStart", "routes/students.$studentId.week.$weekStart.tsx"),
+    // Narration routes
+    route("narrations", "routes/students.$studentId.narrations._index.tsx"),
   ]),
+
+  // Narration routes (top-level for cleaner URLs)
+  route("narration/new", "routes/narration.new.tsx"),
+  route("narration/:id", "routes/narration.$id.tsx"),
+  route("narrations", "routes/narrations.tsx"),
 
   // Auth routes
   route("login", "routes/login.tsx"),
@@ -17,4 +24,5 @@ export default [
 
   // API routes
   route("api/toggle-completion", "routes/api.toggle-completion.tsx"),
+  route("api/save-narration", "routes/api.save-narration.tsx"),
 ] satisfies RouteConfig;

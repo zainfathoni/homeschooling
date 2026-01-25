@@ -65,8 +65,8 @@ export default function StudentNarrations() {
   return (
     <div className="p-4 md:p-6 max-w-2xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Narrations</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-bold text-dark-gray">Narrations</h1>
+        <p className="text-sm text-medium-gray mt-1">
           All your learning narrations grouped by subject
         </p>
       </div>

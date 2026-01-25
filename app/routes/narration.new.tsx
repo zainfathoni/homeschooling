@@ -43,9 +43,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return {
     subject,
     date: dateStr,
-    studentId: activeStudentId,
-    userRole: user.role,
-    students: user.ownedStudents,
     selectedStudentId: activeStudentId,
   };
 }
@@ -53,17 +50,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
 interface LoaderData {
   subject: { id: string; name: string; icon: string | null };
   date: string;
-  studentId: string;
-  userRole: "PARENT" | "STUDENT";
-  students: { id: string; name: string }[];
   selectedStudentId: string;
 }
 
 type NarrationTab = "text" | "voice" | "photo";
 
 export default function NewNarration() {
-  const { subject, date, userRole, students, selectedStudentId } =
-    useLoaderData<LoaderData>();
+  const { subject, date, selectedStudentId } = useLoaderData<LoaderData>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialTab = (searchParams.get("type") as NarrationTab) || "text";
@@ -76,11 +69,7 @@ export default function NewNarration() {
   };
 
   return (
-    <AppShell
-      userRole={userRole}
-      students={students}
-      selectedStudentId={selectedStudentId}
-    >
+    <AppShell selectedStudentId={selectedStudentId}>
       <div className="p-4 md:p-6 max-w-2xl mx-auto">
         <div className="mb-6">
           <Link
@@ -97,23 +86,23 @@ export default function NewNarration() {
 
         <div className="bg-white rounded-xl shadow-sm p-6">
           <div className="mb-6">
-            <h1 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+            <h1 className="text-xl font-semibold text-dark-gray flex items-center gap-2">
               {subject.icon && <span>{subject.icon}</span>}
               Add Narration
             </h1>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-medium-gray mt-1">
               {subject.name} • {dateFormatted}
             </p>
           </div>
 
-          <div className="flex border-b border-gray-200 mb-6">
+          <div className="flex border-b border-light-gray mb-6">
             <button
               type="button"
               onClick={() => setActiveTab("text")}
               className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors min-h-[44px] ${
                 activeTab === "text"
                   ? "border-coral text-coral"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  : "border-transparent text-medium-gray hover:text-dark-gray"
               }`}
             >
               ✏️ Text
@@ -124,7 +113,7 @@ export default function NewNarration() {
               className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors min-h-[44px] ${
                 activeTab === "voice"
                   ? "border-coral text-coral"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  : "border-transparent text-medium-gray hover:text-dark-gray"
               }`}
             >
               🎤 Voice
@@ -135,7 +124,7 @@ export default function NewNarration() {
               className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors min-h-[44px] ${
                 activeTab === "photo"
                   ? "border-coral text-coral"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  : "border-transparent text-medium-gray hover:text-dark-gray"
               }`}
             >
               📷 Photo

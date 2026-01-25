@@ -35,8 +35,8 @@ export function TextInput({
   return (
     <div className="space-y-4">
       {subjectName && (
-        <div className="text-sm text-gray-500">
-          Narration for <span className="font-medium text-gray-700">{subjectName}</span>
+        <div className="text-sm text-medium-gray">
+          Narration for <span className="font-medium text-dark-gray">{subjectName}</span>
         </div>
       )}
       <fetcher.Form method="post" action="/api/save-narration" className="space-y-4">
@@ -50,7 +50,7 @@ export function TextInput({
           onChange={(e) => setContent(e.target.value)}
           placeholder="Describe what you learned today..."
           rows={6}
-          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-coral/50 focus:border-coral resize-none text-gray-700 placeholder-gray-400"
+          className="w-full px-4 py-3 border border-light-gray rounded-lg focus:outline-none focus:ring-2 focus:ring-coral/50 focus:border-coral resize-none text-dark-gray placeholder-medium-gray"
           disabled={isSubmitting}
         />
         <div className="flex justify-end gap-3">
@@ -59,8 +59,8 @@ export function TextInput({
             disabled={isSubmitting || !content.trim()}
             className={`px-6 py-2 rounded-lg font-medium transition-colors min-h-[44px] ${
               isSubmitting || !content.trim()
-                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                : "bg-coral text-white hover:bg-coral/90"
+                ? "bg-light-gray text-medium-gray cursor-not-allowed"
+                : "bg-coral text-white hover:bg-coral-hover"
             }`}
           >
             {isSubmitting ? "Saving..." : "Save Narration"}
