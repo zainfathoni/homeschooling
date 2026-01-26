@@ -21,7 +21,10 @@ export function StudentSwitcher({
   const location = useLocation();
 
   const handleChange = (newStudentId: string) => {
-    if (selectedStudentId && location.pathname.includes(`/students/${selectedStudentId}`)) {
+    if (
+      selectedStudentId &&
+      location.pathname.includes(`/students/${selectedStudentId}`)
+    ) {
       const newPath = location.pathname.replace(
         `/students/${selectedStudentId}`,
         `/students/${newStudentId}`
@@ -33,14 +36,12 @@ export function StudentSwitcher({
   };
 
   if (students.length === 0) {
-    return (
-      <div className="px-3 py-2 text-sm text-gray-600">No students</div>
-    );
+    return <div className="px-3 py-2 text-sm text-medium-gray">No students</div>;
   }
 
   if (students.length === 1) {
     return (
-      <div className="px-3 py-2 text-sm text-gray-600">
+      <div className="px-3 py-2 text-sm text-dark-gray font-medium">
         {students[0].name}
       </div>
     );
@@ -48,7 +49,7 @@ export function StudentSwitcher({
 
   if (variant === "tabs") {
     return (
-      <div className="flex gap-1 bg-gray-100 p-1 rounded-lg" role="tablist">
+      <div className="flex gap-1 bg-lavender p-1 rounded-lg" role="tablist">
         {students.map((student) => (
           <button
             key={student.id}
@@ -58,7 +59,7 @@ export function StudentSwitcher({
             className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors min-h-[44px] ${
               selectedStudentId === student.id
                 ? "bg-white text-coral shadow-sm"
-                : "text-gray-600 hover:bg-gray-50"
+                : "text-medium-gray hover:bg-white/50"
             }`}
           >
             {student.avatar && (
@@ -79,7 +80,7 @@ export function StudentSwitcher({
     <select
       value={selectedStudentId ?? students[0]?.id ?? ""}
       onChange={(e) => handleChange(e.target.value)}
-      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-coral focus:border-transparent min-h-[44px]"
+      className="w-full px-3 py-2 bg-white border border-light-gray rounded-lg text-sm text-dark-gray focus:outline-none focus:ring-2 focus:ring-coral focus:border-transparent min-h-[44px]"
       aria-label="Select student"
     >
       {students.map((student) => (

@@ -7,7 +7,7 @@ export class StudentSwitcherPage {
 
   constructor(page: Page) {
     this.page = page
-    this.switcher = page.getByLabel('Select student')
+    this.switcher = page.locator('aside').getByLabel('Select student')
     this.viewingAsLabel = page.getByText('Viewing as')
   }
 
@@ -16,6 +16,8 @@ export class StudentSwitcherPage {
     await this.page.goto('/week')
     await this.page.waitForURL(/\/students\/[^/]+\/week\/\d{4}-\d{2}-\d{2}/)
     await this.page.waitForLoadState('networkidle')
+    // Wait for React hydration to complete
+    await this.page.waitForTimeout(500)
   }
 
   getStudentIdFromUrl(): string | null {
@@ -47,11 +49,18 @@ export class StudentSwitcherPage {
   }
 
   async selectStudent(studentName: string) {
-    // Student selection now uses nested routes - selecting navigates to /students/:newStudentId/...
-    // The URL pattern is replaced while staying on the same page type (week, narrations, etc.)
     const currentUrl = this.page.url()
-    await this.switcher.selectOption({ label: studentName })
-    // Wait for URL to change (studentId in path will change)
+    const currentValue = await this.switcher.inputValue()
+    const studentOption = this.switcher.locator('option', { hasText: studentName })
+    const studentId = await studentOption.getAttribute('value')
+
+    if (!studentId) throw new Error(`Could not find student option for "${studentName}"`)
+
+    if (studentId === currentValue) {
+      return
+    }
+
+    await this.switcher.selectOption({ value: studentId }, { force: true })
     await expect(async () => {
       expect(this.page.url()).not.toBe(currentUrl)
     }).toPass({ timeout: 10000 })

@@ -6,6 +6,7 @@ import {
   requireStudentAccess,
   isStudent,
   isParent,
+  type AuthUser,
 } from "~/utils/permissions.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -36,18 +37,26 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   return {
     selectedStudentId: studentId,
+    students: user.ownedStudents,
+    userRole: user.role,
   };
 }
 
 interface LoaderData {
   selectedStudentId: string;
+  students: AuthUser["ownedStudents"];
+  userRole: AuthUser["role"];
 }
 
 export default function StudentLayout() {
-  const { selectedStudentId } = useLoaderData<LoaderData>();
+  const { selectedStudentId, students, userRole } = useLoaderData<LoaderData>();
 
   return (
-    <AppShell selectedStudentId={selectedStudentId}>
+    <AppShell
+      selectedStudentId={selectedStudentId}
+      students={students}
+      userRole={userRole}
+    >
       <Outlet />
     </AppShell>
   );

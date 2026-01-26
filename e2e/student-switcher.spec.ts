@@ -1,4 +1,4 @@
-import { test, expect } from './base-test'
+import { expect, test } from './base-test'
 import { StudentSwitcherPage } from './pages/student-switcher.page'
 
 /**
@@ -154,13 +154,14 @@ test.describe('Student switcher - Mobile layout', () => {
     storageState: 'e2e/fixtures/auth/parent.local.json',
   })
 
-  test('switcher not visible in mobile sidebar (sidebar hidden)', async ({ page, noscript }, testInfo) => {
+  test('switcher visible in mobile header', async ({ page, noscript }, testInfo) => {
     test.skip(noscript, 'Requires JavaScript for page rendering')
     test.skip(!isMobileProject(testInfo), 'This test is specifically for mobile viewports')
     const switcherPage = new StudentSwitcherPage(page)
     await switcherPage.goto()
 
-    // On mobile, sidebar is hidden, so switcher should not be visible
-    await switcherPage.expectSwitcherNotVisible()
+    // On mobile, switcher is in the header (not sidebar which is hidden)
+    const mobileHeaderSwitcher = page.locator('header').getByLabel('Select student')
+    await expect(mobileHeaderSwitcher).toBeVisible()
   })
 })
