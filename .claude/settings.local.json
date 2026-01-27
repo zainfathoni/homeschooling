@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:playwright.dev)",
+      "Bash(gh run:*)",
+      "Bash(bd activity:*)",
+      "Bash(npm pkg:*)",
+      "Bash(npm run test:e2e:*)",
+      "Bash(bd dep remove:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run test:e2e:dev:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(xargs:*)",
+      "Bash(bun run typecheck:*)",
+      "Bash(bun run test:e2e:*)"
+    ]
+  }
+}
