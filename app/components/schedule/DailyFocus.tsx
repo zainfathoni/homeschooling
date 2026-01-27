@@ -1,6 +1,7 @@
 import { format, formatISO } from "date-fns";
 import { ProgressRing } from "~/components/schedule/ProgressRing";
 import { TaskCard } from "~/components/schedule/TaskCard";
+import { Pick1TaskCard } from "~/components/schedule/Pick1TaskCard";
 
 export interface DailyTask {
   entryId: string;
@@ -11,6 +12,9 @@ export interface DailyTask {
   hasNarration?: boolean;
   subjectId?: string;
   narrationId?: string;
+  subjectType?: string;
+  options?: { id: string; name: string }[];
+  selectedOptionId?: string | null;
 }
 
 export interface DailyFocusProps {
@@ -42,22 +46,41 @@ export function DailyFocus({ date, dayIndex, tasks, studentId }: DailyFocusProps
       </div>
 
       <div className="space-y-2">
-        {tasks.map((task) => (
-          <TaskCard
-            key={task.entryId}
-            entryId={task.entryId}
-            dayIndex={dayIndex}
-            subjectName={task.subjectName}
-            subjectIcon={task.subjectIcon}
-            isCompleted={task.isCompleted}
-            requiresNarration={task.requiresNarration}
-            hasNarration={task.hasNarration}
-            subjectId={task.subjectId}
-            date={formatISO(date, { representation: "date" })}
-            narrationId={task.narrationId}
-            studentId={studentId}
-          />
-        ))}
+        {tasks.map((task) =>
+          task.subjectType === "PICK1" && task.options ? (
+            <Pick1TaskCard
+              key={task.entryId}
+              entryId={task.entryId}
+              dayIndex={dayIndex}
+              subjectName={task.subjectName}
+              subjectIcon={task.subjectIcon}
+              isCompleted={task.isCompleted}
+              options={task.options}
+              selectedOptionId={task.selectedOptionId ?? null}
+              requiresNarration={task.requiresNarration}
+              hasNarration={task.hasNarration}
+              subjectId={task.subjectId}
+              date={formatISO(date, { representation: "date" })}
+              narrationId={task.narrationId}
+              studentId={studentId}
+            />
+          ) : (
+            <TaskCard
+              key={task.entryId}
+              entryId={task.entryId}
+              dayIndex={dayIndex}
+              subjectName={task.subjectName}
+              subjectIcon={task.subjectIcon}
+              isCompleted={task.isCompleted}
+              requiresNarration={task.requiresNarration}
+              hasNarration={task.hasNarration}
+              subjectId={task.subjectId}
+              date={formatISO(date, { representation: "date" })}
+              narrationId={task.narrationId}
+              studentId={studentId}
+            />
+          )
+        )}
       </div>
 
       {tasks.length === 0 && (

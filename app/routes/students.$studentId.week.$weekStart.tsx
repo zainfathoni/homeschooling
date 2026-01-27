@@ -6,6 +6,7 @@ import { eq, and, gte, lte } from "drizzle-orm";
 import { db } from "~/utils/db.server";
 import { students, weeklySchedules, scheduleEntries, narrations } from "~/db/schema";
 import { SubjectRow } from "~/components/schedule/SubjectRow";
+import { Pick1Selector } from "~/components/schedule/Pick1Selector";
 import { TabletDuetView, type DuetEntry } from "~/components/schedule/TabletDuetView";
 import { getWeekStart, getCurrentWeekStart } from "~/utils/week";
 
@@ -197,6 +198,7 @@ interface LoaderEntry {
   requiresNarration: boolean;
   completedDays: boolean[];
   selectedOptionId: string | null;
+  options: { id: string; name: string }[];
   hasNarrationByDay: Record<number, { hasNarration: boolean; narrationId?: string }>;
 }
 
@@ -220,6 +222,9 @@ export default function StudentWeekView() {
     requiresNarration: entry.requiresNarration,
     hasNarrationByDay: entry.hasNarrationByDay,
     subjectId: entry.subjectId,
+    subjectType: entry.subjectType,
+    options: entry.options,
+    selectedOptionId: entry.selectedOptionId,
   }));
 
   return (
@@ -247,17 +252,31 @@ export default function StudentWeekView() {
           </div>
         ) : (
           <div className="space-y-3">
-            {entries.map((entry) => (
-              <SubjectRow
-                key={entry.id}
-                entryId={entry.id}
-                subjectName={entry.subjectName}
-                subjectIcon={entry.subjectIcon ?? undefined}
-                completedDays={entry.completedDays}
-                offDays={offDays}
-                todayIndex={todayIndex ?? undefined}
-              />
-            ))}
+            {entries.map((entry) =>
+              entry.subjectType === "PICK1" ? (
+                <Pick1Selector
+                  key={entry.id}
+                  entryId={entry.id}
+                  subjectName={entry.subjectName}
+                  subjectIcon={entry.subjectIcon ?? undefined}
+                  options={entry.options}
+                  selectedOptionId={entry.selectedOptionId}
+                  completedDays={entry.completedDays}
+                  offDays={offDays}
+                  todayIndex={todayIndex ?? undefined}
+                />
+              ) : (
+                <SubjectRow
+                  key={entry.id}
+                  entryId={entry.id}
+                  subjectName={entry.subjectName}
+                  subjectIcon={entry.subjectIcon ?? undefined}
+                  completedDays={entry.completedDays}
+                  offDays={offDays}
+                  todayIndex={todayIndex ?? undefined}
+                />
+              )
+            )}
           </div>
         )}
       </div>

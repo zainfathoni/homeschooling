@@ -28,4 +28,5 @@ export default [
   // API routes
   route("api/toggle-completion", "routes/api.toggle-completion.tsx"),
   route("api/save-narration", "routes/api.save-narration.tsx"),
+  route("api/select-option", "routes/api.select-option.tsx"),
 ] satisfies RouteConfig;

@@ -1,5 +1,5 @@
 import { chromium } from '@playwright/test'
-import { setupAuthFixtures } from './e2e/setup-auth-fixtures'
+import { existsSync } from 'fs'
 
 async function globalSetup() {
   const browser = await chromium.launch()
@@ -9,8 +9,14 @@ async function globalSetup() {
   await page.goto('http://localhost:3000/')
   await page.waitForLoadState('networkidle')
 
-  // Generate auth fixtures using the known seed email
-  await setupAuthFixtures()
+  // Only regenerate auth fixtures if they don't exist
+  // This avoids the better-sqlite3 dependency issue
+  const parentFixture = 'e2e/fixtures/auth/parent.local.json'
+  const studentFixture = 'e2e/fixtures/auth/student.local.json'
+  
+  if (!existsSync(parentFixture) || !existsSync(studentFixture)) {
+    console.log('Auth fixtures missing - run `bun run e2e/setup-auth-fixtures.ts` manually')
+  }
 
   await browser.close()
 }

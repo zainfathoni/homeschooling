@@ -10,6 +10,9 @@ export interface DuetEntry {
   requiresNarration?: boolean;
   hasNarrationByDay?: Record<number, { hasNarration: boolean; narrationId?: string }>;
   subjectId?: string;
+  subjectType?: string;
+  options?: { id: string; name: string }[];
+  selectedOptionId?: string | null;
 }
 
 export interface TabletDuetViewProps {
@@ -50,6 +53,9 @@ export function TabletDuetView({
       hasNarration: narrationData?.hasNarration ?? false,
       subjectId: entry.subjectId,
       narrationId: narrationData?.narrationId,
+      subjectType: entry.subjectType,
+      options: entry.options,
+      selectedOptionId: entry.selectedOptionId,
     };
   });
 
