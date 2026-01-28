@@ -18,17 +18,18 @@ Nate Berkopec's observation about 37signals: their clean Rails code comes from *
 
 ### Current App Characteristics
 
-| Characteristic | Implication |
-|----------------|-------------|
-| 3 users (family) | No scale concerns |
-| CRUD-heavy (checklists, narrations) | Rails' sweet spot |
-| File uploads (voice, photos) | ActiveStorage built-in |
-| Simple auth | `has_secure_password` or Devise |
-| Server-rendered + light interactivity | Hotwire's sweet spot |
+| Characteristic                        | Implication                     |
+| ------------------------------------- | ------------------------------- |
+| 3 users (family)                      | No scale concerns               |
+| CRUD-heavy (checklists, narrations)   | Rails' sweet spot               |
+| File uploads (voice, photos)          | ActiveStorage built-in          |
+| Simple auth                           | `has_secure_password` or Devise |
+| Server-rendered + light interactivity | Hotwire's sweet spot            |
 
 ### Professional Development Factor
 
 The maintainer's day job involves a Rails + React codebase. They are:
+
 - Already proficient in React
 - Seeking to deepen Rails knowledge
 - Looking for a simple project as a learning vehicle
@@ -45,15 +46,15 @@ Ruby's characteristics make it well-suited for AI-assisted development:
 
 3. **Types unnecessary for AI**: Dynamic typing eliminates boilerplate that AI doesn't need. "AI just doesn't need the types that some programmers cling to." Ruby's duck typing and conventions provide enough context for AI to understand intent.
 
-| Language | Avg Tokens/Task | vs Ruby | Type System |
-|----------|-----------------|---------|-------------|
-| Clojure | ~109 | 0.95x | Dynamic |
-| Ruby | ~115 | 1.0x | Dynamic |
-| Python | ~122 | 1.06x | Dynamic |
-| JavaScript | ~165 | 1.43x | Dynamic |
-| Java | ~190 | 1.65x | Static |
-| Go | ~205 | 1.78x | Static |
-| C# | ~210 | 1.83x | Static |
+| Language   | Avg Tokens/Task | vs Ruby | Type System |
+| ---------- | --------------- | ------- | ----------- |
+| Clojure    | ~109            | 0.95x   | Dynamic     |
+| Ruby       | ~115            | 1.0x    | Dynamic     |
+| Python     | ~122            | 1.06x   | Dynamic     |
+| JavaScript | ~165            | 1.43x   | Dynamic     |
+| Java       | ~190            | 1.65x   | Static      |
+| Go         | ~205            | 1.78x   | Static      |
+| C#         | ~210            | 1.83x   | Static      |
 
 This project will be developed primarily with AI assistance (Claude Code), making token efficiency a practical consideration.
 
@@ -62,12 +63,14 @@ This project will be developed primarily with AI assistance (Claude Code), makin
 ### Option A: Stay with React Router v7
 
 **Pros:**
+
 - Setup already complete
 - TypeScript throughout
 - Familiar React patterns
 - Single runtime (Node.js)
 
 **Cons:**
+
 - More boilerplate for CRUD operations
 - Must configure: Prisma, auth, file uploads, flash messages
 - No professional learning benefit (already know React)
@@ -76,6 +79,7 @@ This project will be developed primarily with AI assistance (Claude Code), makin
 ### Option B: Switch to Rails 8 with Hotwire
 
 **Pros:**
+
 - Convention over configuration reduces decisions
 - Built-in: migrations, validations, auth, file uploads, background jobs
 - Hotwire (Turbo + Stimulus) handles interactivity without heavy JS
@@ -84,6 +88,7 @@ This project will be developed primarily with AI assistance (Claude Code), makin
 - 37signals' Basecamp/HEY prove it scales if needed
 
 **Cons:**
+
 - Discard current setup (~2-3 hours of work)
 - Ruby runtime + potentially different deployment
 - Learning curve (but this is also a pro)
@@ -91,10 +96,12 @@ This project will be developed primarily with AI assistance (Claude Code), makin
 ### Option C: Rails API + React Frontend
 
 **Pros:**
+
 - Uses both technologies
 - Mirrors day-job architecture
 
 **Cons:**
+
 - Most complex option
 - Two codebases to maintain
 - Defeats the simplicity goal
@@ -117,15 +124,15 @@ This project will be developed primarily with AI assistance (Claude Code), makin
 
 ### New Stack
 
-| Component | React Router v7 | Rails 8 |
-|-----------|-----------------|---------|
-| Framework | React Router v7 | Rails 8 |
-| Database | Prisma + SQLite | ActiveRecord + SQLite |
-| Auth | Supabase Auth | `has_secure_password` |
-| File uploads | Manual setup | ActiveStorage |
-| Interactivity | React components | Turbo + Stimulus |
-| Styling | Tailwind CSS | Tailwind CSS (portable) |
-| Background jobs | External service | Solid Queue (built-in) |
+| Component       | React Router v7  | Rails 8                 |
+| --------------- | ---------------- | ----------------------- |
+| Framework       | React Router v7  | Rails 8                 |
+| Database        | Prisma + SQLite  | ActiveRecord + SQLite   |
+| Auth            | Supabase Auth    | `has_secure_password`   |
+| File uploads    | Manual setup     | ActiveStorage           |
+| Interactivity   | React components | Turbo + Stimulus        |
+| Styling         | Tailwind CSS     | Tailwind CSS (portable) |
+| Background jobs | External service | Solid Queue (built-in)  |
 
 ### What We Keep
 
@@ -154,11 +161,11 @@ This project will be developed primarily with AI assistance (Claude Code), makin
 
 ### Risks and Mitigations
 
-| Risk | Mitigation |
-|------|------------|
-| Unfamiliar with Rails patterns | Start with `rails new`, follow Rails Guides |
-| Over-engineering again | Apply same tracer bullet discipline from ADR-0001 |
-| Scope creep via "learning" | Timebox learning; ship features, not experiments |
+| Risk                           | Mitigation                                        |
+| ------------------------------ | ------------------------------------------------- |
+| Unfamiliar with Rails patterns | Start with `rails new`, follow Rails Guides       |
+| Over-engineering again         | Apply same tracer bullet discipline from ADR-0001 |
+| Scope creep via "learning"     | Timebox learning; ship features, not experiments  |
 
 ## Counterarguments
 
@@ -171,15 +178,16 @@ Modern context windows are 200k+ tokens. Saving 30-40% tokens per task is neglig
 ### Types May Help AI, Not Hurt
 
 The claim that "AI doesn't need types" is contested. Types provide:
+
 - Explicit constraints on what code should do
 - Self-documenting intent
 - Compile-time error catching that AI can use as feedback
 
-Many developers find AI generates *better* code with TypeScript than JavaScript.
+Many developers find AI generates _better_ code with TypeScript than JavaScript.
 
 ### Learning Happens at Work Anyway
 
-The maintainer works with Rails daily. Deep Rails knowledge will come from that codebase regardless. A personal project might be better spent on technologies *not* used at work.
+The maintainer works with Rails daily. Deep Rails knowledge will come from that codebase regardless. A personal project might be better spent on technologies _not_ used at work.
 
 ### Hotwire Has Its Own Complexity
 
@@ -192,7 +200,8 @@ ADR-0001's tracer bullet could be done in the existing React Router setup in ~2 
 ### Why We're Proceeding Anyway
 
 Despite these counterarguments, the decision stands because:
-1. The maintainer *wants* to build with Rails (motivation matters)
+
+1. The maintainer _wants_ to build with Rails (motivation matters)
 2. Sunk cost is genuinely low
 3. "Best tool" debates are often bikeshedding—pick one and ship
 
