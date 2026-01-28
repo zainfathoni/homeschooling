@@ -6,6 +6,10 @@
 
   <%= render "shared/student_selector" %>
 
+  <% if @student %>
+    <%= render "today/progress_bar", completed: @total_completed, total: @total_possible %>
+  <% end %>
+
   <% if @subjects.any? %>
     <div class="space-y-3">
       <% @subjects.each do |subject| %>
