@@ -1,12 +1,17 @@
 <%# locals: (subject:, date:, completed:, is_today:) %>
-<%# Stub partial - full implementation in hs-weekly-grid.6 %>
 <%= turbo_frame_tag dom_id(subject, "circle_#{date.to_s}") do %>
-  <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center
-              <%= completed ? 'bg-coral border-coral' : is_today ? 'border-coral' : 'border-gray-300' %>">
-    <% if completed %>
-      <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-      </svg>
-    <% end %>
-  </div>
+  <%= button_to toggle_completion_path(subject_id: subject.id, date: date),
+      method: :post,
+      class: "w-11 h-11 rounded-full flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-coral focus:ring-offset-2",
+      data: { turbo_frame: dom_id(subject, "circle_#{date.to_s}") },
+      aria: { label: "#{completed ? 'Mark incomplete' : 'Mark complete'}: #{subject.name} on #{date.strftime('%A')}" } do %>
+    <span class="w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all
+                <%= completed ? 'bg-coral border-coral' : is_today ? 'border-coral' : 'border-gray-300' %>">
+      <% if completed %>
+        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+        </svg>
+      <% end %>
+    </span>
+  <% end %>
 <% end %>
