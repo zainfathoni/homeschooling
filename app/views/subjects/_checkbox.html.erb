@@ -13,8 +13,9 @@
         </svg>
       <% end %>
     </span>
+    <span class="sr-only"><%= completed ? "Completed" : "Mark complete" %>:</span>
     <span class="text-lg text-gray-800 <%= 'line-through text-gray-400' if completed %>">
-      <%= completed ? "Completed: " : "Mark complete: " %><%= subject.name %>
+      <%= subject.name %>
     </span>
   <% end %>
 <% end %>
