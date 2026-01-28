@@ -8,7 +8,6 @@
 
   <% if @student %>
     <%= render "today/progress_bar", completed: @total_completed, total: @total_possible %>
-    <%= render "today/day_selector", dates: @dates, current_date: @date %>
   <% end %>
 
   <% if @subjects.any? %>

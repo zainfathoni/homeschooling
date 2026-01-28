@@ -1,12 +1,26 @@
 <%# locals: (subjects:, dates:, week_completions:, current_date:) %>
 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+  <%# Header row with day labels %>
+  <div class="flex items-center px-4 py-2 border-b border-gray-200 bg-gray-50">
+    <div class="flex-1 min-w-0"></div>
+    <div class="grid grid-cols-5 gap-1" style="width: 235px;">
+      <% dates.each do |date| %>
+        <% is_today = date == current_date %>
+        <div class="w-11 text-center text-xs font-medium <%= is_today ? 'text-coral' : 'text-gray-500' %>">
+          <%= date.strftime("%a")[0..1] %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Subject rows %>
   <% subjects.each do |subject| %>
     <div class="flex items-center px-4 py-3 border-b border-gray-100 last:border-b-0">
       <div class="flex items-center gap-3 flex-1 min-w-0">
         <span class="text-lg shrink-0" aria-hidden="true">📚</span>
         <span class="text-sm font-medium text-gray-800 truncate"><%= subject.name %></span>
       </div>
-      <div class="flex items-center gap-2 shrink-0">
+      <div class="grid grid-cols-5 gap-1" style="width: 235px;">
         <% dates.each do |date| %>
           <% completed = week_completions.dig(subject.id)&.include?(date) || false %>
           <% is_today = date == current_date %>
