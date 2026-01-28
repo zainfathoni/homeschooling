@@ -1,6 +1,6 @@
 # Plan 001: Multi-Student Epic
 
-**Status:** Draft  
+**Status:** Complete  
 **Created:** 2026-01-28  
 **Author:** AI Assistant
 
@@ -299,13 +299,13 @@ hs-multi-student (epic)
 
 ## Success Criteria
 
-- [ ] Can switch between students with one click
-- [ ] Each student has independent subject list
-- [ ] Completions are per-student, per-subject, per-date
-- [ ] Student selector persists selection across page loads
-- [ ] Can add/edit/delete students
-- [ ] All tests pass
-- [ ] No rubocop violations
+- [x] Can switch between students with one click
+- [x] Each student has independent subject list
+- [x] Completions are per-student, per-subject, per-date
+- [x] Student selector persists selection across page loads
+- [x] Can add/edit/delete students
+- [x] All tests pass
+- [x] No rubocop violations
 
 ## Future Considerations
 
