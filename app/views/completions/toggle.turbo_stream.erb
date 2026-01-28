@@ -1,3 +1,20 @@
+<%# Update the checkbox (existing Today view) %>
 <%= turbo_stream.replace dom_id(@subject, :checkbox) do %>
   <%= render "subjects/checkbox", subject: @subject, date: @date %>
+<% end %>
+
+<%# Update the completion circle (weekly grid) %>
+<%= turbo_stream.replace dom_id(@subject, "circle_#{@date.to_s}") do %>
+  <%= render "today/completion_circle",
+             subject: @subject,
+             date: @date,
+             completed: @completed,
+             is_today: @is_today %>
+<% end %>
+
+<%# Update the progress bar %>
+<%= turbo_stream.replace "progress_bar" do %>
+  <%= render "today/progress_bar",
+             completed: @total_completed,
+             total: @total_possible %>
 <% end %>
