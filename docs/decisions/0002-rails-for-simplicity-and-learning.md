@@ -160,6 +160,42 @@ This project will be developed primarily with AI assistance (Claude Code), makin
 | Over-engineering again | Apply same tracer bullet discipline from ADR-0001 |
 | Scope creep via "learning" | Timebox learning; ship features, not experiments |
 
+## Counterarguments
+
+For intellectual honesty, here are the weaknesses in this decision:
+
+### Token Efficiency is Marginal
+
+Modern context windows are 200k+ tokens. Saving 30-40% tokens per task is negligible when you have this much headroom. The token efficiency argument sounds compelling but likely doesn't matter in practice.
+
+### Types May Help AI, Not Hurt
+
+The claim that "AI doesn't need types" is contested. Types provide:
+- Explicit constraints on what code should do
+- Self-documenting intent
+- Compile-time error catching that AI can use as feedback
+
+Many developers find AI generates *better* code with TypeScript than JavaScript.
+
+### Learning Happens at Work Anyway
+
+The maintainer works with Rails daily. Deep Rails knowledge will come from that codebase regardless. A personal project might be better spent on technologies *not* used at work.
+
+### Hotwire Has Its Own Complexity
+
+Turbo Frames, Turbo Streams, and Stimulus have a mental model that's different from—not simpler than—React. For someone fluent in React, this is net-new learning overhead.
+
+### Starting Fresh vs. Shipping
+
+ADR-0001's tracer bullet could be done in the existing React Router setup in ~2 hours. Switching frameworks delays the actual goal (working software) in favor of tooling preferences.
+
+### Why We're Proceeding Anyway
+
+Despite these counterarguments, the decision stands because:
+1. The maintainer *wants* to build with Rails (motivation matters)
+2. Sunk cost is genuinely low
+3. "Best tool" debates are often bikeshedding—pick one and ship
+
 ## Implementation Plan
 
 1. Create new Rails 8 app with: `rails new homeschooling --css=tailwind --database=sqlite3`
