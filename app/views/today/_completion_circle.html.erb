@@ -1,0 +1,12 @@
+<%# locals: (subject:, date:, completed:, is_today:) %>
+<%# Stub partial - full implementation in hs-weekly-grid.6 %>
+<%= turbo_frame_tag dom_id(subject, "circle_#{date.to_s}") do %>
+  <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center
+              <%= completed ? 'bg-coral border-coral' : is_today ? 'border-coral' : 'border-gray-300' %>">
+    <% if completed %>
+      <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+      </svg>
+    <% end %>
+  </div>
+<% end %>

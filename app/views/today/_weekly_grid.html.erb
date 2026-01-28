@@ -1,0 +1,22 @@
+<%# locals: (subjects:, dates:, week_completions:, current_date:) %>
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+  <% subjects.each do |subject| %>
+    <div class="flex items-center px-4 py-3 border-b border-gray-100 last:border-b-0">
+      <div class="flex items-center gap-3 flex-1 min-w-0">
+        <span class="text-lg shrink-0" aria-hidden="true">📚</span>
+        <span class="text-sm font-medium text-gray-800 truncate"><%= subject.name %></span>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <% dates.each do |date| %>
+          <% completed = week_completions.dig(subject.id)&.include?(date) || false %>
+          <% is_today = date == current_date %>
+          <%= render "today/completion_circle",
+                     subject: subject,
+                     date: date,
+                     completed: completed,
+                     is_today: is_today %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>
