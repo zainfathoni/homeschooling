@@ -35,6 +35,25 @@ The maintainer's day job involves a Rails + React codebase. They are:
 
 A personal project with low stakes is ideal for learning a framework deeply.
 
+### AI-Assisted Development Factor
+
+Ruby's characteristics make it well-suited for AI-assisted development:
+
+1. **Token efficiency**: Ruby typically uses 15-25% fewer tokens than Python, and 40-60% fewer than TypeScript/Go/Java for equivalent tasks. Fewer tokens = longer context windows = better AI assistance.
+
+2. **Human readability**: Ruby's concise syntax makes it faster for humans to review and verify AI-generated code. As DHH notes: "Ruby is not just highly token efficient for the LLMs, but even more so for humans. Being able to quickly read and verify what's been written by AI is a real advantage."
+
+3. **Types unnecessary for AI**: Dynamic typing eliminates boilerplate that AI doesn't need. "AI just doesn't need the types that some programmers cling to." Ruby's duck typing and conventions provide enough context for AI to understand intent.
+
+| Language | Relative Token Usage | Type Annotations |
+|----------|---------------------|------------------|
+| Ruby | 1.0x (baseline) | None required |
+| Python | 1.15-1.25x | Optional |
+| TypeScript | 1.4-1.6x | Required |
+| Go/Java | 1.4-1.6x | Required |
+
+This project will be developed primarily with AI assistance (Claude Code), making token efficiency a practical consideration.
+
 ## Options Considered
 
 ### Option A: Stay with React Router v7
@@ -90,6 +109,8 @@ A personal project with low stakes is ideal for learning a framework deeply.
 3. **Low sunk cost**: Only ~15 lines of application code exist; Tailwind config and design tokens are portable
 
 4. **Aligned incentives**: Professional growth + personal project success point the same direction
+
+5. **AI-assisted development**: Ruby's token efficiency and readability make it ideal for development with Claude Code
 
 ### New Stack
 
@@ -151,5 +172,7 @@ A personal project with low stakes is ideal for learning a framework deeply.
 
 - [Vanilla Rails is Plenty](https://dev.37signals.com/vanilla-rails-is-plenty/) - Jorge Manrubia, 37signals
 - [Nate Berkopec on 37signals](https://x.com/nateberkopec/status/2015966051650191531) - "37signals' code looks great because of their engineering strategy"
+- [Which programming languages are most token-efficient?](https://martinalderson.com/posts/which-programming-languages-are-most-token-efficient/) - Martin Alderson
+- [Why Ruby Shines in the Age of AI-Powered Development](https://dev.to/daviducolo/why-ruby-shines-in-the-age-of-ai-powered-development-a-token-efficiency-story-25kh) - DEV Community
 - ADR-0001: Tracer Bullet Reset
 - [Rails 8 Release Notes](https://rubyonrails.org/)
