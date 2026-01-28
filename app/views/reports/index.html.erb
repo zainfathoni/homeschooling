@@ -1,0 +1,39 @@
+<div class="min-h-screen bg-lavender p-4">
+  <div class="max-w-lg mx-auto">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Weekly Report</h1>
+
+    <% if @student %>
+      <div class="bg-white rounded-xl p-6 shadow-sm mb-6">
+        <p class="text-lg text-gray-800">
+          <span class="font-bold text-coral text-3xl"><%= @total_completed %></span>
+          <span class="text-gray-500">/</span>
+          <span class="font-bold text-3xl"><%= @total_possible %></span>
+          <span class="text-gray-600 ml-2">completed this week</span>
+        </p>
+      </div>
+
+      <div class="bg-white rounded-xl p-4 shadow-sm">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Daily Breakdown</h2>
+        <ul class="space-y-3">
+          <% @dates.each do |date| %>
+            <% completions_on_date = @subjects.sum { |s| s.completions.any? { |c| c.date == date } ? 1 : 0 } %>
+            <li class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+              <span class="text-gray-700"><%= date.strftime("%A, %b %d") %></span>
+              <span class="<%= completions_on_date == @subjects.count && @subjects.any? ? 'text-coral font-semibold' : 'text-gray-500' %>">
+                <%= completions_on_date %>/<%= @subjects.count %>
+              </span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% else %>
+      <div class="bg-white rounded-xl p-6 shadow-sm">
+        <p class="text-gray-500">No student found. Please set up a student first.</p>
+      </div>
+    <% end %>
+
+    <div class="mt-6">
+      <%= link_to "← Back to Today", today_path, class: "text-coral hover:underline" %>
+    </div>
+  </div>
+</div>
