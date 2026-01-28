@@ -6,6 +6,12 @@ Rails.application.routes.draw do
   get "signup", to: "registrations#new"
   post "signup", to: "registrations#create"
 
+  resources :students, only: [ :index, :new, :create, :edit, :update, :destroy ] do
+    member do
+      post :select
+    end
+  end
+
   get "today", to: "today#index"
   get "report", to: "reports#index"
   post "completions/toggle", to: "completions#toggle", as: :toggle_completion

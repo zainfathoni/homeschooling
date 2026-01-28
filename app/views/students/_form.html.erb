@@ -1,0 +1,33 @@
+<%= form_with model: student, class: "space-y-4" do |form| %>
+  <% if student.errors.any? %>
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+      <h3 class="text-red-800 font-medium">Please fix the following errors:</h3>
+      <ul class="list-disc list-inside text-red-600 mt-2">
+        <% student.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name, class: "block text-gray-700 font-medium mb-1" %>
+    <%= form.text_field :name,
+        class: "w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-coral focus:border-coral",
+        placeholder: "Enter student name" %>
+  </div>
+
+  <div>
+    <%= form.label :year_level, class: "block text-gray-700 font-medium mb-1" %>
+    <%= form.number_field :year_level,
+        class: "w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-coral focus:border-coral",
+        placeholder: "e.g., 6",
+        min: 1,
+        max: 12 %>
+  </div>
+
+  <div class="flex gap-3 pt-4">
+    <%= form.submit class: "bg-coral text-white px-6 py-2 rounded-lg font-medium hover:bg-coral/90 cursor-pointer" %>
+    <%= link_to "Cancel", students_path, class: "text-gray-600 hover:text-gray-800 px-4 py-2" %>
+  </div>
+<% end %>
