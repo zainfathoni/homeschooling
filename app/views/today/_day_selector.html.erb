@@ -1,0 +1,10 @@
+<%# locals: (dates:, current_date:) %>
+<div class="flex justify-between mb-4 gap-1">
+  <% dates.each do |date| %>
+    <% is_today = date == current_date %>
+    <div class="flex-1 text-center py-2 rounded-lg text-sm font-medium
+                <%= is_today ? 'bg-coral text-white' : 'bg-white text-gray-600' %>">
+      <%= date.strftime("%a")[0..1] %>
+    </div>
+  <% end %>
+</div>
