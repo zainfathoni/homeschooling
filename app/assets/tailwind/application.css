@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+/* Design System Tokens */
+@theme {
+  --color-lavender: #E8E4F0;
+  --color-coral: #F08080;
+}

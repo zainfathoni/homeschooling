@@ -1,17 +1,24 @@
-# Homeschool Planner
+# README
 
-A weekly planning app for homeschooling families.
+This README would normally document whatever steps are necessary to get the
+application up and running.
 
-## Overview
+Things you may want to cover:
 
-This app helps homeschooling parents and children track daily subject completion, manage "Pick 1" curriculum choices, and capture learning narrations.
+* Ruby version
 
-See [Product Vision](docs/PRODUCT_VISION.md) for detailed specifications and UI mockups.
+* System dependencies
 
-## Status
+* Configuration
 
-🚧 **In Development**
+* Database creation
 
-## License
+* Database initialization
 
-MIT
+* How to run the test suite
+
+* Services (job queues, cache servers, search engines, etc.)
+
+* Deployment instructions
+
+* ...

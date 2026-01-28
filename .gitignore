@@ -1,10 +1,21 @@
-# Dependencies
-node_modules/
+# Rails
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+/storage/*
+!/storage/.keep
+/db/*.sqlite3
+/db/*.sqlite3-*
 
-# Build
-dist/
-build/
-.react-router/
+# Bundler
+/.bundle
+/vendor/bundle
+
+# Assets
+/public/assets
+/app/assets/builds/*
+!/app/assets/builds/.keep
 
 # Environment
 .env
@@ -21,9 +32,9 @@ build/
 .DS_Store
 Thumbs.db
 
-# Logs
-*.log
-npm-debug.log*
+# Credentials - keep encrypted versions, ignore master key
+/config/master.key
+/config/credentials/*.key
 
 # bv (beads viewer) local config and caches
 .bv/

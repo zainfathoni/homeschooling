@@ -27,6 +27,23 @@ Homeschool Planner - a weekly planning app for homeschooling families. Tracks da
 - **Colors**: Lavender (#E8E4F0) background, Coral (#F08080) primary accent, White (#FFFFFF) cards
 - **Touch targets**: Minimum 44x44pt
 
+## Tech Stack
+
+- **Framework**: Rails 8.1 with Hotwire (Turbo + Stimulus)
+- **Database**: SQLite with Solid Queue/Cache/Cable
+- **Styling**: Tailwind CSS 4
+- **Ruby**: 3.4.4
+
+## Common Commands
+
+```bash
+bin/dev              # Start development server (with Tailwind watch)
+bin/rails test       # Run tests
+bin/rails db:migrate # Run migrations
+bin/rubocop          # Run linter
+bin/ci               # Run full CI suite (tests + linter + security)
+```
+
 # Agent Instructions
 
 This project uses **bd** (beads) for issue tracking. Run `bd onboard` to get started.
