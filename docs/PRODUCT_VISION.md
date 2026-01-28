@@ -119,11 +119,12 @@ Replace paper-based weekly planners with a digital tool that:
 
 ### Stack
 
-- **Framework**: React + TypeScript
-- **Build**: Vite
-- **Styling**: Tailwind CSS
-- **Routing**: React Router
-- **Storage**: Local Storage (v1), optional cloud sync later
+> **Note**: Original vision specified React. Actual implementation uses Rails 8 + Hotwire per [ADR-0002](decisions/0002-rails-for-simplicity-and-learning.md).
+
+- **Framework**: Rails 8 with Hotwire (Turbo + Stimulus)
+- **Database**: SQLite with ActiveRecord
+- **Styling**: Tailwind CSS 4
+- **Auth**: has_secure_password
 
 ### Data Model
 
