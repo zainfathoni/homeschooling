@@ -14,6 +14,7 @@ class TodayControllerTest < ActionDispatch::IntegrationTest
 
   test "shows today view when logged in" do
     sign_in_as @user
+    post select_student_path(@student)
     get today_path
     assert_response :success
     assert_select "h1", "Today"

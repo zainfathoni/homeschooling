@@ -1,6 +1,7 @@
 class TodayController < ApplicationController
   def index
-    @student = Current.user.students.first
+    @students = Current.user.students
+    @student = current_student
     @subjects = @student&.subjects&.includes(:completions) || []
     @date = Date.current
   end

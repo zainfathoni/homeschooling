@@ -1,6 +1,7 @@
 class ReportsController < ApplicationController
   def index
-    @student = Current.user.students.first
+    @students = Current.user.students
+    @student = current_student
     @start_date = Date.current.beginning_of_week
     @end_date = Date.current
 

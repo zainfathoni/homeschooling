@@ -1,0 +1,17 @@
+<%= turbo_frame_tag "student_selector" do %>
+  <% if @students.present? && @students.size > 1 %>
+    <div class="flex gap-2 mb-4">
+      <% @students.each do |student| %>
+        <%= button_to select_student_path(student),
+            method: :post,
+            class: "flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-colors #{student == current_student ? 'bg-coral text-white shadow-sm' : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'}",
+            data: { turbo: false } do %>
+          <span class="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold <%= student == current_student ? 'bg-white/20' : 'bg-lavender' %>">
+            <%= student.name.first.upcase %>
+          </span>
+          <span><%= student.name %></span>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
