@@ -6,6 +6,9 @@ Rails.application.routes.draw do
   get "signup", to: "registrations#new"
   post "signup", to: "registrations#create"
 
+  get "today", to: "today#index"
+  post "completions/toggle", to: "completions#toggle", as: :toggle_completion
+
   get "up" => "rails/health#show", as: :rails_health_check
 
   root "home#show"

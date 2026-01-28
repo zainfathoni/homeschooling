@@ -1,0 +1,3 @@
+<%= turbo_stream.replace dom_id(@subject, :checkbox) do %>
+  <%= render "subjects/checkbox", subject: @subject, date: @date %>
+<% end %>
