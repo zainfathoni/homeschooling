@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_28_025108) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_28_032451) do
   create_table "completions", force: :cascade do |t|
     t.boolean "completed", default: false, null: false
     t.datetime "created_at", null: false
@@ -21,10 +21,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_28_025108) do
   end
 
   create_table "students", force: :cascade do |t|
+    t.string "avatar_url"
     t.datetime "created_at", null: false
     t.string "name"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.integer "year_level"
     t.index ["user_id"], name: "index_students_on_user_id"
   end
 
