@@ -1,21 +1,22 @@
 <div class="min-h-screen bg-lavender p-4">
   <header class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-800">Today</h1>
-    <p class="text-gray-600"><%= @date.strftime("%A, %B %d") %></p>
+    <h1 class="text-2xl font-bold text-gray-800">Weekly Progress</h1>
+    <p class="text-gray-600"><%= week_label(@week_start, @week_end) %></p>
   </header>
 
   <%= render "shared/student_selector" %>
 
   <% if @student %>
     <%= render "today/progress_bar", completed: @total_completed, total: @total_possible %>
+    <%= render "today/day_selector", dates: @dates, current_date: @date %>
   <% end %>
 
   <% if @subjects.any? %>
-    <div class="space-y-3">
-      <% @subjects.each do |subject| %>
-        <%= render "subjects/checkbox", subject: subject, date: @date %>
-      <% end %>
-    </div>
+    <%= render "today/weekly_grid",
+               subjects: @subjects,
+               dates: @dates,
+               week_completions: @week_completions,
+               current_date: @date %>
   <% else %>
     <div class="bg-white rounded-xl p-6 text-center text-gray-500">
       No subjects yet. Add a student and subjects to get started.
