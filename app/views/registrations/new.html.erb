@@ -1,0 +1,42 @@
+<div class="bg-white rounded-lg shadow p-6 max-w-md mx-auto">
+  <h1 class="text-2xl font-bold text-gray-900 mb-6">Create account</h1>
+
+  <% if @user.errors.any? %>
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+      <ul class="list-disc list-inside">
+        <% @user.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form_with model: @user, url: signup_path, class: "space-y-4" do |f| %>
+    <div>
+      <%= f.label :name, class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.text_field :name, required: true, autofocus: true, class: "w-full border border-gray-300 rounded-lg px-3 py-2 min-h-[44px] focus:ring-2 focus:ring-coral focus:border-coral" %>
+    </div>
+
+    <div>
+      <%= f.label :email, class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.email_field :email, required: true, autocomplete: "email", class: "w-full border border-gray-300 rounded-lg px-3 py-2 min-h-[44px] focus:ring-2 focus:ring-coral focus:border-coral" %>
+    </div>
+
+    <div>
+      <%= f.label :password, class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.password_field :password, required: true, autocomplete: "new-password", class: "w-full border border-gray-300 rounded-lg px-3 py-2 min-h-[44px] focus:ring-2 focus:ring-coral focus:border-coral" %>
+    </div>
+
+    <div>
+      <%= f.label :password_confirmation, class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.password_field :password_confirmation, required: true, autocomplete: "new-password", class: "w-full border border-gray-300 rounded-lg px-3 py-2 min-h-[44px] focus:ring-2 focus:ring-coral focus:border-coral" %>
+    </div>
+
+    <%= f.submit "Create account", class: "w-full bg-coral text-white px-4 py-2 rounded-lg hover:opacity-90 transition cursor-pointer min-h-[44px]" %>
+  <% end %>
+
+  <p class="mt-4 text-center text-sm text-gray-600">
+    Already have an account?
+    <%= link_to "Sign in", login_path, class: "text-coral hover:underline" %>
+  </p>
+</div>
