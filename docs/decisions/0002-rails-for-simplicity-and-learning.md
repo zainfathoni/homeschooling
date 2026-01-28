@@ -39,18 +39,21 @@ A personal project with low stakes is ideal for learning a framework deeply.
 
 Ruby's characteristics make it well-suited for AI-assisted development:
 
-1. **Token efficiency**: Ruby typically uses 15-25% fewer tokens than Python, and 40-60% fewer than TypeScript/Go/Java for equivalent tasks. Fewer tokens = longer context windows = better AI assistance.
+1. **Token efficiency**: Per Martin Alderson's research, Ruby averages ~115 tokens per task vs JavaScript at ~165 tokens (43% more). Static typed languages are even worse: Java ~190, Go ~205, C# ~210. Fewer tokens = longer context windows = better AI assistance.
 
 2. **Human readability**: Ruby's concise syntax makes it faster for humans to review and verify AI-generated code. As DHH notes: "Ruby is not just highly token efficient for the LLMs, but even more so for humans. Being able to quickly read and verify what's been written by AI is a real advantage."
 
 3. **Types unnecessary for AI**: Dynamic typing eliminates boilerplate that AI doesn't need. "AI just doesn't need the types that some programmers cling to." Ruby's duck typing and conventions provide enough context for AI to understand intent.
 
-| Language | Relative Token Usage | Type Annotations |
-|----------|---------------------|------------------|
-| Ruby | 1.0x (baseline) | None required |
-| Python | 1.15-1.25x | Optional |
-| TypeScript | 1.4-1.6x | Required |
-| Go/Java | 1.4-1.6x | Required |
+| Language | Avg Tokens/Task | vs Ruby | Type System |
+|----------|-----------------|---------|-------------|
+| Clojure | ~109 | 0.95x | Dynamic |
+| Ruby | ~115 | 1.0x | Dynamic |
+| Python | ~122 | 1.06x | Dynamic |
+| JavaScript | ~165 | 1.43x | Dynamic |
+| Java | ~190 | 1.65x | Static |
+| Go | ~205 | 1.78x | Static |
+| C# | ~210 | 1.83x | Static |
 
 This project will be developed primarily with AI assistance (Claude Code), making token efficiency a practical consideration.
 
