@@ -33,15 +33,11 @@ class NarrationsController < ApplicationController
   def create
     @narration = @student.narrations.build(narration_params)
 
-    respond_to do |format|
-      if @narration.save
-        format.html { redirect_to student_narrations_path(@student), notice: "Narration was successfully created." }
-        format.turbo_stream
-      else
-        @subjects = @student.subjects
-        format.html { render :new, status: :unprocessable_entity }
-        format.turbo_stream { render :form_errors, status: :unprocessable_entity }
-      end
+    if @narration.save
+      redirect_to student_narrations_path(@student), notice: "Narration was successfully created."
+    else
+      @subjects = @student.subjects
+      render :new, status: :unprocessable_entity
     end
   end
 

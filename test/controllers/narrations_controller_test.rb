@@ -68,7 +68,7 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to student_narrations_path(@student)
   end
 
-  test "creates narration with turbo stream" do
+  test "creates narration with turbo stream redirects" do
     sign_in_as @user
 
     assert_difference "Narration.count", 1 do
@@ -82,8 +82,7 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
       }, as: :turbo_stream
     end
 
-    assert_response :success
-    assert_match "turbo-stream", response.body
+    assert_redirected_to student_narrations_path(@student)
   end
 
   test "rejects invalid narration" do
@@ -201,7 +200,7 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to student_narrations_path(@student)
   end
 
-  test "creates voice narration with turbo stream" do
+  test "creates voice narration with turbo stream redirects" do
     sign_in_as @user
 
     assert_difference "Narration.count", 1 do
@@ -215,8 +214,7 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
       }, as: :turbo_stream
     end
 
-    assert_response :success
-    assert_match "turbo-stream", response.body
+    assert_redirected_to student_narrations_path(@student)
     assert Narration.last.voice?
   end
 
@@ -298,7 +296,7 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to student_narrations_path(@student)
   end
 
-  test "creates photo narration with turbo stream" do
+  test "creates photo narration with turbo stream redirects" do
     sign_in_as @user
 
     assert_difference "Narration.count", 1 do
@@ -312,8 +310,7 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
       }, as: :turbo_stream
     end
 
-    assert_response :success
-    assert_match "turbo-stream", response.body
+    assert_redirected_to student_narrations_path(@student)
     assert Narration.last.photo?
   end
 
