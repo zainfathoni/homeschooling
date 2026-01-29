@@ -1,0 +1,14 @@
+safar_book:
+  subject: pick1_islamic
+  name: Safar Book
+  position: 0
+
+quran_recitation:
+  subject: pick1_islamic
+  name: Quran Recitation
+  position: 1
+
+seerah_stories:
+  subject: pick1_islamic
+  name: Seerah Stories
+  position: 2

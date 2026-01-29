@@ -2,6 +2,9 @@ class Subject < ApplicationRecord
   belongs_to :student
 
   has_many :completions, dependent: :destroy
+  has_many :subject_options, -> { order(:position) }, dependent: :destroy
+
+  accepts_nested_attributes_for :subject_options, allow_destroy: true, reject_if: :all_blank
 
   validates :name, presence: true
   validates :subject_type, inclusion: { in: %w[fixed scheduled pick1] }
