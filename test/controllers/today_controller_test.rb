@@ -76,4 +76,15 @@ class TodayControllerTest < ActionDispatch::IntegrationTest
     get today_path
     assert_response :success
   end
+
+  test "progress calculation works with scheduled subjects" do
+    sign_in_as @user
+    post select_student_path(@student)
+
+    travel_to Date.new(2026, 1, 28) do
+      get today_path
+      assert_response :success
+      assert_select "turbo-frame#progress_bar"
+    end
+  end
 end

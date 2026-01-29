@@ -69,7 +69,7 @@ class CompletionsController < ApplicationController
                                  .where(date: week_start..week_end)
                                  .count
 
-    @total_possible = subjects.count * @dates.count
+    @total_possible = calculate_week_possible(subjects, @dates)
     @total_completed = week_completions
     @is_today = @date == Date.current
   end

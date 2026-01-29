@@ -22,7 +22,7 @@ class TodayController < ApplicationController
       @week_completions = {}
     end
 
-    @total_possible = @subjects.count * @dates.count
+    @total_possible = calculate_week_possible(@subjects, @dates)
     @total_completed = @week_completions.values.sum(&:size)
   end
 end

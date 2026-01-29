@@ -13,4 +13,10 @@ module WeekHelper
       "#{start_date.strftime('%b %d')} - #{end_date.strftime('%b %d')}"
     end
   end
+
+  def calculate_week_possible(subjects, dates)
+    dates.sum do |date|
+      subjects.count { |subject| subject.active_on?(date) }
+    end
+  end
 end
