@@ -11,3 +11,10 @@ another_text:
   date: <%= Date.new(2026, 1, 27) %>
   narration_type: text
   content: "Built a simple calculator in Python."
+
+weekly_grid_narration:
+  student: one
+  subject: narration_required_subject
+  date: <%= Date.new(2026, 1, 28) %>
+  narration_type: text
+  content: "Narrated reading for today."

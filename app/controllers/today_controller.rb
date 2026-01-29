@@ -17,9 +17,15 @@ class TodayController < ApplicationController
                                     .pluck(:subject_id, :date)
                                     .group_by(&:first)
                                     .transform_values { |v| v.map(&:last).to_set }
+      @week_narrations = Narration.where(student_id: @student.id)
+                                  .where(date: @week_start..@week_end)
+                                  .pluck(:subject_id, :date)
+                                  .group_by(&:first)
+                                  .transform_values { |v| v.map(&:last).to_set }
     else
       @subjects = []
       @week_completions = {}
+      @week_narrations = {}
     end
 
     @total_possible = calculate_week_possible(@subjects, @dates)

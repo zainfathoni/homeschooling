@@ -88,16 +88,17 @@ class TodayControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "shows add narration link for subjects with narration_required" do
+  test "shows add narration link for subjects with narration_required when no narration exists today" do
     sign_in_as @user
     post select_student_path(@student)
 
     narration_subject = subjects(:narration_required_subject)
 
-    travel_to Date.new(2026, 1, 28) do
+    # Test on a day without narration (2026-01-27)
+    travel_to Date.new(2026, 1, 27) do
       get today_path
       assert_response :success
-      assert_select "a[href*='narrations/new'][href*='subject_id=#{narration_subject.id}'][href*='date=2026-01-28']", text: /narration/
+      assert_select "a[href*='narrations/new'][href*='subject_id=#{narration_subject.id}'][href*='date=2026-01-27']", text: /narration/
     end
   end
 
@@ -110,6 +111,53 @@ class TodayControllerTest < ActionDispatch::IntegrationTest
       assert_response :success
       # Math subject should not have narration link (narration_required is false)
       assert_no_match /Math.*\+ narration/, response.body
+    end
+  end
+
+  test "shows narration indicator on days with narrations in weekly grid" do
+    sign_in_as @user
+    post select_student_path(@student)
+
+    travel_to Date.new(2026, 1, 28) do
+      get today_path
+      assert_response :success
+
+      # Narration exists for narration_required_subject on 2026-01-28
+      narration_subject = subjects(:narration_required_subject)
+      # Check for the narration indicator link
+      assert_select "a.bg-green-500[href*='narrations'][href*='subject_id=#{narration_subject.id}'][href*='date=2026-01-28']"
+    end
+  end
+
+  test "narration indicator links to narrations index with correct params" do
+    sign_in_as @user
+    post select_student_path(@student)
+
+    travel_to Date.new(2026, 1, 28) do
+      get today_path
+      assert_response :success
+
+      narration_subject = subjects(:narration_required_subject)
+      # Verify link has correct student and filters
+      assert_select "a[href='#{student_narrations_path(@student, date: '2026-01-28', subject_id: narration_subject.id)}']"
+    end
+  end
+
+  test "no narration indicator on days without narrations" do
+    sign_in_as @user
+    post select_student_path(@student)
+
+    travel_to Date.new(2026, 1, 28) do
+      # Delete the fixture narration for Math to test clean state
+      Narration.where(subject: subjects(:one)).delete_all
+
+      get today_path
+      assert_response :success
+
+      # Math subject now has no narration
+      math_subject = subjects(:one)
+      # Should not have narration indicator for Math
+      assert_select "a.bg-green-500[href*='subject_id=#{math_subject.id}']", count: 0
     end
   end
 end

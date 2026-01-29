@@ -1,38 +1,50 @@
-<%# locals: (subject:, date:, completed:, is_today:) %>
+<%# locals: (subject:, date:, completed:, has_narration:, is_today:) %>
 <% active = subject.active_on?(date) %>
 <% clickable = active && !subject.pick1? %>
 <%= turbo_frame_tag dom_id(subject, "circle_#{date.to_s}") do %>
-  <% if clickable %>
-    <%= button_to toggle_completion_path(subject_id: subject.id, date: date),
-        method: :post,
-        class: "w-11 h-11 rounded-full flex items-center justify-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-coral focus:ring-offset-2",
-        data: { turbo_frame: dom_id(subject, "circle_#{date.to_s}") },
-        aria: { label: "#{completed ? 'Mark incomplete' : 'Mark complete'}: #{subject.name} on #{date.strftime('%A')}" } do %>
-      <span class="w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all
-                  <%= completed ? 'bg-coral border-coral' : is_today ? 'border-coral' : 'border-gray-300' %>">
-        <% if completed %>
-          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-          </svg>
-        <% end %>
-      </span>
+  <div class="relative w-11 h-11">
+    <% if clickable %>
+      <%= button_to toggle_completion_path(subject_id: subject.id, date: date),
+          method: :post,
+          class: "w-11 h-11 rounded-full flex items-center justify-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-coral focus:ring-offset-2",
+          data: { turbo_frame: dom_id(subject, "circle_#{date.to_s}") },
+          aria: { label: "#{completed ? 'Mark incomplete' : 'Mark complete'}: #{subject.name} on #{date.strftime('%A')}" } do %>
+        <span class="w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all
+                    <%= completed ? 'bg-coral border-coral' : is_today ? 'border-coral' : 'border-gray-300' %>">
+          <% if completed %>
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+            </svg>
+          <% end %>
+        </span>
+      <% end %>
+    <% elsif subject.pick1? && active %>
+      <%# Pick1 subjects show status but need Daily Focus to toggle %>
+      <div class="w-11 h-11 flex items-center justify-center" title="Use Daily Focus to select an option">
+        <span class="w-8 h-8 rounded-full border-2 flex items-center justify-center
+                    <%= completed ? 'bg-coral/50 border-coral/50' : 'border-gray-300 border-dotted' %>">
+          <% if completed %>
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+            </svg>
+          <% end %>
+        </span>
+      </div>
+    <% else %>
+      <%# Dashed circle for off-days (not clickable) %>
+      <div class="w-11 h-11 flex items-center justify-center" aria-label="<%= subject.name %> is not scheduled for <%= date.strftime('%A') %>">
+        <span class="w-8 h-8 rounded-full border-2 border-dashed border-gray-300"></span>
+      </div>
     <% end %>
-  <% elsif subject.pick1? && active %>
-    <%# Pick1 subjects show status but need Daily Focus to toggle %>
-    <div class="w-11 h-11 flex items-center justify-center" title="Use Daily Focus to select an option">
-      <span class="w-8 h-8 rounded-full border-2 flex items-center justify-center
-                  <%= completed ? 'bg-coral/50 border-coral/50' : 'border-gray-300 border-dotted' %>">
-        <% if completed %>
-          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-          </svg>
-        <% end %>
-      </span>
-    </div>
-  <% else %>
-    <%# Dashed circle for off-days (not clickable) %>
-    <div class="w-11 h-11 flex items-center justify-center" aria-label="<%= subject.name %> is not scheduled for <%= date.strftime('%A') %>">
-      <span class="w-8 h-8 rounded-full border-2 border-dashed border-gray-300"></span>
-    </div>
-  <% end %>
+    <% if has_narration %>
+      <%= link_to student_narrations_path(subject.student, date: date, subject_id: subject.id),
+          class: "absolute -top-0.5 -right-0.5 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-green-600 transition-colors",
+          title: "View narration for #{subject.name} on #{date.strftime('%A')}",
+          data: { turbo_frame: "_top" } do %>
+        <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+        </svg>
+      <% end %>
+    <% end %>
+  </div>
 <% end %>

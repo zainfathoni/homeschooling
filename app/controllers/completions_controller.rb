@@ -77,6 +77,7 @@ class CompletionsController < ApplicationController
     @total_possible = calculate_week_possible(subjects, @dates)
     @total_completed = week_completions
     @is_today = @date == Date.current
+    @has_narration = @subject.has_narration_for?(@date)
   end
 
   def authorize_subject!
