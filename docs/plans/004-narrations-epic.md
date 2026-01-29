@@ -1,8 +1,9 @@
 # Plan 004: Narrations Epic
 
-**Status:** Ready for Implementation
+**Status:** ✅ Complete
 **Created:** 2026-01-28
 **Refined:** 2026-01-29
+**Completed:** 2026-01-29
 **Depends on:** [001-multi-student-epic](001-multi-student-epic.md) ✅
 
 ## Overview
@@ -610,7 +611,7 @@ Show narration status for each day in the weekly grid, not just today.
 ## Issue Hierarchy
 
 ```
-hs-narrate (EPIC)
+hs-narrate (EPIC) ✅
 ├── hs-narrate.1: Narration model & migration ✅
 ├── hs-narrate.2: Text narration CRUD ✅
 ├── hs-narrate.3: Voice recording input ✅
@@ -619,7 +620,7 @@ hs-narrate (EPIC)
 ├── hs-narrate.6: Soft enforcement modal ✅
 ├── hs-narrate.7: Narration list view ✅
 ├── hs-narrate.8: Quick add from subject card ✅
-└── hs-narrate.9: Per-day narration indicators in weekly grid
+└── hs-narrate.9: Per-day narration indicators in weekly grid ✅
 ```
 
 ## Dependencies
