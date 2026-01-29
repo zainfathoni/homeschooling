@@ -132,14 +132,13 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Updated content about fractions.", @narration.reload.content
   end
 
-  test "updates narration with turbo stream" do
+  test "updates narration with turbo stream redirects" do
     sign_in_as @user
     patch student_narration_path(@student, @narration), params: {
       narration: { content: "Updated via Turbo." }
     }, as: :turbo_stream
 
-    assert_response :success
-    assert_match "turbo-stream", response.body
+    assert_redirected_to student_narrations_path(@student)
     assert_equal "Updated via Turbo.", @narration.reload.content
   end
 

@@ -42,15 +42,11 @@ class NarrationsController < ApplicationController
   end
 
   def update
-    respond_to do |format|
-      if @narration.update(narration_params)
-        format.html { redirect_to student_narrations_path(@student), notice: "Narration was successfully updated." }
-        format.turbo_stream
-      else
-        @subjects = @student.subjects
-        format.html { render :edit, status: :unprocessable_entity }
-        format.turbo_stream { render :form_errors, status: :unprocessable_entity }
-      end
+    if @narration.update(narration_params)
+      redirect_to student_narrations_path(@student), notice: "Narration was successfully updated."
+    else
+      @subjects = @student.subjects
+      render :edit, status: :unprocessable_entity
     end
   end
 
