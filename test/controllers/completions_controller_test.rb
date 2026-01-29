@@ -44,4 +44,45 @@ class CompletionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match "turbo-stream", response.body
   end
+
+  test "blocks toggle for scheduled subject on off-day" do
+    sign_in_as @user
+    scheduled_subject = subjects(:scheduled_coding)
+    # Friday is day index 4, not in scheduled_days [0,1,2,3]
+    friday = Date.new(2026, 1, 30) # A Friday
+
+    assert_not scheduled_subject.active_on?(friday)
+
+    assert_no_difference "Completion.count" do
+      post toggle_completion_path(subject_id: scheduled_subject.id, date: friday)
+    end
+    assert_response :unprocessable_entity
+  end
+
+  test "allows toggle for scheduled subject on active day" do
+    sign_in_as @user
+    scheduled_subject = subjects(:scheduled_coding)
+    # Monday is day index 0, in scheduled_days [0,1,2,3]
+    monday = Date.new(2026, 1, 26) # A Monday
+    scheduled_subject.completions.where(date: monday).destroy_all
+
+    assert scheduled_subject.active_on?(monday)
+
+    assert_difference "Completion.count", 1 do
+      post toggle_completion_path(subject_id: scheduled_subject.id, date: monday)
+    end
+    assert_response :redirect
+  end
+
+  test "blocks toggle for any subject on weekend" do
+    sign_in_as @user
+    saturday = Date.new(2026, 1, 31) # A Saturday
+
+    assert_not @subject.active_on?(saturday)
+
+    assert_no_difference "Completion.count" do
+      post toggle_completion_path(subject_id: @subject.id, date: saturday)
+    end
+    assert_response :unprocessable_entity
+  end
 end

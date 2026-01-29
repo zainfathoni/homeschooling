@@ -7,6 +7,11 @@ class CompletionsController < ApplicationController
 
     authorize_subject!
 
+    unless @subject.active_on?(@date)
+      head :unprocessable_entity
+      return
+    end
+
     @completion = @subject.completions.find_or_initialize_by(date: @date)
 
     if @completion.persisted?

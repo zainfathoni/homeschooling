@@ -1,17 +1,25 @@
 <%# locals: (subject:, date:, completed:, is_today:) %>
+<% active = subject.active_on?(date) %>
 <%= turbo_frame_tag dom_id(subject, "circle_#{date.to_s}") do %>
-  <%= button_to toggle_completion_path(subject_id: subject.id, date: date),
-      method: :post,
-      class: "w-11 h-11 rounded-full flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-coral focus:ring-offset-2",
-      data: { turbo_frame: dom_id(subject, "circle_#{date.to_s}") },
-      aria: { label: "#{completed ? 'Mark incomplete' : 'Mark complete'}: #{subject.name} on #{date.strftime('%A')}" } do %>
-    <span class="w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all
-                <%= completed ? 'bg-coral border-coral' : is_today ? 'border-coral' : 'border-gray-300' %>">
-      <% if completed %>
-        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-        </svg>
-      <% end %>
-    </span>
+  <% if active %>
+    <%= button_to toggle_completion_path(subject_id: subject.id, date: date),
+        method: :post,
+        class: "w-11 h-11 rounded-full flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-coral focus:ring-offset-2",
+        data: { turbo_frame: dom_id(subject, "circle_#{date.to_s}") },
+        aria: { label: "#{completed ? 'Mark incomplete' : 'Mark complete'}: #{subject.name} on #{date.strftime('%A')}" } do %>
+      <span class="w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all
+                  <%= completed ? 'bg-coral border-coral' : is_today ? 'border-coral' : 'border-gray-300' %>">
+        <% if completed %>
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+          </svg>
+        <% end %>
+      </span>
+    <% end %>
+  <% else %>
+    <%# Dashed circle for off-days (not clickable) %>
+    <div class="w-11 h-11 flex items-center justify-center" aria-label="<%= subject.name %> is not scheduled for <%= date.strftime('%A') %>">
+      <span class="w-8 h-8 rounded-full border-2 border-dashed border-gray-300"></span>
+    </div>
   <% end %>
 <% end %>
