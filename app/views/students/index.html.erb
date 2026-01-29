@@ -21,6 +21,8 @@
             </div>
           </div>
           <div class="flex items-center gap-2">
+            <%= link_to "Subjects", student_subjects_path(student),
+                class: "text-coral hover:text-coral/80 px-3 py-1" %>
             <%= link_to "Edit", edit_student_path(student),
                 class: "text-gray-600 hover:text-gray-800 px-3 py-1" %>
             <%= button_to "Delete", student_path(student),
