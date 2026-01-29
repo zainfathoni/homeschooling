@@ -1,0 +1,95 @@
+<%= form_with model: [student, subject], class: "space-y-6", data: { controller: "subject-type" } do |form| %>
+  <% if subject.errors.any? %>
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+      <h3 class="text-red-800 font-medium">Please fix the following errors:</h3>
+      <ul class="list-disc list-inside text-red-600 mt-2">
+        <% subject.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name, class: "block text-gray-700 font-medium mb-1" %>
+    <%= form.text_field :name,
+        class: "w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-coral focus:border-coral",
+        placeholder: "Enter subject name" %>
+  </div>
+
+  <div>
+    <%= form.label :subject_type, "Subject Type", class: "block text-gray-700 font-medium mb-2" %>
+    <div class="flex gap-2">
+      <% %w[fixed scheduled pick1].each do |type| %>
+        <label class="flex-1 cursor-pointer">
+          <%= form.radio_button :subject_type, type,
+              class: "sr-only peer",
+              data: { subject_type_target: "radio", action: "subject-type#toggle" } %>
+          <span class="block py-2 px-4 text-center rounded-lg border-2 border-gray-300
+                       peer-checked:border-coral peer-checked:bg-coral/10 transition-colors">
+            <%= type == "pick1" ? "Pick 1" : type.titleize %>
+          </span>
+        </label>
+      <% end %>
+    </div>
+  </div>
+
+  <div data-subject-type-target="scheduledDays" class="<%= 'hidden' unless subject.scheduled? %>">
+    <%= form.label :scheduled_days, "Active Days", class: "block text-gray-700 font-medium mb-2" %>
+    <div class="flex gap-2">
+      <% %w[Mon Tue Wed Thu Fri].each_with_index do |day, index| %>
+        <label class="cursor-pointer">
+          <%= check_box_tag "subject[scheduled_days][]", index,
+              subject.scheduled_days&.include?(index),
+              id: "scheduled_days_#{index}",
+              class: "sr-only peer" %>
+          <span class="w-11 h-11 flex items-center justify-center rounded-lg border-2 border-gray-300
+                       peer-checked:border-coral peer-checked:bg-coral/10 transition-colors text-sm">
+            <%= day %>
+          </span>
+        </label>
+      <% end %>
+    </div>
+  </div>
+
+  <div data-subject-type-target="pick1Options" class="<%= 'hidden' unless subject.pick1? %>">
+    <%= form.label :subject_options, "Options", class: "block text-gray-700 font-medium mb-2" %>
+    <div data-subject-type-target="optionsList" class="space-y-2">
+      <% subject.subject_options.each_with_index do |option, index| %>
+        <%= form.fields_for :subject_options, option, index: index do |option_form| %>
+          <div class="flex gap-2" data-subject-type-target="optionRow">
+            <%= option_form.hidden_field :id if option.persisted? %>
+            <%= option_form.hidden_field :position, value: index %>
+            <%= option_form.text_field :name,
+                class: "flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-coral focus:border-coral",
+                placeholder: "Option name" %>
+            <%= option_form.hidden_field :_destroy, value: "0", data: { subject_type_target: "destroyField" } %>
+            <button type="button" class="text-red-500 px-2 hover:text-red-700"
+                    data-action="subject-type#removeOption">✕</button>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+    <button type="button" class="text-coral text-sm mt-2 hover:text-coral/80"
+            data-action="subject-type#addOption">
+      + Add option
+    </button>
+    <template data-subject-type-target="optionTemplate">
+      <div class="flex gap-2" data-subject-type-target="optionRow">
+        <input type="hidden" name="subject[subject_options_attributes][NEW_INDEX][position]" value="NEW_INDEX">
+        <input type="text" name="subject[subject_options_attributes][NEW_INDEX][name]"
+               class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-coral focus:border-coral"
+               placeholder="Option name">
+        <input type="hidden" name="subject[subject_options_attributes][NEW_INDEX][_destroy]" value="0"
+               data-subject-type-target="destroyField">
+        <button type="button" class="text-red-500 px-2 hover:text-red-700"
+                data-action="subject-type#removeOption">✕</button>
+      </div>
+    </template>
+  </div>
+
+  <div class="flex gap-3 pt-4">
+    <%= form.submit class: "bg-coral text-white px-6 py-2 rounded-lg font-medium hover:bg-coral/90 cursor-pointer" %>
+    <%= link_to "Cancel", student_subjects_path(student), class: "text-gray-600 hover:text-gray-800 px-4 py-2" %>
+  </div>
+<% end %>

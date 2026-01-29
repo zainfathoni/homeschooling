@@ -10,6 +10,7 @@ Rails.application.routes.draw do
     member do
       post :select
     end
+    resources :subjects, only: [ :index, :new, :create, :edit, :update, :destroy ]
   end
 
   get "today", to: "today#index"

@@ -19,4 +19,11 @@ module WeekHelper
       subjects.count { |subject| subject.active_on?(date) }
     end
   end
+
+  def scheduled_days_label(days)
+    day_names = %w[Mon Tue Wed Thu Fri]
+    return "" if days.blank?
+
+    days.sort.map { |d| day_names[d] }.join(", ")
+  end
 end

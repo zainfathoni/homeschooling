@@ -1,0 +1,51 @@
+<div class="min-h-screen bg-lavender p-4">
+  <header class="mb-6 flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800">Subjects</h1>
+      <p class="text-gray-600"><%= @student.name %></p>
+    </div>
+    <%= link_to "Add Subject", new_student_subject_path(@student),
+        class: "bg-coral text-white px-4 py-2 rounded-lg font-medium hover:bg-coral/90" %>
+  </header>
+
+  <% if @subjects.any? %>
+    <div class="space-y-3">
+      <% @subjects.each do |subject| %>
+        <div class="bg-white rounded-xl p-4 shadow-sm">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-lg">📚</span>
+              <div>
+                <p class="font-medium text-gray-800"><%= subject.name %></p>
+                <p class="text-sm text-gray-500">
+                  <%= subject.subject_type.titleize %>
+                  <% if subject.scheduled? %>
+                    (<%= scheduled_days_label(subject.scheduled_days) %>)
+                  <% elsif subject.pick1? && subject.subject_options.any? %>
+                    (<%= subject.subject_options.count %> options)
+                  <% end %>
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <%= link_to "Edit", edit_student_subject_path(@student, subject),
+                  class: "text-gray-600 hover:text-gray-800 px-3 py-1" %>
+              <%= button_to "Delete", student_subject_path(@student, subject),
+                  method: :delete,
+                  class: "text-red-600 hover:text-red-800 px-3 py-1",
+                  data: { turbo_confirm: "Are you sure you want to delete #{subject.name}?" } %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="bg-white rounded-xl p-6 text-center text-gray-500">
+      No subjects yet. Add your first subject to get started.
+    </div>
+  <% end %>
+
+  <div class="mt-6">
+    <%= link_to "← Back to Students", students_path, class: "text-gray-600 hover:text-gray-800" %>
+  </div>
+</div>

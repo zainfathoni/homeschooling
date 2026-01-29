@@ -1,0 +1,65 @@
+class SubjectsController < ApplicationController
+  before_action :set_student
+  before_action :set_subject, only: [ :edit, :update, :destroy ]
+
+  def index
+    @subjects = @student.subjects.includes(:subject_options)
+  end
+
+  def new
+    @subject = @student.subjects.build
+  end
+
+  def create
+    @subject = @student.subjects.build(subject_params)
+
+    if @subject.save
+      redirect_to student_subjects_path(@student), notice: "Subject was successfully created."
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  def edit
+  end
+
+  def update
+    if @subject.update(subject_params)
+      redirect_to student_subjects_path(@student), notice: "Subject was successfully updated."
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    @subject.destroy
+    redirect_to student_subjects_path(@student), notice: "Subject was successfully deleted."
+  end
+
+  private
+
+  def set_student
+    @student = Current.user.students.find(params[:student_id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to students_path, alert: "Student not found"
+  end
+
+  def set_subject
+    @subject = @student.subjects.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to student_subjects_path(@student), alert: "Subject not found"
+  end
+
+  def subject_params
+    permitted = params.require(:subject).permit(
+      :name, :subject_type, scheduled_days: [],
+      subject_options_attributes: [ :id, :name, :position, :_destroy ]
+    )
+
+    if permitted[:scheduled_days].present?
+      permitted[:scheduled_days] = permitted[:scheduled_days].map(&:to_i)
+    end
+
+    permitted
+  end
+end
