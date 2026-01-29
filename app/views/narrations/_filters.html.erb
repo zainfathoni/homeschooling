@@ -1,9 +1,11 @@
 <%# locals: (student:) %>
 <div class="bg-white rounded-xl p-4 shadow-sm mb-4">
-  <%= form_with url: student_narrations_path(student), method: :get, class: "flex flex-wrap gap-3", data: { turbo_frame: "_top" } do |f| %>
+  <%= form_with url: student_narrations_path(student), method: :get, class: "flex flex-wrap items-end gap-3", data: { turbo_frame: "narrations" } do |f| %>
     <div class="flex-1 min-w-[140px]">
       <%= f.label :date, "Date", class: "block text-sm text-gray-600 mb-1" %>
-      <%= f.date_field :date, value: params[:date], class: "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-coral focus:border-coral" %>
+      <%= f.date_field :date, value: params[:date],
+          onchange: "this.form.requestSubmit()",
+          class: "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-coral focus:border-coral" %>
     </div>
 
     <div class="flex-1 min-w-[140px]">
@@ -11,12 +13,12 @@
       <%= f.select :subject_id,
           options_from_collection_for_select(student.subjects, :id, :name, params[:subject_id]),
           { include_blank: "All Subjects" },
-          class: "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-coral focus:border-coral" %>
+          { onchange: "this.form.requestSubmit()",
+            class: "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-coral focus:border-coral" } %>
     </div>
 
-    <div class="flex items-end gap-2">
-      <%= f.submit "Filter", class: "bg-coral text-white px-4 py-2 rounded-lg font-medium hover:bg-coral/90 cursor-pointer text-sm" %>
-      <%= link_to "Clear", student_narrations_path(student), class: "text-gray-600 hover:text-gray-800 px-3 py-2 text-sm" %>
-    </div>
+    <%= link_to "Clear", student_narrations_path(student),
+        class: "text-gray-600 hover:text-gray-800 px-3 py-2 text-sm",
+        data: { turbo_frame: "narrations" } %>
   <% end %>
 </div>
