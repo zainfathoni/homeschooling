@@ -590,20 +590,36 @@ Add narration link in weekly grid for subjects with narration_required.
 - Opens narration form (modal or page)
 - Tests for quick add flow
 
+### Task 9: Per-day Narration Indicators in Weekly Grid
+
+Show narration status for each day in the weekly grid, not just today.
+
+**Files:**
+- `app/views/today/_weekly_grid.html.erb`
+- `app/views/today/_completion_circle.html.erb`
+- `app/controllers/today_controller.rb` (preload narration dates)
+
+**Acceptance Criteria:**
+- Each day cell shows narration indicator if narration exists for that subject/date
+- Indicator is visually distinct but not overwhelming (e.g., small badge or dot)
+- Clicking indicator navigates to the narration for that day
+- Tests for per-day indicator display
+
 ---
 
 ## Issue Hierarchy
 
 ```
 hs-narrate (EPIC)
-├── hs-narrate.1: Narration model & migration
-├── hs-narrate.2: Text narration CRUD
-├── hs-narrate.3: Voice recording input
-├── hs-narrate.4: Photo upload input
-├── hs-narrate.5: Subject narration_required flag
-├── hs-narrate.6: Soft enforcement modal
-├── hs-narrate.7: Narration list view
-└── hs-narrate.8: Quick add from subject card
+├── hs-narrate.1: Narration model & migration ✅
+├── hs-narrate.2: Text narration CRUD ✅
+├── hs-narrate.3: Voice recording input ✅
+├── hs-narrate.4: Photo upload input ✅
+├── hs-narrate.5: Subject narration_required flag ✅
+├── hs-narrate.6: Soft enforcement modal ✅
+├── hs-narrate.7: Narration list view ✅
+├── hs-narrate.8: Quick add from subject card ✅
+└── hs-narrate.9: Per-day narration indicators in weekly grid
 ```
 
 ## Dependencies
@@ -612,7 +628,7 @@ hs-narrate (EPIC)
 hs-narrate.1 ─┬─► hs-narrate.2 ─┬─► hs-narrate.3
               │                 ├─► hs-narrate.4
               │                 ├─► hs-narrate.7
-              │                 ├─► hs-narrate.8
+              │                 ├─► hs-narrate.8 ─► hs-narrate.9
               │                 └─► hs-narrate.6 (also needs .5)
               │
               └─► hs-narrate.5 ─► hs-narrate.6
@@ -623,6 +639,7 @@ hs-narrate.1 ─┬─► hs-narrate.2 ─┬─► hs-narrate.3
 2. Text CRUD (Task 2) unlocks Tasks 3, 4, 6, 7, 8
 3. narration_required flag (Task 5) unlocks Task 6 (with Task 2)
 4. Task 6 requires both Task 2 (routes) and Task 5 (flag)
+5. Task 9 enhances Task 8 with per-day indicators
 
 ---
 
