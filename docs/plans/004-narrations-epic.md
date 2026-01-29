@@ -595,34 +595,34 @@ Add narration link in weekly grid for subjects with narration_required.
 ## Issue Hierarchy
 
 ```
-hs-narrations (EPIC)
-├── hs-narrations.1: Narration model & migration
-├── hs-narrations.2: Text narration CRUD
-├── hs-narrations.3: Voice recording input
-├── hs-narrations.4: Photo upload input
-├── hs-narrations.5: Subject narration_required flag
-├── hs-narrations.6: Soft enforcement modal
-├── hs-narrations.7: Narration list view
-└── hs-narrations.8: Quick add from subject card
+hs-narrate (EPIC)
+├── hs-narrate.1: Narration model & migration
+├── hs-narrate.2: Text narration CRUD
+├── hs-narrate.3: Voice recording input
+├── hs-narrate.4: Photo upload input
+├── hs-narrate.5: Subject narration_required flag
+├── hs-narrate.6: Soft enforcement modal
+├── hs-narrate.7: Narration list view
+└── hs-narrate.8: Quick add from subject card
 ```
 
 ## Dependencies
 
 ```
-hs-narrations.1 ─┬─► hs-narrations.2 ─┬─► hs-narrations.3
-                 │                    └─► hs-narrations.4
-                 │
-                 └─► hs-narrations.5 ─► hs-narrations.6
-
-hs-narrations.2 ─► hs-narrations.7
-hs-narrations.2 ─► hs-narrations.8
+hs-narrate.1 ─┬─► hs-narrate.2 ─┬─► hs-narrate.3
+              │                 ├─► hs-narrate.4
+              │                 ├─► hs-narrate.7
+              │                 ├─► hs-narrate.8
+              │                 └─► hs-narrate.6 (also needs .5)
+              │
+              └─► hs-narrate.5 ─► hs-narrate.6
 ```
 
 **Visual flow:**
-1. Model (Task 1) unlocks everything
-2. Text CRUD (Task 2) unlocks voice/photo inputs and list view
-3. narration_required flag (Task 5) unlocks soft enforcement
-4. Tasks 7 & 8 can run in parallel after Task 2
+1. Model (Task 1) unlocks Tasks 2 and 5
+2. Text CRUD (Task 2) unlocks Tasks 3, 4, 6, 7, 8
+3. narration_required flag (Task 5) unlocks Task 6 (with Task 2)
+4. Task 6 requires both Task 2 (routes) and Task 5 (flag)
 
 ---
 
