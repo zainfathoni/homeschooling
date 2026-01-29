@@ -10,14 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_29_040556) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_29_040925) do
   create_table "completions", force: :cascade do |t|
     t.boolean "completed", default: false, null: false
     t.datetime "created_at", null: false
     t.date "date", null: false
     t.integer "subject_id", null: false
+    t.integer "subject_option_id"
     t.datetime "updated_at", null: false
     t.index ["subject_id"], name: "index_completions_on_subject_id"
+    t.index ["subject_option_id"], name: "index_completions_on_subject_option_id"
   end
 
   create_table "students", force: :cascade do |t|
@@ -58,6 +60,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_29_040556) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "completions", "subject_options"
   add_foreign_key "completions", "subjects"
   add_foreign_key "students", "users"
   add_foreign_key "subject_options", "subjects"
