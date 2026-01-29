@@ -18,3 +18,10 @@
              completed: @total_completed,
              total: @total_possible %>
 <% end %>
+
+<%# Show narration reminder modal for subjects with narration_required %>
+<% if @show_narration_reminder %>
+<%= turbo_stream.append "modals" do %>
+  <%= render "completions/narration_reminder", subject: @subject, date: @date %>
+<% end %>
+<% end %>

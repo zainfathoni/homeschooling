@@ -54,7 +54,12 @@ class CompletionsController < ApplicationController
       @completion.completed = true
       @completion.save!
       @completed = true
+      check_narration_reminder
     end
+  end
+
+  def check_narration_reminder
+    @show_narration_reminder = @subject.narration_required? && !@subject.has_narration_for?(@date)
   end
 
   def calculate_week_totals

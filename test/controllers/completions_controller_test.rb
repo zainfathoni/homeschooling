@@ -134,4 +134,64 @@ class CompletionsControllerTest < ActionDispatch::IntegrationTest
     completion = pick1_subject.completions.find_by(date: monday)
     assert_equal option2.id, completion.subject_option_id
   end
+
+  test "shows narration reminder when completing subject with narration_required and no narration" do
+    sign_in_as @user
+    narration_subject = subjects(:narration_required_subject)
+    monday = Date.new(2026, 1, 26)
+    narration_subject.completions.where(date: monday).destroy_all
+    narration_subject.narrations.where(date: monday).destroy_all
+
+    post toggle_completion_path(subject_id: narration_subject.id, date: monday),
+      headers: { "Accept" => "text/vnd.turbo-stream.html" }
+
+    assert_response :success
+    assert_match "narration-reminder-modal", response.body
+    assert_match "Add Narration", response.body
+    assert_match "Skip for Now", response.body
+  end
+
+  test "does not show narration reminder when completing subject with narration_required but has narration" do
+    sign_in_as @user
+    narration_subject = subjects(:narration_required_subject)
+    monday = Date.new(2026, 1, 26)
+    narration_subject.completions.where(date: monday).destroy_all
+    narration_subject.narrations.create!(
+      student: narration_subject.student,
+      date: monday,
+      narration_type: "text",
+      content: "Test narration"
+    )
+
+    post toggle_completion_path(subject_id: narration_subject.id, date: monday),
+      headers: { "Accept" => "text/vnd.turbo-stream.html" }
+
+    assert_response :success
+    assert_no_match(/narration-reminder-modal/, response.body)
+  end
+
+  test "does not show narration reminder when completing subject without narration_required" do
+    sign_in_as @user
+    @subject.completions.where(date: @date).destroy_all
+
+    post toggle_completion_path(subject_id: @subject.id, date: @date),
+      headers: { "Accept" => "text/vnd.turbo-stream.html" }
+
+    assert_response :success
+    assert_no_match(/narration-reminder-modal/, response.body)
+  end
+
+  test "does not show narration reminder when uncompleting subject" do
+    sign_in_as @user
+    narration_subject = subjects(:narration_required_subject)
+    monday = Date.new(2026, 1, 26)
+    narration_subject.completions.where(date: monday).destroy_all
+    narration_subject.completions.create!(date: monday, completed: true)
+
+    post toggle_completion_path(subject_id: narration_subject.id, date: monday),
+      headers: { "Accept" => "text/vnd.turbo-stream.html" }
+
+    assert_response :success
+    assert_no_match(/narration-reminder-modal/, response.body)
+  end
 end
