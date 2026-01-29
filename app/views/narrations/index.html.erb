@@ -10,15 +10,17 @@
 
   <%= render "filters", student: @student %>
 
-  <div id="narrations" class="space-y-3">
-    <% if @narrations.any? %>
-      <%= render partial: "narration", collection: @narrations %>
-    <% else %>
-      <div class="bg-white rounded-xl p-6 text-center text-gray-500">
-        No narrations yet. Add your first narration to capture learning evidence.
-      </div>
-    <% end %>
-  </div>
+  <%= turbo_frame_tag "narrations" do %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <% if @narrations.any? %>
+        <%= render partial: "narration", collection: @narrations %>
+      <% else %>
+        <div class="md:col-span-2 bg-white rounded-xl p-6 text-center text-gray-500">
+          No narrations yet. Add your first narration to capture learning evidence.
+        </div>
+      <% end %>
+    </div>
+  <% end %>
 
   <div class="mt-6">
     <%= link_to "← Back to Students", students_path, class: "text-gray-600 hover:text-gray-800" %>
