@@ -11,6 +11,7 @@ Rails.application.routes.draw do
       post :select
     end
     resources :subjects, only: [ :index, :new, :create, :edit, :update, :destroy ]
+    resources :narrations
   end
 
   get "today", to: "today#index"

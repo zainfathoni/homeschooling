@@ -1,0 +1,37 @@
+<%# locals: (narration:) %>
+<%= turbo_frame_tag dom_id(narration) do %>
+  <div class="bg-white rounded-xl p-4 shadow-sm">
+    <div class="flex items-start justify-between mb-2">
+      <div>
+        <span class="font-medium text-gray-800"><%= narration.subject.name %></span>
+        <span class="text-sm text-gray-500 ml-2"><%= narration.date.strftime("%b %d, %Y") %></span>
+      </div>
+      <span class="text-lg">
+        <%= { "text" => "📝", "voice" => "🎙️", "photo" => "📷" }[narration.narration_type] %>
+      </span>
+    </div>
+
+    <% case narration.narration_type %>
+    <% when "text" %>
+      <p class="text-gray-700 whitespace-pre-wrap"><%= narration.content %></p>
+    <% when "voice" %>
+      <% if narration.media.attached? %>
+        <audio controls class="w-full" src="<%= url_for(narration.media) %>">
+          Your browser does not support audio playback.
+        </audio>
+      <% end %>
+    <% when "photo" %>
+      <% if narration.media.attached? %>
+        <%= image_tag narration.media, class: "w-full rounded-lg", loading: "lazy" %>
+      <% end %>
+    <% end %>
+
+    <div class="flex gap-2 mt-3 pt-3 border-t border-gray-100">
+      <%= link_to "Edit", edit_student_narration_path(narration.student, narration),
+          class: "text-sm text-gray-500 hover:text-coral" %>
+      <%= button_to "Delete", student_narration_path(narration.student, narration),
+          method: :delete, class: "text-sm text-gray-500 hover:text-red-500",
+          data: { turbo_confirm: "Delete this narration?" } %>
+    </div>
+  </div>
+<% end %>
