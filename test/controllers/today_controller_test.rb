@@ -87,4 +87,29 @@ class TodayControllerTest < ActionDispatch::IntegrationTest
       assert_select "turbo-frame#progress_bar"
     end
   end
+
+  test "shows add narration link for subjects with narration_required" do
+    sign_in_as @user
+    post select_student_path(@student)
+
+    narration_subject = subjects(:narration_required_subject)
+
+    travel_to Date.new(2026, 1, 28) do
+      get today_path
+      assert_response :success
+      assert_select "a[href*='narrations/new'][href*='subject_id=#{narration_subject.id}'][href*='date=2026-01-28']", text: /narration/
+    end
+  end
+
+  test "does not show add narration link for subjects without narration_required" do
+    sign_in_as @user
+    post select_student_path(@student)
+
+    travel_to Date.new(2026, 1, 28) do
+      get today_path
+      assert_response :success
+      # Math subject should not have narration link (narration_required is false)
+      assert_no_match /Math.*\+ narration/, response.body
+    end
+  end
 end

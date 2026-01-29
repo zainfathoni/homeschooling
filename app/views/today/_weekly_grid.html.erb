@@ -18,7 +18,16 @@
     <div class="flex items-center px-4 py-3 border-b border-gray-100 last:border-b-0">
       <div class="flex items-center gap-3 flex-1 min-w-0">
         <span class="text-lg shrink-0" aria-hidden="true">📚</span>
-        <span class="text-sm font-medium text-gray-800 truncate"><%= subject.name %></span>
+        <div class="min-w-0 flex-1">
+          <span class="text-sm font-medium text-gray-800 truncate block"><%= subject.name %></span>
+          <% if subject.narration_required? %>
+            <%= link_to new_student_narration_path(subject.student, subject_id: subject.id, date: current_date),
+                class: "text-xs text-coral hover:text-coral/80 inline-flex items-center gap-1",
+                data: { turbo_frame: "_top" } do %>
+              <span>+</span> narration
+            <% end %>
+          <% end %>
+        </div>
       </div>
       <div class="grid grid-cols-5 gap-1" style="width: 235px;">
         <% dates.each do |date| %>
