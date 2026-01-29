@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_28_032451) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_29_033343) do
   create_table "completions", force: :cascade do |t|
     t.boolean "completed", default: false, null: false
     t.datetime "created_at", null: false
@@ -33,7 +33,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_28_032451) do
   create_table "subjects", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name"
+    t.json "scheduled_days"
     t.integer "student_id", null: false
+    t.string "subject_type", default: "fixed", null: false
     t.datetime "updated_at", null: false
     t.index ["student_id"], name: "index_subjects_on_student_id"
   end

@@ -1,7 +1,20 @@
 one:
   name: Math
   student: one
+  subject_type: fixed
 
 two:
   name: Reading
   student: two
+  subject_type: fixed
+
+scheduled_coding:
+  name: Coding
+  student: one
+  subject_type: scheduled
+  scheduled_days: <%= [0, 1, 2, 3].to_json %>
+
+pick1_islamic:
+  name: Islamic Study
+  student: one
+  subject_type: pick1
