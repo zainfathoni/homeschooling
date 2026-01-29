@@ -1,8 +1,21 @@
 # Plan 003: Subject Types Epic
 
-**Status:** Ready for Implementation
+**Status:** ✅ Completed
 **Created:** 2026-01-28
+**Completed:** 2026-01-29
 **Depends on:** [002-weekly-grid-epic](002-weekly-grid-epic.md) ✅
+
+## Implementation Notes
+
+All 8 tasks completed. Key implementations:
+- Subject model with `subject_type` enum (fixed/scheduled/pick1), `scheduled_days` JSON, `active_on?(date)` method
+- SubjectOption model for pick1 subjects with position ordering
+- Completion model with optional `subject_option` reference for pick1 tracking
+- Completion circles: solid (active), dashed (off-day), dotted (pick1 - needs Daily Focus)
+- SubjectsController with full CRUD nested under students
+- Progress calculation accounts for scheduled off-days
+
+**Known limitation:** Pick1 subjects show dotted circles in weekly grid but are not clickable - they require the Daily Focus view (Epic 004/005) for option selection.
 
 ## Overview
 
