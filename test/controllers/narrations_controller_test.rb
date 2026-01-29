@@ -180,4 +180,189 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
     get student_narration_path(@student, other_narration)
     assert_redirected_to student_narrations_path(@student)
   end
+
+  test "creates voice narration with audio file" do
+    sign_in_as @user
+
+    assert_difference "Narration.count", 1 do
+      post student_narrations_path(@student), params: {
+        narration: {
+          subject_id: @subject.id,
+          date: "2026-01-28",
+          narration_type: "voice",
+          media: fixture_file_upload("sample_audio.wav", "audio/wav")
+        }
+      }
+    end
+
+    new_narration = Narration.last
+    assert new_narration.voice?
+    assert new_narration.media.attached?
+    assert_redirected_to student_narrations_path(@student)
+  end
+
+  test "creates voice narration with turbo stream" do
+    sign_in_as @user
+
+    assert_difference "Narration.count", 1 do
+      post student_narrations_path(@student), params: {
+        narration: {
+          subject_id: @subject.id,
+          date: "2026-01-28",
+          narration_type: "voice",
+          media: fixture_file_upload("sample_audio.wav", "audio/wav")
+        }
+      }, as: :turbo_stream
+    end
+
+    assert_response :success
+    assert_match "turbo-stream", response.body
+    assert Narration.last.voice?
+  end
+
+  test "rejects voice narration without audio file" do
+    sign_in_as @user
+
+    assert_no_difference "Narration.count" do
+      post student_narrations_path(@student), params: {
+        narration: {
+          subject_id: @subject.id,
+          date: "2026-01-28",
+          narration_type: "voice"
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
+  test "displays voice narration with audio player" do
+    sign_in_as @user
+
+    narration = Narration.create!(
+      student: @student,
+      subject: @subject,
+      date: Date.current,
+      narration_type: "voice",
+      media: fixture_file_upload("sample_audio.wav", "audio/wav")
+    )
+
+    get student_narrations_path(@student)
+    assert_response :success
+    assert_select "audio[controls]"
+  end
+
+  test "form shows type selector buttons" do
+    sign_in_as @user
+    get new_student_narration_path(@student)
+    assert_response :success
+    assert_select "button[data-type='text']"
+    assert_select "button[data-type='voice']"
+    assert_select "button[data-type='photo']"
+  end
+
+  test "edit form shows current recording for voice narration" do
+    sign_in_as @user
+
+    narration = Narration.create!(
+      student: @student,
+      subject: @subject,
+      date: Date.current,
+      narration_type: "voice",
+      media: fixture_file_upload("sample_audio.wav", "audio/wav")
+    )
+
+    get edit_student_narration_path(@student, narration)
+    assert_response :success
+    assert_select "audio[controls]"
+    assert_match "Current recording", response.body
+  end
+
+  test "creates photo narration with image file" do
+    sign_in_as @user
+
+    assert_difference "Narration.count", 1 do
+      post student_narrations_path(@student), params: {
+        narration: {
+          subject_id: @subject.id,
+          date: "2026-01-28",
+          narration_type: "photo",
+          media: fixture_file_upload("sample_image.png", "image/png")
+        }
+      }
+    end
+
+    new_narration = Narration.last
+    assert new_narration.photo?
+    assert new_narration.media.attached?
+    assert_redirected_to student_narrations_path(@student)
+  end
+
+  test "creates photo narration with turbo stream" do
+    sign_in_as @user
+
+    assert_difference "Narration.count", 1 do
+      post student_narrations_path(@student), params: {
+        narration: {
+          subject_id: @subject.id,
+          date: "2026-01-28",
+          narration_type: "photo",
+          media: fixture_file_upload("sample_image.png", "image/png")
+        }
+      }, as: :turbo_stream
+    end
+
+    assert_response :success
+    assert_match "turbo-stream", response.body
+    assert Narration.last.photo?
+  end
+
+  test "rejects photo narration without image file" do
+    sign_in_as @user
+
+    assert_no_difference "Narration.count" do
+      post student_narrations_path(@student), params: {
+        narration: {
+          subject_id: @subject.id,
+          date: "2026-01-28",
+          narration_type: "photo"
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
+  test "displays photo narration with image" do
+    sign_in_as @user
+
+    narration = Narration.create!(
+      student: @student,
+      subject: @subject,
+      date: Date.current,
+      narration_type: "photo",
+      media: fixture_file_upload("sample_image.png", "image/png")
+    )
+
+    get student_narrations_path(@student)
+    assert_response :success
+    assert_select "img[loading='lazy']"
+  end
+
+  test "edit form shows current photo for photo narration" do
+    sign_in_as @user
+
+    narration = Narration.create!(
+      student: @student,
+      subject: @subject,
+      date: Date.current,
+      narration_type: "photo",
+      media: fixture_file_upload("sample_image.png", "image/png")
+    )
+
+    get edit_student_narration_path(@student, narration)
+    assert_response :success
+    assert_select "img"
+    assert_match "Current photo", response.body
+  end
 end

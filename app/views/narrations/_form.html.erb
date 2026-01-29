@@ -1,5 +1,6 @@
 <%# locals: (narration:, student:, subjects:) %>
-<%= form_with model: [student, narration], class: "space-y-6" do |form| %>
+<%= form_with model: [student, narration], class: "space-y-6",
+    data: { controller: "narration-type", narration_type_type_value: narration.narration_type || "text" } do |form| %>
   <% if narration.errors.any? %>
     <div class="bg-red-50 border border-red-200 rounded-lg p-4">
       <h3 class="text-red-800 font-medium">Please fix the following errors:</h3>
@@ -25,13 +26,71 @@
         class: "w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-coral focus:border-coral" %>
   </div>
 
-  <%= form.hidden_field :narration_type, value: "text" %>
-
   <div>
+    <span class="block text-gray-700 font-medium mb-2">Type</span>
+    <div class="flex gap-2">
+      <button type="button"
+          data-narration-type-target="typeButton"
+          data-type="text"
+          data-action="narration-type#select"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors">
+        <span>📝</span> Text
+      </button>
+      <button type="button"
+          data-narration-type-target="typeButton"
+          data-type="voice"
+          data-action="narration-type#select"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors">
+        <span>🎙️</span> Voice
+      </button>
+      <button type="button"
+          data-narration-type-target="typeButton"
+          data-type="photo"
+          data-action="narration-type#select"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors">
+        <span>📷</span> Photo
+      </button>
+    </div>
+    <%= form.hidden_field :narration_type, data: { narration_type_target: "typeField" } %>
+  </div>
+
+  <div data-narration-type-target="textInput">
     <%= form.label :content, "What did you learn?", class: "block text-gray-700 font-medium mb-1" %>
     <%= form.text_area :content, rows: 6,
         placeholder: "Describe what you learned today...",
         class: "w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-coral focus:border-coral" %>
+  </div>
+
+  <div data-narration-type-target="voiceInput" class="hidden">
+    <%= form.label :media, "Record your voice", class: "block text-gray-700 font-medium mb-1" %>
+    <p class="text-gray-500 text-sm mb-2">Tap to record or upload an audio file</p>
+    <%= form.file_field :media,
+        accept: "audio/*",
+        capture: "microphone",
+        class: "w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-coral focus:border-coral file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-coral file:text-white file:cursor-pointer" %>
+    <% if narration.persisted? && narration.voice? && narration.media.attached? %>
+      <div class="mt-3 p-3 bg-gray-50 rounded-lg">
+        <p class="text-sm text-gray-600 mb-2">Current recording:</p>
+        <audio controls class="w-full" src="<%= url_for(narration.media) %>">
+          Your browser does not support audio playback.
+        </audio>
+      </div>
+    <% end %>
+  </div>
+
+  <div data-narration-type-target="photoInput" class="hidden">
+    <%= form.label :media, "Take or upload a photo", class: "block text-gray-700 font-medium mb-1" %>
+    <p class="text-gray-500 text-sm mb-2">Tap to take a photo or choose from gallery</p>
+    <%= form.file_field :media,
+        accept: "image/*",
+        capture: "environment",
+        class: "w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-coral focus:border-coral file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-coral file:text-white file:cursor-pointer" %>
+    <% if narration.persisted? && narration.photo? && narration.media.attached? %>
+      <div class="mt-3">
+        <p class="text-sm text-gray-600 mb-2">Current photo:</p>
+        <%= image_tag narration.media, class: "max-w-xs rounded-lg" %>
+      </div>
+    <% end %>
   </div>
 
   <div class="flex gap-3 pt-4">
