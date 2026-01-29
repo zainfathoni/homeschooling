@@ -1,0 +1,13 @@
+text_narration:
+  student: one
+  subject: one
+  date: <%= Date.new(2026, 1, 26) %>
+  narration_type: text
+  content: "Today I learned about fractions and how to add them together."
+
+another_text:
+  student: one
+  subject: scheduled_coding
+  date: <%= Date.new(2026, 1, 27) %>
+  narration_type: text
+  content: "Built a simple calculator in Python."

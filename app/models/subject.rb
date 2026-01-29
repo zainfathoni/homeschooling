@@ -2,6 +2,7 @@ class Subject < ApplicationRecord
   belongs_to :student
 
   has_many :completions, dependent: :destroy
+  has_many :narrations, dependent: :destroy
   has_many :subject_options, -> { order(:position) }, dependent: :destroy
 
   accepts_nested_attributes_for :subject_options, allow_destroy: true, reject_if: :all_blank

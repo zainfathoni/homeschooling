@@ -10,7 +10,35 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_29_040925) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_29_050738) do
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.string "content_type"
+    t.datetime "created_at", null: false
+    t.string "filename", null: false
+    t.string "key", null: false
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
   create_table "completions", force: :cascade do |t|
     t.boolean "completed", default: false, null: false
     t.datetime "created_at", null: false
@@ -20,6 +48,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_29_040925) do
     t.datetime "updated_at", null: false
     t.index ["subject_id"], name: "index_completions_on_subject_id"
     t.index ["subject_option_id"], name: "index_completions_on_subject_option_id"
+  end
+
+  create_table "narrations", force: :cascade do |t|
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.date "date", null: false
+    t.string "narration_type", null: false
+    t.integer "student_id", null: false
+    t.integer "subject_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["student_id", "date"], name: "index_narrations_on_student_id_and_date"
+    t.index ["student_id"], name: "index_narrations_on_student_id"
+    t.index ["subject_id", "date"], name: "index_narrations_on_subject_id_and_date"
+    t.index ["subject_id"], name: "index_narrations_on_subject_id"
   end
 
   create_table "students", force: :cascade do |t|
@@ -60,8 +102,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_29_040925) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "completions", "subject_options"
   add_foreign_key "completions", "subjects"
+  add_foreign_key "narrations", "students"
+  add_foreign_key "narrations", "subjects"
   add_foreign_key "students", "users"
   add_foreign_key "subject_options", "subjects"
   add_foreign_key "subjects", "students"
