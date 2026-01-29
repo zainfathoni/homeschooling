@@ -12,7 +12,7 @@
 
   <div id="narrations" class="space-y-3">
     <% if @narrations.any? %>
-      <%= render @narrations %>
+      <%= render partial: "narration", collection: @narrations %>
     <% else %>
       <div class="bg-white rounded-xl p-6 text-center text-gray-500">
         No narrations yet. Add your first narration to capture learning evidence.

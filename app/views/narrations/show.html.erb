@@ -5,7 +5,7 @@
   </header>
 
   <div class="max-w-lg">
-    <%= render @narration %>
+    <%= render partial: "narration", locals: { narration: @narration } %>
   </div>
 
   <div class="mt-6">

@@ -52,7 +52,7 @@ class SubjectsController < ApplicationController
 
   def subject_params
     permitted = params.require(:subject).permit(
-      :name, :subject_type, scheduled_days: [],
+      :name, :subject_type, :narration_required, scheduled_days: [],
       subject_options_attributes: [ :id, :name, :position, :_destroy ]
     )
 

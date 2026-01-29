@@ -18,3 +18,9 @@ pick1_islamic:
   name: Islamic Study
   student: one
   subject_type: pick1
+
+narration_required_subject:
+  name: Reading Narration
+  student: one
+  subject_type: fixed
+  narration_required: true

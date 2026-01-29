@@ -13,6 +13,10 @@ class Subject < ApplicationRecord
 
   enum :subject_type, { fixed: "fixed", scheduled: "scheduled", pick1: "pick1" }
 
+  def has_narration_for?(date)
+    narrations.for_date(date).exists?
+  end
+
   def active_on?(date)
     day_of_week = date.wday
     weekday_index = day_of_week == 0 ? nil : day_of_week - 1

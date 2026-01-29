@@ -81,4 +81,27 @@ class SubjectTest < ActiveSupport::TestCase
     assert_equal "fixed", subject.subject_type
     assert subject.fixed?
   end
+
+  test "narration_required defaults to false" do
+    subject = Subject.create!(name: "New Subject", student: students(:one))
+    assert_equal false, subject.narration_required
+  end
+
+  test "has_narration_for? returns true when narration exists for date" do
+    subject = subjects(:one)
+    date = Date.new(2026, 1, 26)
+    assert subject.has_narration_for?(date)
+  end
+
+  test "has_narration_for? returns false when no narration exists for date" do
+    subject = subjects(:one)
+    date = Date.new(2026, 1, 28)
+    assert_not subject.has_narration_for?(date)
+  end
+
+  test "has_narration_for? returns false for subject with no narrations" do
+    subject = subjects(:two)
+    date = Date.new(2026, 1, 26)
+    assert_not subject.has_narration_for?(date)
+  end
 end
