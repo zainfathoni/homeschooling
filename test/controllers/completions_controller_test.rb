@@ -85,4 +85,53 @@ class CompletionsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_response :unprocessable_entity
   end
+
+  test "pick1 subject creates completion with selected option" do
+    sign_in_as @user
+    pick1_subject = subjects(:pick1_islamic)
+    option = subject_options(:safar_book)
+    monday = Date.new(2026, 1, 26)
+    pick1_subject.completions.where(date: monday).destroy_all
+
+    assert_difference "Completion.count", 1 do
+      post toggle_completion_path(subject_id: pick1_subject.id, date: monday, option_id: option.id)
+    end
+    assert_response :redirect
+
+    completion = pick1_subject.completions.find_by(date: monday)
+    assert_equal option.id, completion.subject_option_id
+  end
+
+  test "pick1 subject clicking same option uncompletes" do
+    sign_in_as @user
+    pick1_subject = subjects(:pick1_islamic)
+    option = subject_options(:safar_book)
+    monday = Date.new(2026, 1, 26)
+    pick1_subject.completions.where(date: monday).destroy_all
+    pick1_subject.completions.create!(date: monday, subject_option: option, completed: true)
+
+    assert_difference "Completion.count", -1 do
+      post toggle_completion_path(subject_id: pick1_subject.id, date: monday, option_id: option.id)
+    end
+    assert_response :redirect
+    assert_not pick1_subject.completions.exists?(date: monday)
+  end
+
+  test "pick1 subject clicking different option switches selection" do
+    sign_in_as @user
+    pick1_subject = subjects(:pick1_islamic)
+    option1 = subject_options(:safar_book)
+    option2 = subject_options(:quran_recitation)
+    monday = Date.new(2026, 1, 26)
+    pick1_subject.completions.where(date: monday).destroy_all
+    pick1_subject.completions.create!(date: monday, subject_option: option1, completed: true)
+
+    assert_no_difference "Completion.count" do
+      post toggle_completion_path(subject_id: pick1_subject.id, date: monday, option_id: option2.id)
+    end
+    assert_response :redirect
+
+    completion = pick1_subject.completions.find_by(date: monday)
+    assert_equal option2.id, completion.subject_option_id
+  end
 end

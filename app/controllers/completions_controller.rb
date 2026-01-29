@@ -14,13 +14,10 @@ class CompletionsController < ApplicationController
 
     @completion = @subject.completions.find_or_initialize_by(date: @date)
 
-    if @completion.persisted?
-      @completion.destroy
-      @completed = false
+    if @subject.pick1?
+      handle_pick1_toggle
     else
-      @completion.completed = true
-      @completion.save!
-      @completed = true
+      handle_standard_toggle
     end
 
     calculate_week_totals
@@ -32,6 +29,33 @@ class CompletionsController < ApplicationController
   end
 
   private
+
+  def handle_pick1_toggle
+    option_id = params[:option_id]
+
+    if @completion.persisted? && @completion.subject_option_id == option_id.to_i
+      @completion.destroy
+      @completed = false
+      @selected_option_id = nil
+    else
+      @completion.subject_option_id = option_id
+      @completion.completed = true
+      @completion.save!
+      @completed = true
+      @selected_option_id = option_id.to_i
+    end
+  end
+
+  def handle_standard_toggle
+    if @completion.persisted?
+      @completion.destroy
+      @completed = false
+    else
+      @completion.completed = true
+      @completion.save!
+      @completed = true
+    end
+  end
 
   def calculate_week_totals
     student = @subject.student
