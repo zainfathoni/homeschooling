@@ -20,6 +20,20 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
     assert_match @narration.content, response.body
   end
 
+  test "narration card Edit link breaks out of turbo frame" do
+    sign_in_as @user
+    get student_narrations_path(@student)
+    assert_response :success
+    assert_select "a[href='#{edit_student_narration_path(@student, @narration)}'][data-turbo-frame='_top']", text: "Edit"
+  end
+
+  test "narration card Delete link uses turbo method delete" do
+    sign_in_as @user
+    get student_narrations_path(@student)
+    assert_response :success
+    assert_select "a[href='#{student_narration_path(@student, @narration)}'][data-turbo-method='delete']", text: "Delete"
+  end
+
   test "filters narrations by date" do
     sign_in_as @user
     get student_narrations_path(@student, date: "2026-01-26")
