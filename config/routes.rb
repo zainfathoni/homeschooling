@@ -17,6 +17,8 @@ Rails.application.routes.draw do
   get "today", to: "daily#show"
   get "daily/:date", to: "daily#show", as: :daily
   get "week", to: "today#index", as: :week
+  get "notes", to: "notes#index", as: :notes
+  get "settings", to: "settings#index", as: :settings
   get "report", to: "reports#index"
   post "completions/toggle", to: "completions#toggle", as: :toggle_completion
 

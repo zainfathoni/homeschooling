@@ -23,10 +23,11 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-lavender min-h-screen">
+  <body class="bg-lavender min-h-screen pb-20 md:pb-0">
     <main class="container mx-auto px-5 py-8">
       <%= yield %>
     </main>
     <div id="modals"></div>
+    <%= render "shared/bottom_nav" if authenticated? && current_student %>
   </body>
 </html>
