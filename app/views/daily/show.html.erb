@@ -1,7 +1,7 @@
 <%= turbo_frame_tag "daily_focus" do %>
   <div class="min-h-screen bg-lavender p-4 pb-20 md:pb-4 md:min-h-0 md:p-0">
     <div class="max-w-md mx-auto md:max-w-none">
-      <%= render "daily/focus", student: @student, date: @date, subjects: @subjects, completions: @completions %>
+      <%= render "daily/focus", student: @student, date: @date, subjects: @subjects, completions: @completions, pick1_selections: @pick1_selections %>
     </div>
   </div>
 <% end %>

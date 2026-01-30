@@ -34,7 +34,11 @@ class TodayController < ApplicationController
     # For Duet view: load daily focus data for current day (only active subjects)
     if @student
       @daily_subjects = @subjects.select { |s| s.active_on?(@date) }
-      @daily_completions = Completion.where(subject: @daily_subjects, date: @date).pluck(:subject_id).to_set
+      daily_completions_records = Completion.where(subject: @daily_subjects, date: @date)
+      @daily_completions = daily_completions_records.pluck(:subject_id).to_set
+      @pick1_selections = daily_completions_records.where.not(subject_option_id: nil)
+                                                   .pluck(:subject_id, :subject_option_id)
+                                                   .to_h
     end
   end
 end

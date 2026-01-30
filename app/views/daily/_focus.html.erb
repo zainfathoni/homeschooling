@@ -1,4 +1,4 @@
-<%# locals: (student:, date:, subjects:, completions:) %>
+<%# locals: (student:, date:, subjects:, completions:, pick1_selections:) %>
 <% completed_count = completions.size %>
 <% total_count = subjects.size %>
 
@@ -10,11 +10,19 @@
 
   <div class="space-y-3">
     <% subjects.each do |subject| %>
-      <%= render "daily/task_card",
-          subject: subject,
-          date: date,
-          completed: completions.include?(subject.id),
-          has_narration: subject.has_narration_for?(date) %>
+      <% if subject.pick1? %>
+        <%= render "daily/pick1_selector",
+            subject: subject,
+            date: date,
+            selected_option_id: pick1_selections[subject.id],
+            has_narration: subject.has_narration_for?(date) %>
+      <% else %>
+        <%= render "daily/task_card",
+            subject: subject,
+            date: date,
+            completed: completions.include?(subject.id),
+            has_narration: subject.has_narration_for?(date) %>
+      <% end %>
     <% end %>
   </div>
 </div>

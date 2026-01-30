@@ -20,13 +20,21 @@
              total: @total_possible %>
 <% end %>
 
-<%# Update the task card (Daily Focus view) %>
+<%# Update the task card or pick1 selector (Daily Focus view) %>
 <%= turbo_stream.replace dom_id(@subject, "task_#{@date}") do %>
-  <%= render "daily/task_card",
-             subject: @subject,
-             date: @date,
-             completed: @completed,
-             has_narration: @has_narration %>
+  <% if @subject.pick1? %>
+    <%= render "daily/pick1_selector",
+               subject: @subject,
+               date: @date,
+               selected_option_id: @selected_option_id,
+               has_narration: @has_narration %>
+  <% else %>
+    <%= render "daily/task_card",
+               subject: @subject,
+               date: @date,
+               completed: @completed,
+               has_narration: @has_narration %>
+  <% end %>
 <% end %>
 
 <%# Update the progress ring (Daily Focus view) %>
