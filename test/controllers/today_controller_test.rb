@@ -8,14 +8,14 @@ class TodayControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "redirects when not logged in" do
-    get today_path
+    get week_path
     assert_redirected_to login_path
   end
 
-  test "shows today view when logged in" do
+  test "shows week view when logged in" do
     sign_in_as @user
     post select_student_path(@student)
-    get today_path
+    get week_path
     assert_response :success
     assert_match @student.name, response.body
     assert_match @subject.name, response.body
@@ -26,7 +26,7 @@ class TodayControllerTest < ActionDispatch::IntegrationTest
     post select_student_path(@student)
 
     travel_to Date.new(2026, 1, 28) do # Wednesday
-      get today_path
+      get week_path
       assert_response :success
       # Controller sets week data - view integration tested in Task 8
     end
@@ -38,7 +38,7 @@ class TodayControllerTest < ActionDispatch::IntegrationTest
 
     travel_to Date.new(2026, 1, 28) do
       Completion.delete_all
-      get today_path
+      get week_path
       assert_response :success
     end
   end
@@ -52,7 +52,7 @@ class TodayControllerTest < ActionDispatch::IntegrationTest
       Completion.create!(subject: @subject, date: Date.new(2026, 1, 26))
       Completion.create!(subject: @subject, date: Date.new(2026, 1, 27))
 
-      get today_path
+      get week_path
       assert_response :success
     end
   end
@@ -66,14 +66,14 @@ class TodayControllerTest < ActionDispatch::IntegrationTest
       Completion.create!(subject: @subject, date: Date.new(2026, 1, 28)) # This week
       Completion.create!(subject: @subject, date: Date.new(2026, 1, 19)) # Last week
 
-      get today_path
+      get week_path
       assert_response :success
     end
   end
 
   test "handles no student selected" do
     sign_in_as @user
-    get today_path
+    get week_path
     assert_response :success
   end
 
@@ -82,7 +82,7 @@ class TodayControllerTest < ActionDispatch::IntegrationTest
     post select_student_path(@student)
 
     travel_to Date.new(2026, 1, 28) do
-      get today_path
+      get week_path
       assert_response :success
       assert_select "turbo-frame#progress_bar"
     end
@@ -96,7 +96,7 @@ class TodayControllerTest < ActionDispatch::IntegrationTest
 
     # Test on a day without narration (2026-01-27)
     travel_to Date.new(2026, 1, 27) do
-      get today_path
+      get week_path
       assert_response :success
       assert_select "a[href*='narrations/new'][href*='subject_id=#{narration_subject.id}'][href*='date=2026-01-27']", text: /narration/
     end
@@ -107,7 +107,7 @@ class TodayControllerTest < ActionDispatch::IntegrationTest
     post select_student_path(@student)
 
     travel_to Date.new(2026, 1, 28) do
-      get today_path
+      get week_path
       assert_response :success
       # Math subject should not have narration link (narration_required is false)
       assert_no_match /Math.*\+ narration/, response.body
@@ -119,7 +119,7 @@ class TodayControllerTest < ActionDispatch::IntegrationTest
     post select_student_path(@student)
 
     travel_to Date.new(2026, 1, 28) do
-      get today_path
+      get week_path
       assert_response :success
 
       # Narration exists for narration_required_subject on 2026-01-28
@@ -134,7 +134,7 @@ class TodayControllerTest < ActionDispatch::IntegrationTest
     post select_student_path(@student)
 
     travel_to Date.new(2026, 1, 28) do
-      get today_path
+      get week_path
       assert_response :success
 
       narration_subject = subjects(:narration_required_subject)
@@ -151,7 +151,7 @@ class TodayControllerTest < ActionDispatch::IntegrationTest
       # Delete the fixture narration for Math to test clean state
       Narration.where(subject: subjects(:one)).delete_all
 
-      get today_path
+      get week_path
       assert_response :success
 
       # Math subject now has no narration

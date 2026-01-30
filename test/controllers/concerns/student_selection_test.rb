@@ -8,7 +8,7 @@ class StudentSelectionTest < ActionDispatch::IntegrationTest
 
   test "current_student defaults to first student when not set in session" do
     sign_in_as @user
-    get today_path
+    get week_path
     assert_response :success
     assert_match @student_one.name, response.body
   end
@@ -16,13 +16,13 @@ class StudentSelectionTest < ActionDispatch::IntegrationTest
   test "current_student returns nil when user has no students" do
     @user.students.destroy_all
     sign_in_as @user
-    get today_path
+    get week_path
     assert_response :success
   end
 
   test "current_student is available as a helper method" do
     sign_in_as @user
-    get today_path
+    get week_path
     assert_response :success
   end
 end

@@ -13,7 +13,7 @@ class SubjectTypesTest < ActionDispatch::IntegrationTest
     assert fixed_subject.fixed?
 
     travel_to Date.new(2026, 1, 28) do # Wednesday
-      get today_path
+      get week_path
       assert_response :success
 
       # Fixed subjects should have clickable circles all 5 days
@@ -119,7 +119,7 @@ class SubjectTypesTest < ActionDispatch::IntegrationTest
 
   test "progress calculation accounts for scheduled off-days" do
     travel_to Date.new(2026, 1, 28) do
-      get today_path
+      get week_path
       assert_response :success
 
       # Progress bar should be rendered
@@ -131,7 +131,7 @@ class SubjectTypesTest < ActionDispatch::IntegrationTest
 
   test "weekly grid shows all subject types correctly" do
     travel_to Date.new(2026, 1, 28) do
-      get today_path
+      get week_path
       assert_response :success
 
       # Should show fixed subjects

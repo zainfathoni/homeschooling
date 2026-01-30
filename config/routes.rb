@@ -14,7 +14,9 @@ Rails.application.routes.draw do
     resources :narrations
   end
 
-  get "today", to: "today#index"
+  get "today", to: "daily#show"
+  get "daily/:date", to: "daily#show", as: :daily
+  get "week", to: "today#index", as: :week
   get "report", to: "reports#index"
   post "completions/toggle", to: "completions#toggle", as: :toggle_completion
 
