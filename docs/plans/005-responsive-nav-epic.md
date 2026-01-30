@@ -2,6 +2,7 @@
 
 **Status:** Ready for Implementation
 **Created:** 2026-01-28
+**Refined at:** 2026-01-30
 **Depends on:** [002-weekly-grid-epic](002-weekly-grid-epic.md) ✅
 
 ## Overview
@@ -10,10 +11,10 @@ Implement responsive navigation with mobile bottom nav, Daily Focus view, and ta
 
 ## Responsive Breakpoints
 
-| Breakpoint | Layout |
-|------------|--------|
-| < 768px | Mobile: single column, bottom nav |
-| ≥ 768px | Tablet: Duet split view (60/40), no bottom nav |
+| Breakpoint | Layout                                         |
+| ---------- | ---------------------------------------------- |
+| < 768px    | Mobile: single column, bottom nav              |
+| ≥ 768px    | Tablet: Duet split view (60/40), no bottom nav |
 
 ## UI References
 
@@ -72,7 +73,7 @@ Implement responsive navigation with mobile bottom nav, Daily Focus view, and ta
 ### Task Card: `app/views/daily/_task_card.html.erb`
 
 ```erb
-<%# locals: (subject:, date:, completed:) %>
+<%# locals: (subject:, date:, completed:, has_narration:) %>
 <%= turbo_frame_tag dom_id(subject, "task_#{date}") do %>
   <%= button_to toggle_completion_path(subject_id: subject.id, date: date),
       method: :post,
@@ -154,10 +155,12 @@ Implement responsive navigation with mobile bottom nav, Daily Focus view, and ta
 ## Routing Changes
 
 ```ruby
-# config/routes.rb additions
-get "week", to: "today#index", as: :week  # Weekly grid (current)
-get "daily", to: "daily#show", as: :daily  # Daily focus (new)
-get "daily/:date", to: "daily#show"        # Daily focus with date
+# config/routes.rb changes
+get "today", to: "daily#show", as: :today       # Daily Focus (current day)
+get "daily/:date", to: "daily#show", as: :daily # Daily Focus (specific date)
+get "week", to: "today#index", as: :week        # Weekly Grid (rename from /today)
+get "notes", to: redirect { |_, req| "/students/#{req.session[:student_id]}/narrations" }
+get "settings", to: "settings#index", as: :settings
 ```
 
 ---
@@ -169,13 +172,17 @@ get "daily/:date", to: "daily#show"        # Daily focus with date
 Create the Daily Focus view infrastructure.
 
 **Files:**
+
 - `app/controllers/daily_controller.rb`
 - `app/views/daily/show.html.erb`
 - `app/views/daily/_focus.html.erb`
 
 **Acceptance Criteria:**
-- GET `/daily` shows current day's tasks
+
+- GET `/today` shows current day's tasks
 - GET `/daily/2026-01-28` shows specific day's tasks
+- Redirects to student selection if no student
+- Uses StudentSelection concern
 - Displays date header and task list
 - Works with existing subject/completion models
 
@@ -184,9 +191,11 @@ Create the Daily Focus view infrastructure.
 Create circular progress indicator for Daily Focus.
 
 **Files:**
+
 - `app/views/daily/_progress_ring.html.erb`
 
 **Acceptance Criteria:**
+
 - SVG-based circular progress
 - Shows X/Y tasks completed
 - Wrapped in turbo_frame for updates
@@ -197,23 +206,29 @@ Create circular progress indicator for Daily Focus.
 Create detailed task card with checkbox for Daily Focus.
 
 **Files:**
+
 - `app/views/daily/_task_card.html.erb`
 
 **Acceptance Criteria:**
+
 - 44px touch target checkbox
 - Left border accent (coral when complete)
 - Subject name with strikethrough when complete
 - Button posts to toggle_completion_path
 - Wrapped in turbo_frame for instant updates
+- Narration indicator: "✓ narrated" (green) or "+ add narration" (coral link)
+- Match pattern from \_weekly_grid.html.erb:23-37
 
 ### Task 4: Update Turbo Streams for Daily Focus
 
 Extend completion toggle to update Daily Focus components.
 
 **Files:**
+
 - `app/views/completions/toggle.turbo_stream.erb` (update)
 
 **Acceptance Criteria:**
+
 - Updates task card in Daily Focus
 - Updates progress ring
 - Continues to update weekly grid circle
@@ -224,11 +239,13 @@ Extend completion toggle to update Daily Focus components.
 Create fixed bottom navigation for mobile.
 
 **Files:**
+
 - `app/views/shared/_bottom_nav.html.erb`
 - `app/helpers/navigation_helper.rb`
 - `app/views/layouts/application.html.erb` (update)
 
 **Acceptance Criteria:**
+
 - Fixed to bottom on mobile (< 768px)
 - Hidden on tablet (≥ 768px)
 - Four items: Today, Week, Notes, Settings
@@ -240,11 +257,13 @@ Create fixed bottom navigation for mobile.
 Create layout that switches between mobile and Duet views.
 
 **Files:**
+
 - `app/views/layouts/_duet.html.erb`
 - `app/views/layouts/application.html.erb` (update)
 - `app/assets/stylesheets/application.css` (update if needed)
 
 **Acceptance Criteria:**
+
 - Mobile: single column with bottom nav
 - Tablet: 60/40 split grid
 - Smooth responsive transition
@@ -255,9 +274,11 @@ Create layout that switches between mobile and Duet views.
 Make day headers in weekly grid navigate to Daily Focus.
 
 **Files:**
+
 - `app/views/today/_weekly_grid.html.erb` (update)
 
 **Acceptance Criteria:**
+
 - Day labels are 44px touch targets
 - Clicking navigates to that day's Daily Focus
 - On tablet: updates right panel via Turbo Frame
@@ -269,41 +290,61 @@ Make day headers in weekly grid navigate to Daily Focus.
 Wire everything together and add comprehensive tests.
 
 **Files:**
+
 - `app/views/today/index.html.erb` (update)
 - `test/system/responsive_navigation_test.rb`
 - `test/controllers/daily_controller_test.rb`
 
 **Acceptance Criteria:**
+
 - Mobile flow: bottom nav switches views
 - Tablet flow: Duet view with synced panels
 - Day click updates Daily Focus
 - Completion toggle updates all visible components
 - Tests cover both breakpoints
 
+### Task 9: Settings Stub Page
+
+Create placeholder Settings page for bottom navigation.
+
+**Files:**
+
+- `app/controllers/settings_controller.rb`
+- `app/views/settings/index.html.erb`
+
+**Acceptance Criteria:**
+
+- GET `/settings` renders placeholder page
+- Shows "Settings coming soon" message
+- Matches app styling (lavender background, white card)
+
 ---
 
 ## Issue Hierarchy
 
-```
-hs-responsive-nav (EPIC)
-├── hs-responsive-nav.1: Daily Focus controller & view
-├── hs-responsive-nav.2: Progress ring component
-├── hs-responsive-nav.3: Task card component
-├── hs-responsive-nav.4: Turbo Stream updates for Daily Focus
-├── hs-responsive-nav.5: Mobile bottom navigation
-├── hs-responsive-nav.6: Responsive layout wrapper
-├── hs-responsive-nav.7: Clickable day navigation
-└── hs-responsive-nav.8: Integration & system tests
+```txt
+hs-nav (EPIC)
+├── hs-nav.1: Daily Focus controller & routes
+├── hs-nav.2: Progress ring component
+├── hs-nav.3: Task card with narration indicator
+├── hs-nav.4: Turbo Stream updates for Daily Focus
+├── hs-nav.5: Mobile bottom navigation
+├── hs-nav.6: Responsive Duet layout wrapper
+├── hs-nav.7: Clickable day navigation
+├── hs-nav.8: Integration & system tests
+└── hs-nav.9: Settings stub page
 ```
 
 ## Dependencies
 
-```
-hs-responsive-nav.1 ─┬─► hs-responsive-nav.2
-                     ├─► hs-responsive-nav.3 ─► hs-responsive-nav.4
-                     └─► hs-responsive-nav.7
+```txt
+hs-nav.1 ─┬─► hs-nav.2 ─┬─► hs-nav.4 ─► hs-nav.8
+          ├─► hs-nav.3 ─┘
+          └─► hs-nav.7 ────────────────► hs-nav.8
 
-hs-responsive-nav.5 ─► hs-responsive-nav.6 ─► hs-responsive-nav.8
+hs-nav.5 ─► hs-nav.6 ─► hs-nav.8
+                   ▲
+hs-nav.9 ─────────┘
 ```
 
 ## Open Questions (Resolved)
@@ -313,5 +354,3 @@ hs-responsive-nav.5 ─► hs-responsive-nav.6 ─► hs-responsive-nav.8
 - **PWA considerations?** → Out of scope for this epic
 
 ---
-
-*Plan refined: 2026-01-28*
