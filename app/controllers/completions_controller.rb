@@ -78,6 +78,14 @@ class CompletionsController < ApplicationController
     @total_completed = week_completions
     @is_today = @date == Date.current
     @has_narration = @subject.has_narration_for?(@date)
+
+    calculate_daily_totals(student, subjects)
+  end
+
+  def calculate_daily_totals(student, subjects)
+    @daily_subjects = subjects.select { |s| s.active_on?(@date) }
+    @daily_completed = Completion.where(subject: @daily_subjects, date: @date).count
+    @daily_total = @daily_subjects.size
   end
 
   def authorize_subject!
