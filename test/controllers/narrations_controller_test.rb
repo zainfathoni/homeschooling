@@ -62,6 +62,15 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='narration[date]'][value='2026-01-28']"
   end
 
+  test "shows selected option name when option_id provided" do
+    sign_in_as @user
+    option = subject_options(:safar_book)
+    get new_student_narration_path(@student, subject_id: option.subject.id, date: "2026-01-28", option_id: option.id)
+    assert_response :success
+    assert_match "Recording for:", response.body
+    assert_match option.name, response.body
+  end
+
   test "creates text narration" do
     sign_in_as @user
 

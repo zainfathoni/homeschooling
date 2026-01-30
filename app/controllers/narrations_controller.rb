@@ -24,6 +24,7 @@ class NarrationsController < ApplicationController
       narration_type: "text"
     )
     @subjects = @student.subjects
+    @selected_option = SubjectOption.find_by(id: params[:option_id]) if params[:option_id].present?
   end
 
   def edit

@@ -40,7 +40,7 @@
             <span>✓</span> narrated
           <% end %>
         <% else %>
-          <%= link_to new_student_narration_path(subject.student, subject_id: subject.id, date: date),
+          <%= link_to new_student_narration_path(subject.student, subject_id: subject.id, date: date, option_id: selected_option_id),
               class: "text-xs text-coral hover:text-coral/80 inline-flex items-center gap-1",
               data: { turbo_frame: "_top" } do %>
             <span>+</span> add narration

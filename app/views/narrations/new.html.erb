@@ -4,6 +4,13 @@
     <p class="text-gray-600">for <%= @student.name %></p>
   </header>
 
+  <% if @selected_option %>
+    <div class="bg-coral/10 border border-coral/30 rounded-xl p-4 mb-4">
+      <p class="text-sm text-gray-600">Recording for:</p>
+      <p class="font-medium text-gray-800"><%= @selected_option.name %></p>
+    </div>
+  <% end %>
+
   <div class="bg-white rounded-xl p-6 shadow-sm">
     <%= render "form", narration: @narration, student: @student, subjects: @subjects %>
   </div>
