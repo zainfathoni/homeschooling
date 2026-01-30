@@ -1,8 +1,9 @@
 # Plan 005: Responsive Navigation Epic
 
-**Status:** Ready for Implementation
+**Status:** Core Complete (enhancements pending)
 **Created:** 2026-01-28
 **Refined at:** 2026-01-30
+**Updated:** 2026-01-31
 **Depends on:** [002-weekly-grid-epic](002-weekly-grid-epic.md) ✅
 
 ## Overview
@@ -324,15 +325,37 @@ Create placeholder Settings page for bottom navigation.
 
 ```txt
 hs-nav (EPIC)
-├── hs-nav.1: Daily Focus controller & routes
-├── hs-nav.2: Progress ring component
-├── hs-nav.3: Task card with narration indicator
-├── hs-nav.4: Turbo Stream updates for Daily Focus
-├── hs-nav.5: Mobile bottom navigation
-├── hs-nav.6: Responsive Duet layout wrapper
-├── hs-nav.7: Clickable day navigation
-├── hs-nav.8: Integration & system tests
-└── hs-nav.9: Settings stub page
+├── hs-nav.1: Daily Focus controller & routes ✅
+├── hs-nav.2: Progress ring component ✅
+├── hs-nav.3: Task card with narration indicator ✅
+├── hs-nav.4: Turbo Stream updates for Daily Focus ✅
+├── hs-nav.5: Mobile bottom navigation ✅
+├── hs-nav.6: Responsive Duet layout wrapper ✅
+├── hs-nav.7: Clickable day navigation ✅
+├── hs-nav.8: Integration & system tests ✅
+└── hs-nav.9: Settings stub page ✅
+```
+
+### Additional Issues (discovered during implementation)
+
+```txt
+hs-nav.10: [BUG] Weekly grid checkbox doesn't update Daily Focus panel ✅
+           Fixed duplicate IDs in duet layout; refactored to single render with CSS
+
+hs-nav.11: [BUG] Pick1 selector component for Daily Focus ✅
+           Created _pick1_selector.html.erb with radio options for pick1 subjects
+
+hs-nav.12: [FEATURE] Weekly grid shows pick1 current selection (P3)
+           Display which option was selected in the weekly grid circles
+
+hs-nav.13: [FEATURE] Quick notes input with voice option (P3)
+           Add quick note capture UI with voice recording support
+
+hs-nav.14: [FEATURE] 'Not today' label for scheduled subjects (P4)
+           Show inactive scheduled subjects with visual indicator
+
+hs-nav.15: [TASK] Narration form shows selected Pick1 option (P2)
+           Pass option_id to narration link; display in form
 ```
 
 ## Dependencies
