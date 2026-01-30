@@ -31,10 +31,10 @@ class TodayController < ApplicationController
     @total_possible = calculate_week_possible(@subjects, @dates)
     @total_completed = @week_completions.values.sum(&:size)
 
-    # For Duet view: load daily focus data for current day
+    # For Duet view: load daily focus data for current day (only active subjects)
     if @student
-      @daily_subjects = @subjects
-      @daily_completions = Completion.where(subject: @subjects, date: @date).pluck(:subject_id).to_set
+      @daily_subjects = @subjects.select { |s| s.active_on?(@date) }
+      @daily_completions = Completion.where(subject: @daily_subjects, date: @date).pluck(:subject_id).to_set
     end
   end
 end

@@ -8,7 +8,8 @@ class DailyController < ApplicationController
       return
     end
 
-    @subjects = @student.subjects.order(:name)
+    all_subjects = @student.subjects.order(:name)
+    @subjects = all_subjects.select { |s| s.active_on?(@date) }
     @completions = Completion.where(subject: @subjects, date: @date).pluck(:subject_id).to_set
   end
 

@@ -82,15 +82,18 @@ class DailyControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "displays all subjects for the student" do
+  test "displays only active subjects for the day" do
     sign_in_as @user
     post select_student_path(@student)
 
     get today_path
     assert_response :success
 
+    date = Date.current
     @student.subjects.each do |subject|
-      assert_match subject.name, response.body
+      if subject.active_on?(date)
+        assert_match subject.name, response.body, "Expected active subject #{subject.name} to be shown"
+      end
     end
   end
 end
