@@ -1,25 +1,43 @@
-<div class="min-h-screen bg-lavender p-4">
-  <header class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-800">Weekly Progress</h1>
-    <p class="text-gray-600"><%= week_label(@week_start, @week_end) %></p>
-  </header>
+<% weekly_grid_content = capture do %>
+  <div class="min-h-screen bg-lavender p-4 md:min-h-0 md:p-0">
+    <header class="mb-6">
+      <h1 class="text-2xl font-bold text-gray-800">Weekly Progress</h1>
+      <p class="text-gray-600"><%= week_label(@week_start, @week_end) %></p>
+    </header>
 
-  <%= render "shared/student_selector" %>
+    <%= render "shared/student_selector" %>
 
-  <% if @student %>
-    <%= render "today/progress_bar", completed: @total_completed, total: @total_possible %>
-  <% end %>
+    <% if @student %>
+      <%= render "today/progress_bar", completed: @total_completed, total: @total_possible %>
+    <% end %>
 
-  <% if @subjects.any? %>
-    <%= render "today/weekly_grid",
-               subjects: @subjects,
-               dates: @dates,
-               week_completions: @week_completions,
-               week_narrations: @week_narrations,
-               current_date: @date %>
+    <% if @subjects.any? %>
+      <%= render "today/weekly_grid",
+                 subjects: @subjects,
+                 dates: @dates,
+                 week_completions: @week_completions,
+                 week_narrations: @week_narrations,
+                 current_date: @date %>
+    <% else %>
+      <div class="bg-white rounded-xl p-6 text-center text-gray-500">
+        No subjects yet. Add a student and subjects to get started.
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<% daily_focus_content = capture do %>
+  <% if @student && @daily_subjects.present? %>
+    <%= render "daily/focus",
+               student: @student,
+               date: @date,
+               subjects: @daily_subjects,
+               completions: @daily_completions %>
   <% else %>
     <div class="bg-white rounded-xl p-6 text-center text-gray-500">
-      No subjects yet. Add a student and subjects to get started.
+      Select a student to view daily tasks.
     </div>
   <% end %>
-</div>
+<% end %>
+
+<%= render "layouts/duet", weekly_grid: weekly_grid_content, daily_focus: daily_focus_content %>
