@@ -5,6 +5,7 @@
 <div class="bg-white rounded-xl p-4 shadow-sm">
   <header class="text-center mb-4">
     <p class="text-gray-600"><%= date.strftime("%A, %b %d") %></p>
+    <%= render "daily/progress_ring", completed: completed_count, total: total_count %>
   </header>
 
   <div class="space-y-3">
