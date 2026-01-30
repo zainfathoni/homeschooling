@@ -1,17 +1,15 @@
 <%# locals: (weekly_grid:, daily_focus:) %>
 <%# Responsive layout: mobile single column, tablet 60/40 split %>
+<%# Weekly grid rendered once to avoid duplicate IDs for turbo_stream updates %>
 
-<%# Mobile: Show weekly grid only (Daily Focus accessed via bottom nav) %>
-<div class="md:hidden">
-  <%= weekly_grid %>
-</div>
-
-<%# Tablet+: Duet split view (60/40) %>
-<div class="hidden md:grid md:grid-cols-5 gap-4 h-[calc(100vh-4rem)]">
-  <div class="col-span-3 overflow-auto">
+<div class="md:grid md:grid-cols-5 md:gap-4 md:h-[calc(100vh-4rem)]">
+  <%# Weekly grid: full width on mobile, 60% on tablet+ %>
+  <div class="md:col-span-3 md:overflow-auto">
     <%= weekly_grid %>
   </div>
-  <div class="col-span-2 overflow-auto">
+
+  <%# Daily Focus: hidden on mobile (accessed via bottom nav), 40% on tablet+ %>
+  <div class="hidden md:block md:col-span-2 md:overflow-auto">
     <%= turbo_frame_tag "daily_focus" do %>
       <%= daily_focus %>
     <% end %>

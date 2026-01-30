@@ -79,18 +79,20 @@ class ResponsiveNavigationTest < ActionDispatch::IntegrationTest
   test "week view includes duet layout structure" do
     get week_path
     assert_response :success
-    # Mobile: single column (md:hidden shows weekly grid)
-    assert_select "div.md\\:hidden"
-    # Tablet: split view (hidden md:grid md:grid-cols-5)
-    assert_select "div.hidden.md\\:grid.md\\:grid-cols-5"
+    # Single responsive grid layout (mobile: stacked, tablet: side-by-side)
+    assert_select "div.md\\:grid.md\\:grid-cols-5"
+    # Weekly grid column (full width mobile, 60% tablet)
+    assert_select "div.md\\:col-span-3"
+    # Daily focus column (hidden mobile, 40% tablet)
+    assert_select "div.hidden.md\\:block.md\\:col-span-2"
   end
 
   test "week view shows daily focus in tablet split panel" do
     travel_to Date.new(2026, 1, 28) do
       get week_path
       assert_response :success
-      # The turbo frame should be in the right panel
-      assert_select "div.col-span-2 turbo-frame#daily_focus"
+      # The turbo frame should be in the right panel (hidden on mobile, visible on tablet)
+      assert_select "div.md\\:col-span-2 turbo-frame#daily_focus"
     end
   end
 
