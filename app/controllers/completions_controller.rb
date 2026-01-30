@@ -37,12 +37,14 @@ class CompletionsController < ApplicationController
       @completion.destroy
       @completed = false
       @selected_option_id = nil
+      @pick1_option_name = nil
     else
       @completion.subject_option_id = option_id
       @completion.completed = true
       @completion.save!
       @completed = true
       @selected_option_id = option_id.to_i
+      @pick1_option_name = @completion.subject_option&.name
     end
   end
 

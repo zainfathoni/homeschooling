@@ -1,4 +1,4 @@
-<%# locals: (subjects:, dates:, week_completions:, week_narrations:, current_date:) %>
+<%# locals: (subjects:, dates:, week_completions:, week_pick1_options:, week_narrations:, current_date:) %>
 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
   <%# Header row with clickable day labels %>
   <div class="flex items-center px-4 py-2 border-b border-gray-200 bg-gray-50">
@@ -44,12 +44,14 @@
         <% dates.each do |date| %>
           <% completed = week_completions.dig(subject.id)&.include?(date) || false %>
           <% has_narration = week_narrations.dig(subject.id)&.include?(date) || false %>
+          <% pick1_option_name = week_pick1_options[[subject.id, date]] %>
           <% is_today = date == current_date %>
           <%= render "today/completion_circle",
                      subject: subject,
                      date: date,
                      completed: completed,
                      has_narration: has_narration,
+                     pick1_option_name: pick1_option_name,
                      is_today: is_today %>
         <% end %>
       </div>

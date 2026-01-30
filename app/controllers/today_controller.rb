@@ -10,13 +10,18 @@ class TodayController < ApplicationController
     @dates = week_dates(@date)
 
     if @student
-      @subjects = @student.subjects.includes(:completions)
-      @week_completions = Completion.joins(:subject)
-                                    .where(subjects: { student_id: @student.id })
-                                    .where(date: @week_start..@week_end)
-                                    .pluck(:subject_id, :date)
-                                    .group_by(&:first)
-                                    .transform_values { |v| v.map(&:last).to_set }
+      @subjects = @student.subjects.includes(:completions, :subject_options)
+      week_completion_records = Completion.joins(:subject)
+                                          .left_joins(:subject_option)
+                                          .where(subjects: { student_id: @student.id })
+                                          .where(date: @week_start..@week_end)
+                                          .pluck(:subject_id, :date, "subject_options.name")
+      @week_completions = week_completion_records
+                            .group_by(&:first)
+                            .transform_values { |v| v.map(&:second).to_set }
+      @week_pick1_options = week_completion_records
+                              .select { |_, _, option_name| option_name.present? }
+                              .each_with_object({}) { |(subject_id, date, option_name), hash| hash[[ subject_id, date ]] = option_name }
       @week_narrations = Narration.where(student_id: @student.id)
                                   .where(date: @week_start..@week_end)
                                   .pluck(:subject_id, :date)
@@ -25,6 +30,7 @@ class TodayController < ApplicationController
     else
       @subjects = []
       @week_completions = {}
+      @week_pick1_options = {}
       @week_narrations = {}
     end
 
