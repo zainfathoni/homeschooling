@@ -42,3 +42,4 @@ Thumbs.db
 # bv (beads viewer) local config and caches
 .bv/
 .beads/.bv.lock
+mcp.json
