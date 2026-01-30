@@ -27,17 +27,20 @@
 <% end %>
 
 <% daily_focus_content = capture do %>
-  <% if @student && @daily_subjects.present? %>
-    <%= render "daily/focus",
-               student: @student,
-               date: @date,
-               subjects: @daily_subjects,
-               completions: @daily_completions %>
-  <% else %>
-    <div class="bg-white rounded-xl p-6 text-center text-gray-500">
-      Select a student to view daily tasks.
-    </div>
-  <% end %>
+  <%# Add top margin on tablet to align with Weekly Completion bar %>
+  <div class="md:mt-[8.9rem]">
+    <% if @student && @daily_subjects.present? %>
+      <%= render "daily/focus",
+                 student: @student,
+                 date: @date,
+                 subjects: @daily_subjects,
+                 completions: @daily_completions %>
+    <% else %>
+      <div class="bg-white rounded-xl p-6 text-center text-gray-500">
+        Select a student to view daily tasks.
+      </div>
+    <% end %>
+  </div>
 <% end %>
 
 <%= render "layouts/duet", weekly_grid: weekly_grid_content, daily_focus: daily_focus_content %>
