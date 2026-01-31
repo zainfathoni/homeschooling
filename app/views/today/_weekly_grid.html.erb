@@ -1,15 +1,22 @@
 <%# locals: (subjects:, dates:, week_completions:, week_pick1_options:, week_narrations:, current_date:) %>
 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
   <%# Header row with clickable day labels %>
-  <div class="flex items-center px-4 py-2 border-b border-gray-200 bg-gray-50">
+  <div class="flex items-center px-4 py-2 border-b border-gray-200 bg-gray-50"
+       data-controller="day-selector"
+       data-day-selector-selected-class="bg-coral text-white"
+       data-day-selector-unselected-class="hover:bg-gray-100 text-gray-500">
     <div class="flex-1 min-w-0"></div>
     <div class="grid grid-cols-5 gap-1" style="width: 235px;">
       <% dates.each do |date| %>
-        <% is_today = date == current_date %>
+        <% is_selected = date == current_date %>
         <%= link_to daily_path(date: date),
             class: "w-11 h-11 flex items-center justify-center rounded-lg text-xs font-medium
-                   #{is_today ? 'bg-coral text-white' : 'hover:bg-gray-100 text-gray-500'}",
-            data: { turbo_frame: "daily_focus" } do %>
+                   #{is_selected ? 'bg-coral text-white' : 'hover:bg-gray-100 text-gray-500'}",
+            data: {
+              turbo_frame: "daily_focus",
+              day_selector_target: "day",
+              action: "click->day-selector#select"
+            } do %>
           <%= date.strftime("%a")[0..1] %>
         <% end %>
       <% end %>
