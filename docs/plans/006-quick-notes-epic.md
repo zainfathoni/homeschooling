@@ -1,8 +1,10 @@
-# Plan 006: Quick Notes Epic
-
-**Status:** Planning
-**Created:** 2026-01-31
-**Depends on:** [005-responsive-nav-epic](005-responsive-nav-epic.md) ✅
+---
+id: "006"
+title: Quick Notes Epic
+status: planning
+created: 2026-01-31
+depends_on: "005"
+---
 
 ## Overview
 

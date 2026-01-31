@@ -1,12 +1,9 @@
-# ADR 0001: Reset to Tracer Bullet Approach
-
-## Status
-
-Accepted
-
-## Date
-
-2026-01-27
+---
+id: "001"
+title: Reset to Tracer Bullet Approach
+status: accepted
+date: 2026-01-27
+---
 
 ## Context
 
@@ -33,12 +30,12 @@ Reset `main` branch to infrastructure-only state (`335855d`) and rebuild using t
 
 ### New Stack
 
-| Component | Before | After |
-|-----------|--------|-------|
-| Database | Drizzle + libSQL/Turso | Supabase (Postgres) |
-| Auth | Custom magic link + cookies | Supabase Auth |
-| Permissions | Custom RLS-like checks | Supabase RLS |
-| Deployment | Kamal + VPS | Vercel/Netlify (static) |
+| Component   | Before                      | After                   |
+| ----------- | --------------------------- | ----------------------- |
+| Database    | Drizzle + libSQL/Turso      | Supabase (Postgres)     |
+| Auth        | Custom magic link + cookies | Supabase Auth           |
+| Permissions | Custom RLS-like checks      | Supabase RLS            |
+| Deployment  | Kamal + VPS                 | Vercel/Netlify (static) |
 
 ### Tracer Bullet Scope
 
@@ -66,4 +63,4 @@ Reset `main` branch to infrastructure-only state (`335855d`) and rebuild using t
 
 - Previous implementation: `backup/v1-full-implementation` branch
 - Tracer bullet issues: `bd show hs-tracer`
-- Decision thread: https://ampcode.com/threads/T-019bfd50-1f6b-7329-9682-4d8f2c7ba8dc
+- Decision thread: <https://ampcode.com/threads/T-019bfd50-1f6b-7329-9682-4d8f2c7ba8dc>

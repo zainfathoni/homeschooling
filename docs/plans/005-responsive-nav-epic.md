@@ -1,10 +1,12 @@
-# Plan 005: Responsive Navigation Epic
-
-**Status:** Core Complete (enhancements pending)
-**Created:** 2026-01-28
-**Refined at:** 2026-01-30
-**Updated:** 2026-01-31
-**Depends on:** [002-weekly-grid-epic](002-weekly-grid-epic.md) ✅
+---
+id: "005"
+title: Responsive Navigation Epic
+status: core-complete
+created: 2026-01-28
+refined: 2026-01-30
+updated: 2026-01-31
+depends_on: "002"
+---
 
 ## Overview
 

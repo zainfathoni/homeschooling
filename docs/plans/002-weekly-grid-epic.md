@@ -1,8 +1,11 @@
-# Plan 002: Weekly Grid Epic
-
-**Status:** Ready for Implementation  
-**Created:** 2026-01-28  
-**Depends on:** [001-multi-student-epic](001-multi-student-epic.md) ✅
+---
+id: "002"
+title: Weekly Grid Epic
+status: ready
+created: 2026-01-28
+refined: 2026-01-28
+depends_on: "001"
+---
 
 ## Overview
 
@@ -89,14 +92,14 @@ end
   <%= render "shared/student_selector" %>
 
   <% if @student %>
-    <%= render "today/progress_bar", 
-        completed: @total_completed, 
+    <%= render "today/progress_bar",
+        completed: @total_completed,
         total: @total_possible %>
-    
+
     <%= render "today/day_selector", dates: @dates, current_date: @date %>
-    
-    <%= render "today/weekly_grid", 
-        subjects: @subjects, 
+
+    <%= render "today/weekly_grid",
+        subjects: @subjects,
         dates: @dates,
         week_completions: @week_completions,
         current_date: @date %>
@@ -119,7 +122,7 @@ end
     <span class="text-sm font-bold text-coral"><%= percentage %>%</span>
   </div>
   <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
-    <div class="h-full bg-coral rounded-full transition-all duration-300" 
+    <div class="h-full bg-coral rounded-full transition-all duration-300"
          style="width: <%= percentage %>%"></div>
   </div>
 </div>
@@ -155,7 +158,7 @@ end
         <span class="flex-1 font-medium text-gray-800 truncate">
           <%= subject.name %>
         </span>
-        
+
         <!-- 5-day completion indicators -->
         <div class="flex gap-2">
           <% subject_completions = week_completions[subject.id] || Set.new %>
@@ -342,13 +345,13 @@ Shows weekly progress (Mon-Fri), not daily. Updates via Turbo Stream when comple
 
 ## Edge Cases
 
-| Case | Handling |
-|------|----------|
-| No subjects | Show empty state message |
-| No students | Show "Add student" prompt |
-| Sunday/Saturday access | Show current week (Mon-Fri) |
-| Week spans months | Display "Jan 27 - Feb 1" format |
-| Many subjects | Scrollable list |
+| Case                   | Handling                        |
+| ---------------------- | ------------------------------- |
+| No subjects            | Show empty state message        |
+| No students            | Show "Add student" prompt       |
+| Sunday/Saturday access | Show current week (Mon-Fri)     |
+| Week spans months      | Display "Jan 27 - Feb 1" format |
+| Many subjects          | Scrollable list                 |
 
 ## Success Criteria
 
@@ -377,6 +380,7 @@ hs-weekly-grid (epic)
 ```
 
 **Dependencies:**
+
 - Task 1 → Task 2 (helper needed for controller)
 - Task 2 → Tasks 3, 4, 5 (data needed for views)
 - Task 6 → Task 7 (circle needed for stream)
@@ -389,7 +393,3 @@ hs-weekly-grid (epic)
 - Tablet Duet view (grid + daily detail)
 - Scheduled days (grayed out unavailable days)
 - Pick1 subject indicators
-
----
-
-*Plan refined and ready for implementation.*

@@ -1,13 +1,17 @@
-# Plan 003: Subject Types Epic
-
-**Status:** ✅ Completed
-**Created:** 2026-01-28
-**Completed:** 2026-01-29
-**Depends on:** [002-weekly-grid-epic](002-weekly-grid-epic.md) ✅
+---
+id: "003"
+title: Subject Types Epic
+status: complete
+created: 2026-01-28
+refined: 2026-01-28
+completed: 2026-01-29
+depends_on: "002"
+---
 
 ## Implementation Notes
 
 All 8 tasks completed. Key implementations:
+
 - Subject model with `subject_type` enum (fixed/scheduled/pick1), `scheduled_days` JSON, `active_on?(date)` method
 - SubjectOption model for pick1 subjects with position ordering
 - Completion model with optional `subject_option` reference for pick1 tracking
@@ -23,15 +27,16 @@ Implement the three subject types from PRODUCT_VISION: fixed, scheduled, and pic
 
 ## Subject Types
 
-| Type | Behavior | Example | Grid Display |
-|------|----------|---------|--------------|
-| `fixed` | Active every day (Mon-Fri) | Math, Handwriting | Solid circle every day |
-| `scheduled` | Active only on specific days | Coding (Mon-Thu) | Solid circle on active days, **dashed circle** on off-days |
-| `pick1` | Choose one option per category | Islamic Study → Safar Book | Solid circle, tracks which option selected |
+| Type        | Behavior                       | Example                    | Grid Display                                               |
+| ----------- | ------------------------------ | -------------------------- | ---------------------------------------------------------- |
+| `fixed`     | Active every day (Mon-Fri)     | Math, Handwriting          | Solid circle every day                                     |
+| `scheduled` | Active only on specific days   | Coding (Mon-Thu)           | Solid circle on active days, **dashed circle** on off-days |
+| `pick1`     | Choose one option per category | Islamic Study → Safar Book | Solid circle, tracks which option selected                 |
 
 ## Design Decisions
 
 Based on user input:
+
 - **Off-day visualization**: Dashed gray circle (not hidden, not grayed solid)
 - **Pick1 tracking**: Track which option was selected each day
 - **Type mutability**: Subject type is fixed at creation (cannot be changed later)
@@ -324,10 +329,12 @@ end
 Add subject_type enum and scheduled_days to Subject model.
 
 **Files:**
+
 - `db/migrate/xxx_add_subject_type_to_subjects.rb`
 - `app/models/subject.rb`
 
 **Acceptance Criteria:**
+
 - Migration adds subject_type (string, default: "fixed") and scheduled_days (json)
 - Subject model has enum for subject_type
 - `active_on?(date)` method returns correct boolean
@@ -339,11 +346,13 @@ Add subject_type enum and scheduled_days to Subject model.
 Create SubjectOption model for pick1 subjects.
 
 **Files:**
+
 - `db/migrate/xxx_create_subject_options.rb`
 - `app/models/subject_option.rb`
 - `app/models/subject.rb` (add association)
 
 **Acceptance Criteria:**
+
 - SubjectOption belongs_to Subject
 - Subject has_many subject_options
 - Options are ordered by position
@@ -355,10 +364,12 @@ Create SubjectOption model for pick1 subjects.
 Add selected option tracking for pick1 completions.
 
 **Files:**
+
 - `db/migrate/xxx_add_selected_option_to_completions.rb`
 - `app/models/completion.rb`
 
 **Acceptance Criteria:**
+
 - Completion optionally belongs_to SubjectOption
 - Validation requires option for pick1 subjects
 - Tests for pick1 completion flow
@@ -368,10 +379,12 @@ Add selected option tracking for pick1 completions.
 Update completion circle to show dashed circles on off-days.
 
 **Files:**
+
 - `app/views/today/_completion_circle.html.erb`
 - `app/views/today/_weekly_grid.html.erb` (pass active status)
 
 **Acceptance Criteria:**
+
 - Fixed subjects: solid circle every day (existing behavior)
 - Scheduled subjects: solid circle on active days, dashed circle on off-days
 - Dashed circles are not clickable
@@ -382,10 +395,12 @@ Update completion circle to show dashed circles on off-days.
 Update toggle action to handle pick1 option selection.
 
 **Files:**
+
 - `app/controllers/completions_controller.rb`
 - `app/views/completions/toggle.turbo_stream.erb`
 
 **Acceptance Criteria:**
+
 - Toggle with option_id param selects that option
 - Clicking same option uncompletes
 - Clicking different option switches selection
@@ -397,11 +412,13 @@ Update toggle action to handle pick1 option selection.
 Update subject form to handle type selection and options.
 
 **Files:**
+
 - `app/views/subjects/_form.html.erb`
 - `app/controllers/subjects_controller.rb`
 - `app/javascript/controllers/subject_type_controller.js`
 
 **Acceptance Criteria:**
+
 - Radio buttons for fixed/scheduled/pick1
 - Scheduled: show day picker (Mon-Fri checkboxes)
 - Pick1: show options list with add/remove
@@ -414,10 +431,12 @@ Update subject form to handle type selection and options.
 Update progress calculation to account for scheduled subjects.
 
 **Files:**
+
 - `app/controllers/today_controller.rb`
 - `app/controllers/completions_controller.rb`
 
 **Acceptance Criteria:**
+
 - Progress only counts active subjects for each day
 - Weekly total = sum of active subjects per day
 - Scheduled off-days don't count toward total
@@ -428,11 +447,13 @@ Update progress calculation to account for scheduled subjects.
 Comprehensive tests for all subject type flows.
 
 **Files:**
+
 - `test/system/subject_types_test.rb`
 - `test/models/subject_test.rb`
 - `test/controllers/completions_controller_test.rb`
 
 **Acceptance Criteria:**
+
 - Create each subject type via form
 - Toggle completions for each type
 - Verify grid displays correctly
@@ -443,7 +464,7 @@ Comprehensive tests for all subject type flows.
 
 ## Issue Hierarchy
 
-```
+```txt
 hs-subject-types (EPIC)
 ├── hs-subject-types.1: Subject type migration & model
 ├── hs-subject-types.2: SubjectOption model
@@ -457,7 +478,7 @@ hs-subject-types (EPIC)
 
 ## Dependencies
 
-```
+```txt
 hs-subject-types.1 ─┬─► hs-subject-types.2 ─► hs-subject-types.3
                     └─► hs-subject-types.4
 
@@ -468,7 +489,3 @@ hs-subject-types.1 ─► hs-subject-types.7
 
 All tasks ─► hs-subject-types.8
 ```
-
----
-
-*Plan refined: 2026-01-28*

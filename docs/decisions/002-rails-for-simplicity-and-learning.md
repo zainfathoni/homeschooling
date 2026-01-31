@@ -1,12 +1,9 @@
-# ADR 0002: Switch to Rails for Simplicity and Learning
-
-## Status
-
-Accepted
-
-## Date
-
-2026-01-28
+---
+id: "002"
+title: Switch to Rails for Simplicity and Learning
+status: accepted
+date: 2026-01-28
+---
 
 ## Context
 

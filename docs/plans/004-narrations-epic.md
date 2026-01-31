@@ -1,10 +1,12 @@
-# Plan 004: Narrations Epic
-
-**Status:** ✅ Complete
-**Created:** 2026-01-28
-**Refined:** 2026-01-29
-**Completed:** 2026-01-29
-**Depends on:** [001-multi-student-epic](001-multi-student-epic.md) ✅
+---
+id: "004"
+title: Narrations Epic
+status: complete
+created: 2026-01-28
+refined: 2026-01-29
+completed: 2026-01-29
+depends_on: "001"
+---
 
 ## Overview
 
@@ -20,21 +22,21 @@ Capture learning evidence as narrations—text, voice recordings, or photos—li
 
 ## Design Decisions
 
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| Subject linking | **Always linked** | Every narration belongs to a subject—no standalone narrations |
-| Voice capture | **Native input** for MVP | `<input type="file" accept="audio/*" capture="microphone">` triggers iOS/Android native recorder. Web Audio API deferred to later enhancement |
-| Photo capture | **Native input** | `<input type="file" accept="image/*" capture="environment">` triggers camera/gallery |
-| File storage | **Active Storage + local disk** | Can migrate to S3 later without code changes |
-| Required narrations | **Soft enforcement** | Confirmation modal when completing subject without required narration |
+| Decision            | Choice                          | Rationale                                                                                                                                     |
+| ------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Subject linking     | **Always linked**               | Every narration belongs to a subject—no standalone narrations                                                                                 |
+| Voice capture       | **Native input** for MVP        | `<input type="file" accept="audio/*" capture="microphone">` triggers iOS/Android native recorder. Web Audio API deferred to later enhancement |
+| Photo capture       | **Native input**                | `<input type="file" accept="image/*" capture="environment">` triggers camera/gallery                                                          |
+| File storage        | **Active Storage + local disk** | Can migrate to S3 later without code changes                                                                                                  |
+| Required narrations | **Soft enforcement**            | Confirmation modal when completing subject without required narration                                                                         |
 
 ## Narration Types
 
-| Type | Capture Method | Display | Storage |
-|------|----------------|---------|---------|
-| Text | Textarea input | Formatted text | `content` column |
-| Voice | Native file input with audio/* | Audio player with controls | Active Storage blob |
-| Photo | Native file input with image/* | Responsive image thumbnail | Active Storage blob |
+| Type  | Capture Method                  | Display                    | Storage             |
+| ----- | ------------------------------- | -------------------------- | ------------------- |
+| Text  | Textarea input                  | Formatted text             | `content` column    |
+| Voice | Native file input with audio/\* | Audio player with controls | Active Storage blob |
+| Photo | Native file input with image/\* | Responsive image thumbnail | Active Storage blob |
 
 ## UI References
 
@@ -388,30 +390,30 @@ end
 ### narration_type_controller.js
 
 ```javascript
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-  static targets = ["radio", "textInput", "voiceInput", "photoInput"]
+  static targets = ["radio", "textInput", "voiceInput", "photoInput"];
 
   selectType(event) {
-    const type = event.target.value
+    const type = event.target.value;
 
     // Hide all inputs
-    this.textInputTarget.classList.add("hidden")
-    this.voiceInputTarget.classList.add("hidden")
-    this.photoInputTarget.classList.add("hidden")
+    this.textInputTarget.classList.add("hidden");
+    this.voiceInputTarget.classList.add("hidden");
+    this.photoInputTarget.classList.add("hidden");
 
     // Show selected input
-    switch(type) {
+    switch (type) {
       case "text":
-        this.textInputTarget.classList.remove("hidden")
-        break
+        this.textInputTarget.classList.remove("hidden");
+        break;
       case "voice":
-        this.voiceInputTarget.classList.remove("hidden")
-        break
+        this.voiceInputTarget.classList.remove("hidden");
+        break;
       case "photo":
-        this.photoInputTarget.classList.remove("hidden")
-        break
+        this.photoInputTarget.classList.remove("hidden");
+        break;
     }
   }
 }
@@ -420,23 +422,23 @@ export default class extends Controller {
 ### modal_controller.js
 
 ```javascript
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-  static values = { open: Boolean }
+  static values = { open: Boolean };
 
   close() {
-    this.element.remove()
+    this.element.remove();
   }
 
   // Close on escape key
   keydown(event) {
-    if (event.key === "Escape") this.close()
+    if (event.key === "Escape") this.close();
   }
 
   // Close on backdrop click
   backdropClick(event) {
-    if (event.target === this.element) this.close()
+    if (event.target === this.element) this.close();
   }
 }
 ```
@@ -463,6 +465,7 @@ end
 Create Narration model with required subject reference and Active Storage attachment.
 
 **Files:**
+
 - `db/migrate/xxx_create_narrations.rb`
 - `app/models/narration.rb`
 - `app/models/student.rb` (add association)
@@ -470,6 +473,7 @@ Create Narration model with required subject reference and Active Storage attach
 - `test/models/narration_test.rb`
 
 **Acceptance Criteria:**
+
 - Migration creates narrations table with student, subject, date, narration_type, content
 - Narration belongs_to student (required) and subject (required)
 - has_one_attached :media for voice/photo
@@ -483,6 +487,7 @@ Create Narration model with required subject reference and Active Storage attach
 Basic narration management with text type.
 
 **Files:**
+
 - `app/controllers/narrations_controller.rb`
 - `app/views/narrations/index.html.erb`
 - `app/views/narrations/new.html.erb`
@@ -493,6 +498,7 @@ Basic narration management with text type.
 - `test/controllers/narrations_controller_test.rb`
 
 **Acceptance Criteria:**
+
 - Routes nested under students
 - Index shows student's narrations with date/subject filters
 - New/Edit forms with subject selector and text input
@@ -504,11 +510,13 @@ Basic narration management with text type.
 Add voice narration support using native file input.
 
 **Files:**
+
 - `app/views/narrations/_form.html.erb` (update)
 - `app/views/narrations/_narration.html.erb` (add audio player)
 - `app/javascript/controllers/narration_type_controller.js`
 
 **Acceptance Criteria:**
+
 - File input with `accept="audio/*" capture="microphone"` triggers native recorder
 - Narration type selector shows/hides appropriate input
 - Voice narrations display with HTML5 audio player
@@ -520,10 +528,12 @@ Add voice narration support using native file input.
 Add photo narration support using native file input.
 
 **Files:**
+
 - `app/views/narrations/_form.html.erb` (update)
 - `app/views/narrations/_narration.html.erb` (add image display)
 
 **Acceptance Criteria:**
+
 - File input with `accept="image/*" capture="environment"` triggers camera/gallery
 - Photo narrations display as responsive images
 - Active Storage handles image upload
@@ -534,6 +544,7 @@ Add photo narration support using native file input.
 Add flag to subjects and update form.
 
 **Files:**
+
 - `db/migrate/xxx_add_narration_required_to_subjects.rb`
 - `app/models/subject.rb` (add has_narration_for? method)
 - `app/views/subjects/_form.html.erb` (add checkbox)
@@ -541,6 +552,7 @@ Add flag to subjects and update form.
 - `test/models/subject_test.rb`
 
 **Acceptance Criteria:**
+
 - Migration adds boolean narration_required (default: false)
 - Subject form has checkbox for narration_required
 - has_narration_for?(date) method works correctly
@@ -551,12 +563,14 @@ Add flag to subjects and update form.
 Show reminder when completing subject without narration.
 
 **Files:**
+
 - `app/views/completions/_narration_reminder.html.erb`
 - `app/views/completions/toggle.turbo_stream.erb` (update)
 - `app/controllers/completions_controller.rb` (update)
 - `app/javascript/controllers/modal_controller.js`
 
 **Acceptance Criteria:**
+
 - When completing subject with narration_required and no narration exists, show modal
 - Modal offers "Add Narration" (links to new narration) or "Skip for Now"
 - Modal closes on skip, escape key, or backdrop click
@@ -567,10 +581,12 @@ Show reminder when completing subject without narration.
 Filterable list of narrations.
 
 **Files:**
+
 - `app/views/narrations/index.html.erb`
 - `app/views/narrations/_filters.html.erb`
 
 **Acceptance Criteria:**
+
 - Index shows all narrations for student, newest first
 - Filter by date (date picker)
 - Filter by subject (dropdown)
@@ -582,10 +598,12 @@ Filterable list of narrations.
 Add narration link in weekly grid for subjects with narration_required.
 
 **Files:**
+
 - `app/views/today/_subject_row.html.erb` (or equivalent)
 - Add navigation to students index
 
 **Acceptance Criteria:**
+
 - Subjects with narration_required show "+ Add narration" link
 - Link pre-fills subject and current date
 - Opens narration form (modal or page)
@@ -596,11 +614,13 @@ Add narration link in weekly grid for subjects with narration_required.
 Show narration status for each day in the weekly grid, not just today.
 
 **Files:**
+
 - `app/views/today/_weekly_grid.html.erb`
 - `app/views/today/_completion_circle.html.erb`
 - `app/controllers/today_controller.rb` (preload narration dates)
 
 **Acceptance Criteria:**
+
 - Each day cell shows narration indicator if narration exists for that subject/date
 - Indicator is visually distinct but not overwhelming (e.g., small badge or dot)
 - Clicking indicator navigates to the narration for that day
@@ -610,7 +630,7 @@ Show narration status for each day in the weekly grid, not just today.
 
 ## Issue Hierarchy
 
-```
+```txt
 hs-narrate (EPIC) ✅
 ├── hs-narrate.1: Narration model & migration ✅
 ├── hs-narrate.2: Text narration CRUD ✅
@@ -625,7 +645,7 @@ hs-narrate (EPIC) ✅
 
 ## Dependencies
 
-```
+```txt
 hs-narrate.1 ─┬─► hs-narrate.2 ─┬─► hs-narrate.3
               │                 ├─► hs-narrate.4
               │                 ├─► hs-narrate.7
@@ -636,6 +656,7 @@ hs-narrate.1 ─┬─► hs-narrate.2 ─┬─► hs-narrate.3
 ```
 
 **Visual flow:**
+
 1. Model (Task 1) unlocks Tasks 2 and 5
 2. Text CRUD (Task 2) unlocks Tasks 3, 4, 6, 7, 8
 3. narration_required flag (Task 5) unlocks Task 6 (with Task 2)
@@ -651,7 +672,3 @@ hs-narrate.1 ─┬─► hs-narrate.2 ─┬─► hs-narrate.3
 - **Batch narrations**: Add multiple narrations in one session
 - **Narration templates**: Pre-defined prompts per subject
 - **Export/sharing**: PDF export of narrations for portfolio
-
----
-
-*Plan refined: 2026-01-29*

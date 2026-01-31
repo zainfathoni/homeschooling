@@ -1,8 +1,10 @@
-# Plan 001: Multi-Student Epic
-
-**Status:** Complete  
-**Created:** 2026-01-28  
-**Author:** AI Assistant
+---
+id: "001"
+title: Multi-Student Epic
+status: complete
+created: 2026-01-28
+author: AI Assistant
+---
 
 ## Overview
 
@@ -319,5 +321,5 @@ This epic lays groundwork for:
 ## References
 
 - [PRODUCT_VISION.md](../PRODUCT_VISION.md) - Core requirements
-- [ADR-0002](../decisions/0002-rails-for-simplicity-and-learning.md) - Rails architecture
+- [ADR-0002](../decisions/002-rails-for-simplicity-and-learning.md) - Rails architecture
 - [Mockup: Mobile Weekly](../mockups/01-mobile-weekly-overview.png) - Student tabs design
