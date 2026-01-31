@@ -10,11 +10,11 @@ depends_on: "003"
 
 The homeschool planner tracks learning for multiple contexts:
 
-| Context | Code | Participants | Examples |
-|---------|------|--------------|----------|
-| **Individual** | (N), (I) | Single student | Math, Daily Report |
-| **Family Study** | (F) | All children together | Picture Study, Nature Study, 99 Names of God |
-| **Joint Tutoring** | (N&I) | Specific subset | Foreign Language, Map Drilling |
+| Context            | Code     | Participants          | Examples                                     |
+| ------------------ | -------- | --------------------- | -------------------------------------------- |
+| **Individual**     | (N), (I) | Single student        | Math, Daily Report                           |
+| **Family Study**   | (F)      | All children together | Picture Study, Nature Study, 99 Names of God |
+| **Joint Tutoring** | (N&I)    | Specific subset       | Foreign Language, Map Drilling               |
 
 Key observations from the Family Studies and Tutoring Schedule:
 
@@ -28,7 +28,7 @@ Key observations from the Family Studies and Tutoring Schedule:
 
 ### Data Model
 
-```
+```txt
 ┌─────────────────────────────────────────────────────────┐
 │                      Teachable                          │
 │  (superclass: user_id, name, teachable_type/id)         │
@@ -174,17 +174,17 @@ end
 
 ### Key Relationships
 
-| Entity | Belongs To | Reasoning |
-|--------|------------|-----------|
-| **Teachable** | User | Ownership container |
-| **Subject** | Teachable | Can be individual or group subject |
-| **Completion** | Subject | Tracks if teachable completed it |
-| **Recording** | Student (always) | Artifacts are always individual |
-| **Narration** | Subject | Can reference group subject |
+| Entity         | Belongs To       | Reasoning                          |
+| -------------- | ---------------- | ---------------------------------- |
+| **Teachable**  | User             | Ownership container                |
+| **Subject**    | Teachable        | Can be individual or group subject |
+| **Completion** | Subject          | Tracks if teachable completed it   |
+| **Recording**  | Student (always) | Artifacts are always individual    |
+| **Narration**  | Subject          | Can reference group subject        |
 
 ### Example: Family Study Flow
 
-```
+```txt
 Family Study: Picture Study
 ├── Subject belongs to "Family" (StudentGroup via Teachable)
 ├── Completion: Family completed Picture Study on Jan 31 ✓
@@ -241,11 +241,11 @@ najmi.recordings.includes(:recordable).recent
 
 This ADR extends ADR 003:
 
-| ADR 003 (Recording) | ADR 004 (Teachable) |
-|---------------------|---------------------|
+| ADR 003 (Recording)          | ADR 004 (Teachable)                  |
+| ---------------------------- | ------------------------------------ |
 | Recording belongs to Student | No change - artifacts are individual |
-| Narration belongs to Subject | Subject now belongs to Teachable |
-| Student has_many :recordings | Student accessed via Teachable |
+| Narration belongs to Subject | Subject now belongs to Teachable     |
+| Student has_many :recordings | Student accessed via Teachable       |
 
 The Recording pattern works unchanged; we're just clarifying that Subject's owner (Teachable) can be a group.
 

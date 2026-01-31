@@ -103,19 +103,37 @@ Replace paper-based weekly planners with a digital tool that:
 | Scheduled Days | Active only on specific days (Coding: Mon-Thu)                |
 | Pick 1         | Select one sub-item per category (Islamic Study → Safar Book) |
 
-### 3. Student Profiles
+### 3. Learning Contexts
+
+The app supports multiple learning contexts beyond individual students:
+
+| Context | Code | Participants | Examples |
+|---------|------|--------------|----------|
+| **Individual** | (N), (I) | Single student | Math, Daily Report |
+| **Family Study** | (F) | All children together | Picture Study, Nature Study, 99 Names of God |
+| **Joint Tutoring** | (N&I) | Specific subset | Foreign Language, Map Drilling |
+
+Key behaviors:
+- **Same subject can be individual or group** - Tutoring mode depends on teacher availability
+- **Group subjects produce individual artifacts** - Family Study yields different narrations per student
+- **Pick1 subjects need balance tracking** - Teacher sees which books have been used to ensure coverage
+
+See [ADR 004: Teachable Delegated Type](decisions/004-teachable-delegated-type.md) for the data model.
+
+### 4. Student Profiles
 
 - Multiple students per family
 - Separate curriculum per student
 - Individual progress tracking
+- Group memberships for Family Study and Joint Tutoring
 
-### 4. Narrations
+### 5. Narrations
 
 - Text, voice, or photo entries
 - Linked to subject and date
 - Filterable by student
 
-### 5. Quick Notes
+### 6. Quick Notes
 
 Quick Notes are **date-level observations** distinct from subject-attached Narrations:
 
@@ -143,83 +161,32 @@ Quick Notes capture day-level context like:
 
 ### Data Model
 
-```typescript
-interface Student {
-  id: string;
-  name: string;
-  avatar: string;
-  yearLevel: number;
-}
+See Architecture Decision Records for detailed data models:
 
-interface Subject {
-  id: string;
-  name: string;
-  icon: string;
-  type: "fixed" | "scheduled" | "pick1";
-  scheduledDays?: number[]; // 0=Mon, 4=Fri
-  options?: SubjectOption[]; // for pick1 type
-  requiresNarration?: boolean;
-}
+- [ADR 003: Delegated Types for Recordables](decisions/003-delegated-types-for-recordables.md) - Recording → Narration/QuickNote
+- [ADR 004: Teachable Delegated Type](decisions/004-teachable-delegated-type.md) - Teachable → Student/StudentGroup
 
-interface SubjectOption {
-  id: string;
-  name: string;
-}
-
-interface WeeklySchedule {
-  weekStart: string; // ISO date
-  studentId: string;
-  entries: ScheduleEntry[];
-}
-
-interface ScheduleEntry {
-  subjectId: string;
-  selectedOptionId?: string; // for pick1 subjects
-  completedDays: boolean[]; // [Mon, Tue, Wed, Thu, Fri]
-}
-
-interface Narration {
-  id: string;
-  studentId: string;
-  subjectId: string;
-  date: string;
-  type: "text" | "voice" | "photo";
-  content: string; // text content or file path
-}
 ```
+┌─────────────────────────────────────────────────────────┐
+│                      Teachable                          │
+│  (user_id, name) → delegates to Student or StudentGroup │
+└─────────────────────────────────────────────────────────┘
+          │                              │
+          ▼                              ▼
+┌─────────────────────┐      ┌─────────────────────────┐
+│      Student        │      │     StudentGroup        │
+│  (avatar, year)     │◄────►│  (family, joint)        │
+└─────────────────────┘      └─────────────────────────┘
+          │
+          ▼
+┌─────────────────────────────────────────────────────────┐
+│                      Recording                          │
+│  (student_id, date) → delegates to Narration/QuickNote  │
+└─────────────────────────────────────────────────────────┘
 
-### File Structure
-
-```txt
-src/
-├── components/
-│   ├── layout/
-│   │   ├── MobileNav.tsx
-│   │   └── TabletSplitView.tsx
-│   ├── schedule/
-│   │   ├── WeeklyGrid.tsx
-│   │   ├── DailyFocus.tsx
-│   │   ├── SubjectRow.tsx
-│   │   └── Pick1Selector.tsx
-│   ├── narration/
-│   │   ├── NarrationList.tsx
-│   │   ├── NarrationCard.tsx
-│   │   └── NarrationInput.tsx
-│   └── common/
-│       ├── Avatar.tsx
-│       ├── ProgressRing.tsx
-│       └── Checkbox.tsx
-├── hooks/
-│   ├── useSchedule.ts
-│   ├── useStudent.ts
-│   └── useNarrations.ts
-├── data/
-│   ├── students.ts
-│   └── curriculum.ts
-├── types/
-│   └── index.ts
-├── App.tsx
-└── main.tsx
+Teachable has_many :subjects
+Subject has_many :completions
+Student has_many :recordings (artifacts always individual)
 ```
 
 ## Responsive Behavior
@@ -238,7 +205,16 @@ src/
 - Multiple family support
 - Curriculum templates
 
+## Reference Documents
+
+The app digitizes these paper-based planners:
+
+| Document | Purpose |
+|----------|---------|
+| [Najmi - Daily Work Year 6 Term 1.pdf](examples/Najmi%20-%20Daily%20Work%20Year%206%20Term%201.pdf) | Individual student tracking (Year 6) |
+| [Isa - Daily Work Year 3 Term 1.pdf](examples/Isa%20-%20Daily%20Work%20Year%203%20Term%201.pdf) | Individual student tracking (Year 3) |
+| [Family Studies and Tutoring Schedule.pdf](examples/Family%20Studies%20and%20Tutoring%20Schedule.pdf) | Family Study (F) and Tutoring (N, I, N&I) schedule |
+
 ---
 
 _Document created: January 2026_
-_Reference: Najmi - Daily Work Year 6 Term 1.pdf_
