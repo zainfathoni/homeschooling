@@ -3,13 +3,15 @@ id: "006"
 title: Quick Notes Epic
 status: planning
 created: 2026-01-31
-depends_on: "005"
+depends_on: "007"
 decision: "003"
 ---
 
 ## Overview
 
 Quick Notes are date-level observations distinct from subject-attached Narrations. They capture day-level context like "Field trip today", "Shortened lessons - dentist", or general reflections not tied to a specific subject.
+
+**Prerequisite**: This plan depends on [Plan 007 (Teachable Foundation)](007-teachable-foundation-epic.md) being implemented first. The Narration validation and Student model assume the Teachable delegated_type pattern is in place.
 
 ## Key Distinction
 
@@ -93,6 +95,10 @@ create_table :narrations do |t|
 end
 ```
 
+Note: The `student_matches_subject` validation must handle both individual subjects
+(owned by Student via Teachable) and group subjects (owned by StudentGroup via Teachable).
+See ADR 004 for the Teachable pattern.
+
 ```ruby
 # app/models/narration.rb
 class Narration < ApplicationRecord
@@ -111,24 +117,48 @@ class Narration < ApplicationRecord
 
   private
 
+  # Validates that the recording's student is allowed to narrate this subject.
+  # - For individual subjects: student must match the subject's owner
+  # - For group subjects: student must be a member of the group
   def student_matches_subject
-    return unless subject.present? && recording&.student_id.present?
-    errors.add(:subject, "must belong to the same student") if subject.student_id != recording.student_id
+    return unless subject.present? && recording&.student.present?
+
+    teachable = subject.teachable
+    student = recording.student
+
+    if teachable.student?
+      unless teachable.student == student
+        errors.add(:subject, "must belong to the same student")
+      end
+    elsif teachable.student_group?
+      unless teachable.student_group.students.include?(student)
+        errors.add(:subject, "student must be a member of the group")
+      end
+    end
   end
 end
 ```
 
 ### Student (Updated)
 
+Note: Per ADR 004, Student is a delegatee of Teachable. The `user` and `name` are
+accessed via delegation from Teachable, and subjects belong to Teachable (not Student).
+
 ```ruby
 # app/models/student.rb
 class Student < ApplicationRecord
-  belongs_to :user
+  has_one :teachable, as: :teachable, dependent: :destroy
+  delegate :name, :user, to: :teachable
 
-  has_many :subjects, dependent: :destroy
   has_many :recordings, dependent: :destroy
+  has_many :group_memberships, dependent: :destroy
+  has_many :student_groups, through: :group_memberships
 
-  validates :name, presence: true
+  # Get all subjects for this student (individual + groups they belong to)
+  def all_subjects
+    teachable_ids = [teachable.id] + student_groups.map { |g| g.teachable.id }
+    Subject.where(teachable_id: teachable_ids)
+  end
 end
 ```
 

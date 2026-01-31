@@ -37,6 +37,64 @@ Implement the Teachable delegated_type pattern per [ADR 004](../decisions/004-te
           └────────────────────────┘
 ```
 
+## Authorization Model
+
+### Completion Authorization
+
+| Subject Type | Who Can Mark Complete | Rationale |
+| ------------ | --------------------- | --------- |
+| **Individual** (Student) | Parent OR Student | Child can check off their own work |
+| **Group** (StudentGroup) | Parent only | Teacher coordinates group activities |
+
+### Narration Authorization
+
+| Subject Type | Who Can Narrate | Validation |
+| ------------ | --------------- | ---------- |
+| **Individual** | The owning student | `teachable.student == recording.student` |
+| **Group** | Any group member | `teachable.student_group.students.include?(recording.student)` |
+
+## View Compatibility Helpers
+
+To ease the transition from `subject.student` pattern used in 7+ views, add helper methods to Subject:
+
+```ruby
+# app/models/subject.rb
+class Subject < ApplicationRecord
+  belongs_to :teachable
+
+  # Helper for views that need a student for path generation
+  # For individual subjects: returns the owner
+  # For group subjects: returns the provided fallback (current_student)
+  def student_for_narration(current_student)
+    teachable.student? ? teachable.student : current_student
+  end
+
+  # Check if this subject is accessible by a given student
+  def for_student?(student)
+    if teachable.student?
+      teachable.student == student
+    else
+      teachable.student_group.students.include?(student)
+    end
+  end
+
+  # Returns the student if individual subject, nil if group
+  def owner_student
+    teachable.student? ? teachable.student : nil
+  end
+end
+```
+
+### View Migration Example
+
+```erb
+<%# Before (current code): %>
+<%= link_to new_student_narration_path(subject.student, date: date) %>
+
+<%# After (with helper): %>
+<%= link_to new_student_narration_path(subject.student_for_narration(current_student), date: date) %>
+```
+
 ## Task Breakdown
 
 ### Task 1: Create Teachable & StudentGroup tables (hs-teach.1)
@@ -70,6 +128,7 @@ Implement the Teachable delegated_type pattern per [ADR 004](../decisions/004-te
 ### Task 5: Refactor Subject model (hs-teach.5)
 
 - Change belongs_to :student → belongs_to :teachable
+- Add view compatibility helpers (student_for_narration, for_student?, owner_student)
 - Update dependent code (completions, narrations)
 - Update existing tests
 
@@ -115,6 +174,8 @@ After implementation:
 4. `Subject.first.teachable` returns Teachable (Student or StudentGroup)
 5. `student.all_subjects` returns individual + group subjects
 6. Can create StudentGroup with members
+7. View helpers work: `subject.student_for_narration(student)` returns correct student
+8. Authorization: `subject.for_student?(student)` returns true for group members
 
 ## Blocks
 

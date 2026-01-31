@@ -3,6 +3,7 @@ id: "003"
 title: Delegated Types for Recordables
 status: proposed
 date: 2026-01-31
+depends_on: "004"
 ---
 
 ## Context
@@ -144,7 +145,9 @@ end
 
 ### Narration (Refactored Delegatee)
 
-Existing model adapted to work with Recording:
+Existing model adapted to work with Recording. Note: The `student_matches_subject` validation
+must handle both individual subjects (owned by Student via Teachable) and group subjects
+(owned by StudentGroup via Teachable). See ADR 004 for the Teachable pattern.
 
 ```ruby
 # app/models/narration.rb
@@ -165,25 +168,50 @@ class Narration < ApplicationRecord
 
   private
 
+  # Validates that the recording's student is allowed to narrate this subject.
+  # - For individual subjects: student must match the subject's owner
+  # - For group subjects: student must be a member of the group
   def student_matches_subject
-    return unless subject.present? && recording&.student_id.present?
-    errors.add(:subject, "must belong to the same student") if subject.student_id != recording.student_id
+    return unless subject.present? && recording&.student.present?
+
+    teachable = subject.teachable
+    student = recording.student
+
+    if teachable.student?
+      # Individual subject: student must match
+      unless teachable.student == student
+        errors.add(:subject, "must belong to the same student")
+      end
+    elsif teachable.student_group?
+      # Group subject: student must be a member of the group
+      unless teachable.student_group.students.include?(student)
+        errors.add(:subject, "student must be a member of the group")
+      end
+    end
   end
 end
 ```
 
 ### Student (Updated)
 
+Note: Per ADR 004, Student is a delegatee of Teachable. The `user` and `name` are
+accessed via delegation from Teachable, and subjects belong to Teachable (not Student).
+
 ```ruby
 # app/models/student.rb
 class Student < ApplicationRecord
-  belongs_to :user
+  has_one :teachable, as: :teachable, dependent: :destroy
+  delegate :name, :user, to: :teachable
 
-  has_many :subjects, dependent: :destroy
   has_many :recordings, dependent: :destroy
-  # Keep has_many :narrations during transition, remove later
+  has_many :group_memberships, dependent: :destroy
+  has_many :student_groups, through: :group_memberships
 
-  validates :name, presence: true
+  # Get all subjects for this student (individual + groups they belong to)
+  def all_subjects
+    teachable_ids = [teachable.id] + student_groups.map { |g| g.teachable.id }
+    Subject.where(teachable_id: teachable_ids)
+  end
 end
 ```
 
@@ -207,6 +235,27 @@ No production data exists, so we can do a clean migration without backfill:
 <%= render partial: "recordings/#{recording.recordable_type.underscore}",
            locals: { recording: recording, recordable: recording.recordable } %>
 ```
+
+## Interaction with ADR 004 (Teachable)
+
+This ADR depends on ADR 004 (Teachable Delegated Type). Key interactions:
+
+| This ADR (Recording)         | ADR 004 (Teachable)                     |
+| ---------------------------- | --------------------------------------- |
+| Recording belongs to Student | No change - artifacts are individual    |
+| Narration belongs to Subject | Subject now belongs to Teachable        |
+| Validation checks ownership  | Must handle Student OR StudentGroup     |
+
+### Group Subject Narrations
+
+When a student creates a narration for a group subject (e.g., "Family Study: Picture Study"):
+
+1. Recording belongs to the individual student (Najmi)
+2. Narration references the subject
+3. Subject belongs to StudentGroup via Teachable
+4. Validation confirms Najmi is a member of the group
+
+This allows each student to create their own narration (artifact) for group learning activities.
 
 ## Consequences
 

@@ -3,7 +3,6 @@ id: "004"
 title: Teachable Delegated Type for Students and Groups
 status: proposed
 date: 2026-01-31
-depends_on: "003"
 ---
 
 ## Context
@@ -182,6 +181,54 @@ end
 | **Recording**  | Student (always) | Artifacts are always individual    |
 | **Narration**  | Subject          | Can reference group subject        |
 
+### Authorization Rules
+
+Completions have different authorization depending on subject ownership:
+
+| Subject Type | Who Can Mark Complete | Rationale |
+| ------------ | --------------------- | --------- |
+| **Individual** (Student) | Parent OR Student | Child can check off their own work |
+| **Group** (StudentGroup) | Parent only | Teacher coordinates group activities |
+
+Narrations (artifacts) always belong to the individual student who created them:
+
+| Subject Type | Who Can Narrate | Validation |
+| ------------ | --------------- | ---------- |
+| **Individual** | The owning student | `teachable.student == recording.student` |
+| **Group** | Any group member | `teachable.student_group.students.include?(recording.student)` |
+
+### View Compatibility Helpers
+
+To ease the transition from `subject.student` pattern, add helper methods to Subject:
+
+```ruby
+# app/models/subject.rb
+class Subject < ApplicationRecord
+  belongs_to :teachable
+
+  # Helper for views that need a student for path generation
+  # For individual subjects: returns the owner
+  # For group subjects: returns the provided fallback (current_student)
+  def student_for_narration(current_student)
+    teachable.student? ? teachable.student : current_student
+  end
+
+  # Check if this subject is accessible by a given student
+  def for_student?(student)
+    if teachable.student?
+      teachable.student == student
+    else
+      teachable.student_group.students.include?(student)
+    end
+  end
+
+  # Returns the student if individual subject, nil if group
+  def owner_student
+    teachable.student? ? teachable.student : nil
+  end
+end
+```
+
 ### Example: Family Study Flow
 
 ```txt
@@ -239,13 +286,14 @@ najmi.recordings.includes(:recordable).recent
 
 ### Interaction with ADR 003
 
-This ADR extends ADR 003:
+This ADR must be implemented **before** ADR 003 (Recording pattern). ADR 003 depends on the
+Teachable infrastructure established here.
 
-| ADR 003 (Recording)          | ADR 004 (Teachable)                  |
-| ---------------------------- | ------------------------------------ |
-| Recording belongs to Student | No change - artifacts are individual |
-| Narration belongs to Subject | Subject now belongs to Teachable     |
-| Student has_many :recordings | Student accessed via Teachable       |
+| This ADR (Teachable)         | ADR 003 (Recording)                        |
+| ---------------------------- | ------------------------------------------ |
+| Subject belongs to Teachable | Narration.student_matches_subject uses it  |
+| Student is a delegatee       | Recording still belongs to Student         |
+| StudentGroup has members     | Validation checks group membership         |
 
 The Recording pattern works unchanged; we're just clarifying that Subject's owner (Teachable) can be a group.
 
