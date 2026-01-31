@@ -21,6 +21,56 @@ Key observations from the Family Studies and Tutoring Schedule:
 2. **Group subjects produce individual artifacts** - Family Study on Picture Study yields different narrations/handicrafts per student
 3. **Pick1 subjects need balance tracking** - Teacher wants to see which books have been used to avoid over/under coverage
 
+## Options Considered
+
+### Option A: Polymorphic Association
+
+Use `belongs_to :owner, polymorphic: true` on Subject directly:
+
+```ruby
+class Subject < ApplicationRecord
+  belongs_to :owner, polymorphic: true  # Student or StudentGroup
+end
+```
+
+**Pros:**
+- Simpler, fewer tables
+- Well-understood Rails pattern
+
+**Cons:**
+- No unified query for "all teachables" without manual UNION
+- User ownership scattered across types (each needs `belongs_to :user`)
+- Less structured than delegated_type
+
+### Option B: Duplicate Subjects Per Student
+
+For group subjects, create a copy for each student:
+
+```ruby
+# "Family Study: Picture Study" becomes:
+# - Subject for Najmi (copy)
+# - Subject for Isa (copy)
+```
+
+**Pros:**
+- Keeps simple Student → Subject relationship
+- No group_membership complexity
+
+**Cons:**
+- Data duplication
+- Sync issues if subject is renamed
+- Completion tracking becomes complex (mark all copies? or one authoritative?)
+
+### Option C: Delegated Types (Chosen)
+
+Use `delegated_type` with Teachable as superclass.
+
+**Why this option:**
+1. Unified `Teachable.for_user(user)` query for all things that can be taught
+2. Centralized user ownership in Teachable (no duplication)
+3. Clean separation: group subjects exist once, members share via group_memberships
+4. Extensible: could add "ClassGroup" or "Cohort" later
+
 ## Decision
 
 **Adopt Teachable as a delegated_type superclass** for both Student and StudentGroup.
@@ -307,9 +357,82 @@ Since no production data exists:
 4. Update `subjects` to reference `teachable_id` instead of `student_id`
 5. Update all models and tests
 
+## Implementation Guidance
+
+### Avoiding N+1 on all_subjects
+
+When loading a student's subjects, eager load group memberships:
+
+```ruby
+# In controller
+@student = Student.includes(:teachable, student_groups: :teachable).find(id)
+@subjects = @student.all_subjects.includes(:subject_options)
+
+# Optimized all_subjects with eager loading
+def all_subjects
+  Subject.includes(:teachable).where(teachable_id: all_teachable_ids)
+end
+
+private
+
+def all_teachable_ids
+  [teachable_id] + student_groups.map { |g| g.teachable_id }
+end
+```
+
+### Same Subject, Different Context
+
+**Important clarification**: When the same activity is sometimes individual and sometimes group (e.g., "Math might be 1:1 some days, group other days"), create **separate Subject records**:
+
+```ruby
+# Individual Math for Najmi
+Subject.create!(teachable: najmi.teachable, name: "Math", subject_type: :fixed)
+
+# Family Math Review (group activity)
+Subject.create!(teachable: family_group.teachable, name: "Math Review", subject_type: :scheduled)
+```
+
+The ownership of a Subject is **fixed at creation time**. Scheduling variations are modeled through:
+1. `subject_type: :scheduled` with `scheduled_days`
+2. Separate subjects for different contexts
+
+This matches the paper planner model where "Najmi's Math" and "Family Study: Math Review" are distinct rows.
+
+### Test Fixtures
+
+```yaml
+# test/fixtures/teachables.yml
+najmi_teachable:
+  user: parent
+  name: Najmi
+  teachable_type: Student
+  teachable_id: <%= ActiveRecord::FixtureSet.identify(:najmi) %>
+
+family_teachable:
+  user: parent
+  name: Family Study
+  teachable_type: StudentGroup
+  teachable_id: <%= ActiveRecord::FixtureSet.identify(:family_group) %>
+
+# test/fixtures/students.yml
+najmi:
+  avatar_url: null
+  year_level: 6
+
+# test/fixtures/student_groups.yml
+family_group:
+  group_type: family
+
+# test/fixtures/group_memberships.yml
+najmi_in_family:
+  student: najmi
+  student_group: family_group
+```
+
 ## References
 
 - [The Rails Delegated Type Pattern](https://dev.37signals.com/the-rails-delegated-type-pattern/) - 37signals
 - [Rails API: ActiveRecord::DelegatedType](https://api.rubyonrails.org/classes/ActiveRecord/DelegatedType.html)
+- [ADR-003-004-EVALUATION.md](ADR-003-004-EVALUATION.md) - Multi-perspective evaluation
 - ADR 003: Delegated Types for Recordables
 - Family Studies and Tutoring Schedule.pdf

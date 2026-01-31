@@ -287,9 +287,81 @@ This allows each student to create their own narration (artifact) for group lear
 | Standalone `QuickNote` model    | QuickNote as delegatee of Recording     |
 | Separate queries, merge in Ruby | Single `Recording` query                |
 
+## Implementation Guidance
+
+### Avoiding N+1 Queries
+
+When loading the unified timeline, always eager load the recordable and its associations:
+
+```ruby
+# Good: Eager loads recordables
+@recordings = current_student.recordings.includes(:recordable).recent
+
+# Better: Also eager load attachments for voice/photo narrations
+@recordings = current_student.recordings
+  .includes(recordable: { media_attachment: :blob })
+  .recent
+```
+
+### Creation Pattern
+
+QuickNotes should be created with their Recording in a transaction:
+
+```ruby
+# In QuickNotesController
+def create
+  Recording.transaction do
+    @quick_note = QuickNote.create!(quick_note_params)
+    @recording = Recording.create!(
+      student: current_student,
+      date: Date.current,
+      recordable: @quick_note
+    )
+  end
+end
+```
+
+Alternatively, use `accepts_nested_attributes_for`:
+
+```ruby
+# app/models/quick_note.rb
+class QuickNote < ApplicationRecord
+  has_one :recording, as: :recordable, dependent: :destroy, inverse_of: :recordable
+  accepts_nested_attributes_for :recording
+end
+
+# Controller
+@quick_note = QuickNote.create!(
+  content: params[:content],
+  recording_attributes: { student: current_student, date: Date.current }
+)
+```
+
+### Test Fixtures Example
+
+```yaml
+# test/fixtures/recordings.yml
+najmi_math_narration:
+  student: alex
+  date: <%= Date.new(2026, 1, 28) %>
+  recordable_type: Narration
+  recordable_id: <%= ActiveRecord::FixtureSet.identify(:text_narration) %>
+
+najmi_quick_note:
+  student: alex
+  date: <%= Date.new(2026, 1, 28) %>
+  recordable_type: QuickNote
+  recordable_id: <%= ActiveRecord::FixtureSet.identify(:field_trip_note) %>
+
+# test/fixtures/quick_notes.yml
+field_trip_note:
+  content: "Field trip to the museum today - shortened lessons"
+```
+
 ## References
 
 - [The Rails Delegated Type Pattern](https://dev.37signals.com/the-rails-delegated-type-pattern/) - 37signals
 - [Rails API: ActiveRecord::DelegatedType](https://api.rubyonrails.org/classes/ActiveRecord/DelegatedType.html)
+- [ADR-003-004-EVALUATION.md](ADR-003-004-EVALUATION.md) - Multi-perspective evaluation
 - Plan 006: Quick Notes Epic
 - ADR-0002: Rails for Simplicity and Learning
