@@ -22,9 +22,12 @@ class DailyControllerTest < ActionDispatch::IntegrationTest
   test "shows daily focus view when logged in with student" do
     sign_in_as @user
     post select_student_path(@student)
-    get today_path
-    assert_response :success
-    assert_match @subject.name, response.body
+
+    travel_to Date.new(2026, 1, 28) do  # Wednesday
+      get today_path
+      assert_response :success
+      assert_match @subject.name, response.body
+    end
   end
 
   test "shows correct date header" do
@@ -86,13 +89,15 @@ class DailyControllerTest < ActionDispatch::IntegrationTest
     sign_in_as @user
     post select_student_path(@student)
 
-    get today_path
-    assert_response :success
+    monday = Date.new(2026, 1, 26)
+    travel_to monday do
+      get today_path
+      assert_response :success
 
-    date = Date.current
-    @student.subjects.each do |subject|
-      if subject.active_on?(date)
-        assert_match subject.name, response.body, "Expected active subject #{subject.name} to be shown"
+      @student.subjects.each do |subject|
+        if subject.active_on?(monday)
+          assert_match subject.name, response.body, "Expected active subject #{subject.name} to be shown"
+        end
       end
     end
   end
@@ -204,7 +209,7 @@ class DailyControllerTest < ActionDispatch::IntegrationTest
 
   # Scheduled Subject Filtering
 
-  test "excludes scheduled subjects on off-days" do
+  test "shows scheduled subjects on off-days with not today label" do
     sign_in_as @user
     post select_student_path(@student)
 
@@ -214,7 +219,10 @@ class DailyControllerTest < ActionDispatch::IntegrationTest
     travel_to friday do
       get today_path
       assert_response :success
-      assert_no_match(/#{scheduled_subject.name}/, response.body)
+      assert_match scheduled_subject.name, response.body
+      assert_match(/Not today/, response.body)
+      assert_match(/Not scheduled today/, response.body)
+      assert_select ".opacity-50", minimum: 1
     end
   end
 

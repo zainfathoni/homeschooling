@@ -10,6 +10,7 @@ class DailyController < ApplicationController
 
     all_subjects = @student.subjects.order(:name)
     @subjects = all_subjects.select { |s| s.active_on?(@date) }
+    @off_day_subjects = all_subjects.select { |s| s.scheduled? && !s.active_on?(@date) }
     completions_records = Completion.where(subject: @subjects, date: @date)
     @completions = completions_records.pluck(:subject_id).to_set
     @pick1_selections = completions_records.where.not(subject_option_id: nil)

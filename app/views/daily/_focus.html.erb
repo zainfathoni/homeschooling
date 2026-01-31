@@ -1,4 +1,4 @@
-<%# locals: (student:, date:, subjects:, completions:, pick1_selections:) %>
+<%# locals: (student:, date:, subjects:, completions:, pick1_selections:, off_day_subjects:) %>
 <% completed_count = completions.size %>
 <% total_count = subjects.size %>
 
@@ -25,4 +25,13 @@
       <% end %>
     <% end %>
   </div>
+
+  <% if off_day_subjects.any? %>
+    <div class="mt-6 space-y-3">
+      <h3 class="text-sm text-gray-500 font-medium">Not scheduled today</h3>
+      <% off_day_subjects.each do |subject| %>
+        <%= render "daily/off_day_card", subject: subject %>
+      <% end %>
+    </div>
+  <% end %>
 </div>

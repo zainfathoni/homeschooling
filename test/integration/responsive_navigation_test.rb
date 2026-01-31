@@ -229,9 +229,13 @@ class ResponsiveNavigationTest < ActionDispatch::IntegrationTest
     get daily_path(date: monday.to_s)
     assert_response :success
     assert_match scheduled_subject.name, response.body
+    assert_no_match(/Not today/, response.body)
 
+    # On off-days, scheduled subjects appear grayed out with "Not today" label
     get daily_path(date: friday.to_s)
     assert_response :success
-    assert_no_match(/#{scheduled_subject.name}/, response.body)
+    assert_match scheduled_subject.name, response.body
+    assert_match(/Not today/, response.body)
+    assert_select ".opacity-50", minimum: 1
   end
 end

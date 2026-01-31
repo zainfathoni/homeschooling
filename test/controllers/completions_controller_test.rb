@@ -4,7 +4,7 @@ class CompletionsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:parent)
     @subject = subjects(:one)
-    @date = Date.current
+    @date = Date.new(2026, 1, 28)  # Wednesday - subjects are active on weekdays
   end
 
   test "redirects when not logged in" do
