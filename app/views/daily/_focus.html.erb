@@ -2,9 +2,12 @@
 <% completed_count = completions.size %>
 <% total_count = subjects.size %>
 
-<div class="bg-white rounded-xl p-4 shadow-sm">
-  <header class="text-center mb-4">
-    <p class="text-gray-600"><%= date.strftime("%A, %b %d") %></p>
+<div class="bg-white rounded-2xl p-5 shadow-sm">
+  <header class="mb-5">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-sm font-semibold text-gray-500 tracking-wide uppercase">Today's Focus</h2>
+    </div>
+    <p class="text-lg font-medium text-gray-800 text-center"><%= date.strftime("%A, %b %d") %></p>
     <%= render "daily/progress_ring", completed: completed_count, total: total_count %>
   </header>
 

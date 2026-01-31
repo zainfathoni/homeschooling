@@ -1,9 +1,11 @@
 <%# locals: (subject:, date:, selected_option_id:, has_narration:) %>
 <%= turbo_frame_tag dom_id(subject, "task_#{date}") do %>
-  <div class="bg-white rounded-xl p-4 shadow-sm border-l-4
-              <%= selected_option_id ? 'border-coral' : 'border-gray-200' %>">
+  <div class="relative bg-white rounded-lg shadow-sm overflow-hidden p-4 pl-5">
+    <%# Left accent tab - positioned absolutely to avoid wavy border effect %>
+    <div class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full <%= selected_option_id ? 'bg-coral' : 'bg-gray-200' %>"></div>
+
     <div class="flex items-center justify-between mb-3">
-      <span class="text-sm text-gray-500">Pick 1</span>
+      <span class="text-xs font-medium text-gray-400 uppercase tracking-wide">Pick 1</span>
       <span class="text-lg">📖</span>
     </div>
     <h3 class="font-medium text-gray-800 mb-3 <%= 'line-through text-gray-400' if selected_option_id %>">

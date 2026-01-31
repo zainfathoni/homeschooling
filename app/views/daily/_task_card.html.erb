@@ -1,7 +1,9 @@
 <%# locals: (subject:, date:, completed:, has_narration:) %>
 <%= turbo_frame_tag dom_id(subject, "task_#{date}") do %>
-  <div class="w-full bg-white rounded-xl p-4 shadow-sm border-l-4 flex items-center gap-4
-              <%= completed ? 'border-coral' : 'border-gray-200' %>">
+  <div class="relative w-full bg-white rounded-lg shadow-sm overflow-hidden flex items-center gap-4 p-4 pl-5">
+    <%# Left accent tab - positioned absolutely to avoid wavy border effect %>
+    <div class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full <%= completed ? 'bg-coral' : 'bg-gray-200' %>"></div>
+
     <%= button_to toggle_completion_path(subject_id: subject.id, date: date),
         method: :post,
         class: "w-11 h-11 rounded-lg border-2 flex items-center justify-center shrink-0 cursor-pointer
@@ -17,7 +19,7 @@
     <% end %>
 
     <div class="flex-1 min-w-0">
-      <span class="text-lg font-medium text-gray-800 block <%= 'line-through text-gray-400' if completed %>">
+      <span class="text-base font-medium text-gray-800 block <%= 'line-through text-gray-400' if completed %>">
         <%= subject.name %>
       </span>
       <% if subject.narration_required? %>
