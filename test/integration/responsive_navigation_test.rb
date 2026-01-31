@@ -236,6 +236,6 @@ class ResponsiveNavigationTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match scheduled_subject.name, response.body
     assert_match(/Not today/, response.body)
-    assert_select ".opacity-50", minimum: 1
+    assert_select ".opacity-60", minimum: 1
   end
 end

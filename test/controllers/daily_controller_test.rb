@@ -203,7 +203,7 @@ class DailyControllerTest < ActionDispatch::IntegrationTest
     travel_to monday do
       get today_path
       assert_response :success
-      assert_match(/add narration/, response.body)
+      assert_match(/Narration Required/, response.body)
     end
   end
 
@@ -222,7 +222,7 @@ class DailyControllerTest < ActionDispatch::IntegrationTest
       assert_match scheduled_subject.name, response.body
       assert_match(/Not today/, response.body)
       assert_match(/Not scheduled today/, response.body)
-      assert_select ".opacity-50", minimum: 1
+      assert_select ".opacity-60", minimum: 1
     end
   end
 
