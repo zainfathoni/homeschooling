@@ -1,7 +1,7 @@
 ---
 id: "003"
 title: Delegated Types for Recordables
-status: proposed
+status: accepted
 date: 2026-01-31
 depends_on: "004"
 ---
@@ -362,6 +362,5 @@ field_trip_note:
 
 - [The Rails Delegated Type Pattern](https://dev.37signals.com/the-rails-delegated-type-pattern/) - 37signals
 - [Rails API: ActiveRecord::DelegatedType](https://api.rubyonrails.org/classes/ActiveRecord/DelegatedType.html)
-- [ADR-003-004-EVALUATION.md](ADR-003-004-EVALUATION.md) - Multi-perspective evaluation
 - Plan 006: Quick Notes Epic
-- ADR-0002: Rails for Simplicity and Learning
+- ADR 004: Teachable Delegated Type

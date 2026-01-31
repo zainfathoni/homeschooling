@@ -1,7 +1,7 @@
 ---
 id: "004"
 title: Teachable Delegated Type for Students and Groups
-status: proposed
+status: accepted
 date: 2026-01-31
 ---
 
@@ -433,6 +433,5 @@ najmi_in_family:
 
 - [The Rails Delegated Type Pattern](https://dev.37signals.com/the-rails-delegated-type-pattern/) - 37signals
 - [Rails API: ActiveRecord::DelegatedType](https://api.rubyonrails.org/classes/ActiveRecord/DelegatedType.html)
-- [ADR-003-004-EVALUATION.md](ADR-003-004-EVALUATION.md) - Multi-perspective evaluation
 - ADR 003: Delegated Types for Recordables
 - Family Studies and Tutoring Schedule.pdf
