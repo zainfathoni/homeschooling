@@ -115,6 +115,21 @@ Replace paper-based weekly planners with a digital tool that:
 - Linked to subject and date
 - Filterable by student
 
+### 5. Quick Notes
+
+Quick Notes are **date-level observations** distinct from subject-attached Narrations:
+
+| Feature         | Attached To    | Purpose                          | Examples                          |
+| --------------- | -------------- | -------------------------------- | --------------------------------- |
+| **Narrations**  | Subject + Date | Learning evidence for curriculum | "Tell me about the book you read" |
+| **Quick Notes** | Date only      | Day-level observations           | "We visited the museum today"     |
+
+Quick Notes capture day-level context like:
+
+- "Field trip today"
+- "Shortened lessons - dentist appointment"
+- General reflections not tied to a specific subject
+
 ## Technical Architecture
 
 ### Stack
