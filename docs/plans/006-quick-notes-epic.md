@@ -4,6 +4,7 @@ title: Quick Notes Epic
 status: planning
 created: 2026-01-31
 depends_on: "005"
+decision: "003"
 ---
 
 ## Overview
@@ -19,51 +20,115 @@ Quick Notes are date-level observations distinct from subject-attached Narration
 
 ## Goal
 
-- New `QuickNote` model attached to student + date (not subject)
+- Implement delegated_type pattern per ADR 003
+- Recording superclass for unified timeline queries
+- QuickNote and Narration as delegatees
 - Quick capture UI: FAB on mobile, section on tablet
-- Display in daily view and notes timeline
 - Text-only for v1 (voice deferred)
 
 ## Data Model
 
-### Migration: CreateQuickNotes
+Per [ADR 003](../decisions/003-delegated-types-for-recordables.md), we use Rails `delegated_type` pattern.
+
+### Recording (Superclass)
 
 ```ruby
-class CreateQuickNotes < ActiveRecord::Migration[8.0]
-  def change
-    create_table :quick_notes do |t|
-      t.references :student, null: false, foreign_key: true
-      t.references :week, null: false, foreign_key: true
-      t.integer :day_index, null: false  # 0=Mon, 4=Fri
-      t.text :content, null: false
-      t.timestamps
-    end
+# db/migrate/xxx_create_recordings.rb
+create_table :recordings do |t|
+  t.references :student, null: false, foreign_key: true
+  t.date :date, null: false
+  t.string :recordable_type, null: false
+  t.bigint :recordable_id, null: false
+  t.timestamps
+end
 
-    add_index :quick_notes, [:student_id, :week_id, :day_index]
+add_index :recordings, [:student_id, :date]
+add_index :recordings, [:recordable_type, :recordable_id], unique: true
+```
+
+```ruby
+# app/models/recording.rb
+class Recording < ApplicationRecord
+  belongs_to :student
+
+  delegated_type :recordable, types: %w[Narration QuickNote], dependent: :destroy
+
+  validates :date, presence: true
+
+  scope :recent, -> { order(date: :desc, created_at: :desc) }
+  scope :for_date, ->(date) { where(date: date) }
+end
+```
+
+### QuickNote (Delegatee)
+
+```ruby
+# db/migrate/xxx_create_quick_notes.rb
+create_table :quick_notes do |t|
+  t.text :content, null: false
+  t.timestamps
+end
+```
+
+```ruby
+# app/models/quick_note.rb
+class QuickNote < ApplicationRecord
+  has_one :recording, as: :recordable, dependent: :destroy, inverse_of: :recordable
+  delegate :student, :student_id, :date, to: :recording
+
+  validates :content, presence: true
+end
+```
+
+### Narration (Refactored Delegatee)
+
+```ruby
+# db/migrate/xxx_recreate_narrations.rb
+# Drop existing narrations table and recreate without student_id/date
+create_table :narrations do |t|
+  t.references :subject, null: false, foreign_key: true
+  t.string :narration_type, null: false
+  t.text :content
+  t.timestamps
+end
+```
+
+```ruby
+# app/models/narration.rb
+class Narration < ApplicationRecord
+  belongs_to :subject
+  has_one_attached :media
+
+  has_one :recording, as: :recordable, dependent: :destroy, inverse_of: :recordable
+  delegate :student, :student_id, :date, to: :recording
+
+  validates :narration_type, presence: true, inclusion: { in: %w[text voice photo] }
+  validates :content, presence: true, if: :text?
+  validates :media, presence: true, if: -> { voice? || photo? }
+  validate :student_matches_subject
+
+  enum :narration_type, { text: "text", voice: "voice", photo: "photo" }
+
+  private
+
+  def student_matches_subject
+    return unless subject.present? && recording&.student_id.present?
+    errors.add(:subject, "must belong to the same student") if subject.student_id != recording.student_id
   end
 end
 ```
 
-### Model: QuickNote
+### Student (Updated)
 
 ```ruby
-class QuickNote < ApplicationRecord
-  belongs_to :student
-  belongs_to :week
+# app/models/student.rb
+class Student < ApplicationRecord
+  belongs_to :user
 
-  validates :day_index, presence: true, inclusion: { in: 0..4 }
-  validates :content, presence: true
+  has_many :subjects, dependent: :destroy
+  has_many :recordings, dependent: :destroy
 
-  def date
-    week.start_date + day_index.days
-  end
-
-  scope :for_date, ->(date) {
-    week = Week.find_by(start_date: date.beginning_of_week(:monday))
-    where(week: week, day_index: date.wday - 1) if week
-  }
-
-  scope :recent, -> { order(created_at: :desc) }
+  validates :name, presence: true
 end
 ```
 
@@ -90,42 +155,46 @@ end
 
 ## Task Breakdown
 
-### Task 1: QuickNote Model & Migration
+### Task 1: Delegated Types Foundation (hs-qn.1)
 
-- Create migration
-- Create model with validations
-- Add association to Student and Week
-- Unit tests
+- Create `recordings` table (superclass)
+- Drop existing `narrations` table, recreate as delegatee (without student_id/date)
+- Create `quick_notes` table (delegatee)
+- Create Recording model with delegated_type
+- Refactor Narration model to use Recording
+- Create QuickNote model
+- Update Student associations
+- Unit tests for all three models
 
-### Task 2: QuickNotes Controller
+### Task 2: QuickNotes Controller (hs-qn.2)
 
-- CRUD actions
+- CRUD actions for QuickNote via Recording
 - Scoped to current student
 - Turbo Stream responses
 
-### Task 3: Quick Notes FAB (Mobile)
+### Task 3: Quick Notes FAB (Mobile) (hs-qn.3)
 
 - Stimulus controller for modal
 - Form partial
 - Integration with daily view
 
-### Task 4: Quick Notes Section (Tablet)
+### Task 4: Quick Notes Section (Tablet) (hs-qn.4)
 
 - Inline form partial
 - Display existing notes
 - Integration with Duet view
 
-### Task 5: Notes Timeline Integration
+### Task 5: Notes Timeline Integration (hs-qn.5)
 
-- Update notes index to include QuickNotes
-- Unified display with Narrations
+- Build `/notes` view using `Recording.includes(:recordable).recent`
+- Render partials per recordable type
 - Filter by type (Narrations vs Quick Notes)
 
-### Task 6: Tests
+### Task 6: Integration Tests (hs-qn.6)
 
-- Model tests
-- Controller tests
+- Controller tests for recordings
 - Integration tests for both breakpoints
+- Timeline display tests
 
 ## Dependencies
 
@@ -138,12 +207,23 @@ hs-qn.1 ─► hs-qn.2 ─┬─► hs-qn.3 ─► hs-qn.6
 
 ```txt
 hs-qn (EPIC)
-├── hs-qn.1: QuickNote model & migration
+├── hs-qn.1: Delegated types foundation (Recording + QuickNote + Narration refactor)
 ├── hs-qn.2: QuickNotes controller
 ├── hs-qn.3: Quick Notes FAB (mobile)
 ├── hs-qn.4: Quick Notes section (tablet)
 ├── hs-qn.5: Notes timeline integration
-└── hs-qn.6: Tests
+└── hs-qn.6: Integration tests
+```
+
+## Timeline Query Example
+
+```ruby
+# Unified feed - single query with correct ordering
+@recordings = current_student.recordings.includes(:recordable).recent
+
+# Render with partials
+<%= render partial: "recordings/#{recording.recordable_type.underscore}",
+           locals: { recording: recording, recordable: recording.recordable } %>
 ```
 
 ## Verification
@@ -153,5 +233,5 @@ After implementation:
 1. `bin/rails test` - all tests pass
 2. Mobile: FAB visible, modal opens, can save note without selecting subject
 3. Tablet: Section visible in Duet view, inline form works
-4. Notes view: Quick Notes appear alongside Narrations
-5. Data: QuickNote records have student + week + day_index, no subject_id
+4. Notes view: Quick Notes and Narrations in unified timeline via Recording
+5. Data: Recording holds student_id + date; QuickNote has only content; Narration has subject_id + type
