@@ -4,7 +4,7 @@ class TodayController < ApplicationController
   def index
     @students = Current.user.students
     @student = current_student
-    @date = Date.current
+    @date = clamp_to_weekday(Date.current)
     @week_start = @date.beginning_of_week(:monday)
     @week_end = @week_start + 4.days
     @dates = week_dates(@date)
@@ -46,6 +46,17 @@ class TodayController < ApplicationController
       @pick1_selections = daily_completions_records.where.not(subject_option_id: nil)
                                                    .pluck(:subject_id, :subject_option_id)
                                                    .to_h
+    end
+  end
+
+  private
+
+  # On weekends, default to Friday (end of week) for the daily focus
+  def clamp_to_weekday(date)
+    case date.wday
+    when 0 then date - 2  # Sunday -> Friday
+    when 6 then date - 1  # Saturday -> Friday
+    else date
     end
   end
 end
