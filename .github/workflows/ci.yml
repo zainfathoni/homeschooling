@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Setup database
+        run: bin/rails db:prepare
+        env:
+          RAILS_ENV: test
+
+      - name: Style - Rubocop
+        run: bin/rubocop
+
+      - name: Security - Gem audit
+        run: bin/bundler-audit
+
+      - name: Security - Importmap audit
+        run: bin/importmap audit
+
+      - name: Security - Brakeman
+        run: bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error
+
+      - name: Tests - Rails
+        run: bin/rails test
+        env:
+          RAILS_ENV: test
+
+      - name: Tests - Seeds
+        run: bin/rails db:seed:replant
+        env:
+          RAILS_ENV: test
