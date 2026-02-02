@@ -1,6 +1,6 @@
 require "test_helper"
 
-class TeachableTest < ActionDispatch::IntegrationTest
+class TeachableWorkflowTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:parent)
     @student = students(:one)
