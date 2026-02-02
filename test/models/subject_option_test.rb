@@ -43,7 +43,7 @@ class SubjectOptionTest < ActiveSupport::TestCase
   test "accepts_nested_attributes_for subject_options" do
     subject = Subject.create!(
       name: "Test Pick1",
-      student: students(:one),
+      teachable: teachables(:student_one_teachable),
       subject_type: "pick1",
       subject_options_attributes: [
         { name: "Option A", position: 0 },
@@ -72,7 +72,7 @@ class SubjectOptionTest < ActiveSupport::TestCase
   test "accepts_nested_attributes_for rejects all blank" do
     subject = Subject.create!(
       name: "Test Pick1",
-      student: students(:one),
+      teachable: teachables(:student_one_teachable),
       subject_type: "pick1",
       subject_options_attributes: [
         { name: "Option A", position: 0 },

@@ -11,7 +11,7 @@
     <div class="flex-1 min-w-[140px]">
       <%= f.label :subject_id, "Subject", class: "block text-sm text-gray-600 mb-1" %>
       <%= f.select :subject_id,
-          options_from_collection_for_select(student.subjects, :id, :name, params[:subject_id]),
+          options_from_collection_for_select(student.all_subjects, :id, :name, params[:subject_id]),
           { include_blank: "All Subjects" },
           { onchange: "this.form.requestSubmit()",
             class: "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-coral focus:border-coral" } %>

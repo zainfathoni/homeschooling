@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_02_055343) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_02_061729) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -102,10 +102,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_02_055343) do
     t.string "name"
     t.boolean "narration_required", default: false, null: false
     t.json "scheduled_days"
-    t.integer "student_id", null: false
+    t.integer "student_id"
     t.string "subject_type", default: "fixed", null: false
+    t.integer "teachable_id"
     t.datetime "updated_at", null: false
     t.index ["student_id"], name: "index_subjects_on_student_id"
+    t.index ["teachable_id"], name: "index_subjects_on_teachable_id"
   end
 
   create_table "teachables", force: :cascade do |t|
@@ -137,6 +139,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_02_055343) do
   add_foreign_key "narrations", "students"
   add_foreign_key "narrations", "subjects"
   add_foreign_key "subject_options", "subjects"
-  add_foreign_key "subjects", "students"
+  add_foreign_key "subjects", "teachables"
   add_foreign_key "teachables", "users"
 end

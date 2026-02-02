@@ -192,7 +192,7 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
     other_student = students(:three)
     other_narration = Narration.create!(
       student: other_student,
-      subject: other_student.subjects.create!(name: "Test", subject_type: "fixed"),
+      subject: other_student.all_subjects.first || Subject.create!(name: "Test", subject_type: "fixed", teachable: other_student.teachable),
       date: Date.current,
       narration_type: "text",
       content: "Other student narration"

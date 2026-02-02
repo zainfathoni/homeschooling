@@ -3,6 +3,8 @@ class Teachable < ApplicationRecord
 
   delegated_type :teachable, types: %w[Student StudentGroup], dependent: :destroy
 
+  has_many :subjects, dependent: :destroy
+
   validates :name, presence: true
   validates :teachable_type, presence: true
   validates :teachable_id, uniqueness: { scope: :teachable_type }, if: -> { teachable_id.present? }

@@ -21,6 +21,8 @@ class Narration < ApplicationRecord
 
   def student_matches_subject
     return unless subject.present? && student.present?
-    errors.add(:subject, "must belong to the same student") if subject.student_id != student_id
+    unless subject.for_student?(student)
+      errors.add(:subject, "must belong to the same student or group")
+    end
   end
 end

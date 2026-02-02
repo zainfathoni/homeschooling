@@ -94,7 +94,7 @@ class DailyControllerTest < ActionDispatch::IntegrationTest
       get today_path
       assert_response :success
 
-      @student.subjects.each do |subject|
+      @student.all_subjects.each do |subject|
         if subject.active_on?(monday)
           assert_match subject.name, response.body, "Expected active subject #{subject.name} to be shown"
         end

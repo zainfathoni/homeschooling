@@ -42,7 +42,7 @@
       </div>
     <% end %>
     <% if has_narration %>
-      <%= link_to student_narrations_path(subject.student, date: date, subject_id: subject.id),
+      <%= link_to student_narrations_path(subject.student_for_narration(current_student), date: date, subject_id: subject.id),
           class: "absolute -top-0.5 -right-0.5 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-green-600 transition-colors",
           title: "View narration for #{subject.name} on #{date.strftime('%A')}",
           data: { turbo_frame: "_top" } do %>

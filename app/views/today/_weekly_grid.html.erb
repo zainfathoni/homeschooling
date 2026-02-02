@@ -32,13 +32,13 @@
           <span class="text-sm font-medium text-gray-800 truncate block"><%= subject.name %></span>
           <% if subject.narration_required? %>
             <% if subject.has_narration_for?(current_date) %>
-              <%= link_to student_narrations_path(subject.student, date: current_date, subject_id: subject.id),
+              <%= link_to student_narrations_path(subject.student_for_narration(current_student), date: current_date, subject_id: subject.id),
                   class: "text-xs text-green-600 hover:text-green-700 inline-flex items-center gap-1",
                   data: { turbo_frame: "_top" } do %>
                 <span>✓</span> narrated today
               <% end %>
             <% else %>
-              <%= link_to new_student_narration_path(subject.student, subject_id: subject.id, date: current_date),
+              <%= link_to new_student_narration_path(subject.student_for_narration(current_student), subject_id: subject.id, date: current_date),
                   class: "text-xs text-coral hover:text-coral/80 inline-flex items-center gap-1",
                   data: { turbo_frame: "_top" } do %>
                 <span>+</span> add today narration

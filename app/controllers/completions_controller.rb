@@ -65,14 +65,14 @@ class CompletionsController < ApplicationController
   end
 
   def calculate_week_totals
-    student = @subject.student
     @dates = week_dates(@date)
     week_start = @dates.first
     week_end = @dates.last
 
-    subjects = student.subjects
+    # Get subjects for this teachable
+    subjects = Subject.where(teachable: @subject.teachable)
     week_completions = Completion.joins(:subject)
-                                 .where(subjects: { student_id: student.id })
+                                 .where(subjects: { teachable_id: @subject.teachable_id })
                                  .where(date: week_start..week_end)
                                  .count
 
@@ -81,17 +81,17 @@ class CompletionsController < ApplicationController
     @is_today = @date == Date.current
     @has_narration = @subject.has_narration_for?(@date)
 
-    calculate_daily_totals(student, subjects)
+    calculate_daily_totals(subjects)
   end
 
-  def calculate_daily_totals(student, subjects)
+  def calculate_daily_totals(subjects)
     @daily_subjects = subjects.select { |s| s.active_on?(@date) }
     @daily_completed = Completion.where(subject: @daily_subjects, date: @date).count
     @daily_total = @daily_subjects.size
   end
 
   def authorize_subject!
-    unless @subject.student.user_id == Current.user.id
+    unless @subject.teachable.user_id == Current.user.id
       redirect_to today_path, alert: "Not authorized"
     end
   end

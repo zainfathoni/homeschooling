@@ -10,10 +10,11 @@ class TodayController < ApplicationController
     @dates = week_dates(@date)
 
     if @student
-      @subjects = @student.subjects.includes(:completions, :subject_options)
+      @subjects = @student.all_subjects.includes(:completions, :subject_options, :teachable)
+      subject_ids = @subjects.pluck(:id)
       week_completion_records = Completion.joins(:subject)
                                           .left_joins(:subject_option)
-                                          .where(subjects: { student_id: @student.id })
+                                          .where(subject_id: subject_ids)
                                           .where(date: @week_start..@week_end)
                                           .pluck(:subject_id, :date, "subject_options.name")
       @week_completions = week_completion_records

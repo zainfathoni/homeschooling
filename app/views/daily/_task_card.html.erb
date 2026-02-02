@@ -24,13 +24,13 @@
       </span>
       <% if subject.narration_required? %>
         <% if has_narration %>
-          <%= link_to student_narrations_path(subject.student, date: date, subject_id: subject.id),
+          <%= link_to student_narrations_path(subject.student_for_narration(current_student), date: date, subject_id: subject.id),
               class: "text-xs text-green-600 hover:text-green-700 inline-flex items-center gap-1 shrink-0",
               data: { turbo_frame: "_top" } do %>
             <span>✓</span> narrated
           <% end %>
         <% else %>
-          <%= link_to new_student_narration_path(subject.student, subject_id: subject.id, date: date),
+          <%= link_to new_student_narration_path(subject.student_for_narration(current_student), subject_id: subject.id, date: date),
               class: "text-xs bg-coral/90 text-white px-2 py-0.5 rounded-full hover:bg-coral shrink-0",
               data: { turbo_frame: "_top" } do %>
             Narration Required

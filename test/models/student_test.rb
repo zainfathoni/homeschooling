@@ -32,7 +32,7 @@ class StudentTest < ActiveSupport::TestCase
 
   test "all_subjects returns individual subjects" do
     subject = subjects(:one)
-    assert_includes @student.subjects, subject
+    assert_includes @student.all_subjects, subject
   end
 
   test "destroying student destroys teachable" do
