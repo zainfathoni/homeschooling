@@ -401,32 +401,84 @@ This matches the paper planner model where "Najmi's Math" and "Family Study: Mat
 ### Test Fixtures
 
 ```yaml
+# test/fixtures/users.yml
+vika:
+  email: vika@example.com
+  role: parent
+
 # test/fixtures/teachables.yml
 najmi_teachable:
-  user: parent
+  user: vika
   name: Najmi
   teachable_type: Student
   teachable_id: <%= ActiveRecord::FixtureSet.identify(:najmi) %>
 
+isa_teachable:
+  user: vika
+  name: Isa
+  teachable_type: Student
+  teachable_id: <%= ActiveRecord::FixtureSet.identify(:isa) %>
+
 family_teachable:
-  user: parent
+  user: vika
   name: Family Study
   teachable_type: StudentGroup
   teachable_id: <%= ActiveRecord::FixtureSet.identify(:family_group) %>
 
+najmi_isa_joint:
+  user: vika
+  name: Najmi & Isa Tutoring
+  teachable_type: StudentGroup
+  teachable_id: <%= ActiveRecord::FixtureSet.identify(:joint_group) %>
+
 # test/fixtures/students.yml
 najmi:
   avatar_url: null
-  year_level: 6
+  year_level: 6  # Age 11
+
+isa:
+  avatar_url: null
+  year_level: 3  # Age 8
 
 # test/fixtures/student_groups.yml
 family_group:
   group_type: family
 
+joint_group:
+  group_type: joint
+
 # test/fixtures/group_memberships.yml
 najmi_in_family:
   student: najmi
   student_group: family_group
+
+isa_in_family:
+  student: isa
+  student_group: family_group
+
+najmi_in_joint:
+  student: najmi
+  student_group: joint_group
+
+isa_in_joint:
+  student: isa
+  student_group: joint_group
+
+# test/fixtures/subjects.yml
+najmi_math:
+  teachable: najmi_teachable
+  name: Math
+  subject_type: fixed
+
+isa_math:
+  teachable: isa_teachable
+  name: Math
+  subject_type: fixed
+
+family_picture_study:
+  teachable: family_teachable
+  name: Picture Study
+  subject_type: scheduled
 ```
 
 ## References

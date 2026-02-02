@@ -340,18 +340,40 @@ end
 ### Test Fixtures Example
 
 ```yaml
+# test/fixtures/users.yml
+vika:
+  email: vika@example.com
+  role: parent
+
 # test/fixtures/recordings.yml
 najmi_math_narration:
-  student: alex
+  student: najmi
   date: <%= Date.new(2026, 1, 28) %>
   recordable_type: Narration
-  recordable_id: <%= ActiveRecord::FixtureSet.identify(:text_narration) %>
+  recordable_id: <%= ActiveRecord::FixtureSet.identify(:najmi_text_narration) %>
 
 najmi_quick_note:
-  student: alex
+  student: najmi
   date: <%= Date.new(2026, 1, 28) %>
   recordable_type: QuickNote
   recordable_id: <%= ActiveRecord::FixtureSet.identify(:field_trip_note) %>
+
+isa_math_narration:
+  student: isa
+  date: <%= Date.new(2026, 1, 28) %>
+  recordable_type: Narration
+  recordable_id: <%= ActiveRecord::FixtureSet.identify(:isa_text_narration) %>
+
+# test/fixtures/narrations.yml
+najmi_text_narration:
+  subject: najmi_math
+  narration_type: text
+  content: "Today I learned about fractions"
+
+isa_text_narration:
+  subject: isa_math
+  narration_type: text
+  content: "I practiced addition and subtraction"
 
 # test/fixtures/quick_notes.yml
 field_trip_note:
