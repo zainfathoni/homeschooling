@@ -5,7 +5,7 @@ class Teachable < ApplicationRecord
 
   validates :name, presence: true
   validates :teachable_type, presence: true
-  validates :teachable_id, presence: true, uniqueness: { scope: :teachable_type }
+  validates :teachable_id, uniqueness: { scope: :teachable_type }, if: -> { teachable_id.present? }
 
   scope :students, -> { where(teachable_type: "Student") }
   scope :student_groups, -> { where(teachable_type: "StudentGroup") }

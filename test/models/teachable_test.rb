@@ -24,23 +24,22 @@ class TeachableTest < ActiveSupport::TestCase
     assert_includes teachable.errors[:teachable_type], "can't be blank"
   end
 
-  test "requires teachable_id" do
+  test "requires teachable association" do
     teachable = Teachable.new(name: "Test", user: @user, teachable_type: "Student")
+    # delegated_type requires the teachable association to exist
     assert_not teachable.valid?
-    assert_includes teachable.errors[:teachable_id], "can't be blank"
+    assert_includes teachable.errors[:teachable], "must exist"
   end
 
   test "teachable_id must be unique within teachable_type" do
-    student2 = students(:two)
-    Teachable.create!(name: "First", user: @user, teachable: @student)
-
+    # Fixture already created teachable for @student
     duplicate = Teachable.new(name: "Second", user: @user, teachable_type: "Student", teachable_id: @student.id)
     assert_not duplicate.valid?
     assert_includes duplicate.errors[:teachable_id], "has already been taken"
   end
 
   test "same teachable_id allowed for different teachable_types" do
-    Teachable.create!(name: "Student One", user: @user, teachable: @student)
+    # Fixture already created teachable for @student
     group = StudentGroup.create!(group_type: :family)
     group_teachable = Teachable.new(name: "Group One", user: @user, teachable: group)
 
@@ -48,7 +47,8 @@ class TeachableTest < ActiveSupport::TestCase
   end
 
   test "valid with all required attributes" do
-    teachable = Teachable.new(name: "Test Student", user: @user, teachable: @student)
+    new_student = Student.create!(name: "New Student")
+    teachable = Teachable.new(name: "Test Student", user: @user, teachable: new_student)
     assert teachable.valid?
   end
 
@@ -65,7 +65,7 @@ class TeachableTest < ActiveSupport::TestCase
   end
 
   test "students scope returns only Student teachables" do
-    Teachable.create!(name: "Student", user: @user, teachable: @student)
+    # Fixtures already created teachables for students
     group = StudentGroup.create!(group_type: :family)
     Teachable.create!(name: "Group", user: @user, teachable: group)
 
@@ -74,7 +74,7 @@ class TeachableTest < ActiveSupport::TestCase
   end
 
   test "student_groups scope returns only StudentGroup teachables" do
-    Teachable.create!(name: "Student", user: @user, teachable: @student)
+    # Fixtures already created teachables for students
     group = StudentGroup.create!(group_type: :family)
     Teachable.create!(name: "Group", user: @user, teachable: group)
 
@@ -83,12 +83,9 @@ class TeachableTest < ActiveSupport::TestCase
   end
 
   test "for_user scope returns teachables for specific user" do
-    other_user = users(:other)
-    student2 = students(:two)
-    Teachable.create!(name: "Parent Student", user: @user, teachable: @student)
-    Teachable.create!(name: "Other Student", user: other_user, teachable: student2)
-
+    # Fixtures already created teachables for students with users
     parent_teachables = Teachable.for_user(@user)
     assert parent_teachables.all? { |t| t.user == @user }
+    assert parent_teachables.count >= 2 # students :one and :three belong to parent
   end
 end

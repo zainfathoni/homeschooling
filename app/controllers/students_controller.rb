@@ -6,11 +6,12 @@ class StudentsController < ApplicationController
   end
 
   def new
-    @student = Current.user.students.build
+    @student = Student.new
   end
 
   def create
-    @student = Current.user.students.build(student_params)
+    @student = Student.new(student_params.except(:name))
+    @student.build_teachable(name: student_params[:name], user: Current.user)
 
     if @student.save
       redirect_to students_path, notice: "Student was successfully created."
@@ -23,7 +24,10 @@ class StudentsController < ApplicationController
   end
 
   def update
-    if @student.update(student_params)
+    student_attrs = student_params.except(:name)
+    teachable_attrs = { name: student_params[:name] }.compact
+
+    if @student.update(student_attrs) && @student.teachable.update(teachable_attrs)
       redirect_to students_path, notice: "Student was successfully updated."
     else
       render :edit, status: :unprocessable_entity

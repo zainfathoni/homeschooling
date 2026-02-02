@@ -1,0 +1,17 @@
+student_one_teachable:
+  name: Alex
+  user: parent
+  teachable_type: Student
+  teachable_id: <%= ActiveRecord::FixtureSet.identify(:one) %>
+
+student_two_teachable:
+  name: Sam
+  user: other
+  teachable_type: Student
+  teachable_id: <%= ActiveRecord::FixtureSet.identify(:two) %>
+
+student_three_teachable:
+  name: Jordan
+  user: parent
+  teachable_type: Student
+  teachable_id: <%= ActiveRecord::FixtureSet.identify(:three) %>
