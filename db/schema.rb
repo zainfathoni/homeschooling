@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_29_131646) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_02_053821) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -50,6 +50,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_29_131646) do
     t.index ["subject_option_id"], name: "index_completions_on_subject_option_id"
   end
 
+  create_table "group_memberships", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "student_group_id", null: false
+    t.integer "student_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["student_group_id", "student_id"], name: "index_group_memberships_on_student_group_id_and_student_id", unique: true
+    t.index ["student_group_id"], name: "index_group_memberships_on_student_group_id"
+    t.index ["student_id"], name: "index_group_memberships_on_student_id"
+  end
+
   create_table "narrations", force: :cascade do |t|
     t.text "content"
     t.datetime "created_at", null: false
@@ -62,6 +72,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_29_131646) do
     t.index ["student_id"], name: "index_narrations_on_student_id"
     t.index ["subject_id", "date"], name: "index_narrations_on_subject_id_and_date"
     t.index ["subject_id"], name: "index_narrations_on_subject_id"
+  end
+
+  create_table "student_groups", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "group_type", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "students", force: :cascade do |t|
@@ -94,6 +110,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_29_131646) do
     t.index ["student_id"], name: "index_subjects_on_student_id"
   end
 
+  create_table "teachables", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.integer "teachable_id", null: false
+    t.string "teachable_type", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["teachable_type", "teachable_id"], name: "index_teachables_on_teachable_type_and_teachable_id", unique: true
+    t.index ["user_id"], name: "index_teachables_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -107,9 +134,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_29_131646) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "completions", "subject_options"
   add_foreign_key "completions", "subjects"
+  add_foreign_key "group_memberships", "student_groups"
+  add_foreign_key "group_memberships", "students"
   add_foreign_key "narrations", "students"
   add_foreign_key "narrations", "subjects"
   add_foreign_key "students", "users"
   add_foreign_key "subject_options", "subjects"
   add_foreign_key "subjects", "students"
+  add_foreign_key "teachables", "users"
 end
