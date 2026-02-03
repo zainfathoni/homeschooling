@@ -56,9 +56,4 @@ class StudentTest < ActiveSupport::TestCase
     assert_nil Teachable.find_by(id: teachable_id)
   end
 
-  test "student validates name presence when no teachable" do
-    student = Student.new(name: nil)
-    assert_not student.valid?
-    assert_includes student.errors[:name], "can't be blank"
-  end
 end

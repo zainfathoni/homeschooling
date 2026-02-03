@@ -9,7 +9,6 @@ class Student < ApplicationRecord
 
   delegate :user, :user_id, :name, to: :teachable, allow_nil: true
 
-  validates :name, presence: true, if: -> { teachable.blank? }
   validates_associated :teachable
 
   def all_subjects
