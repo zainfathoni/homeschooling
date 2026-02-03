@@ -55,5 +55,4 @@ class StudentTest < ActiveSupport::TestCase
     @student.destroy
     assert_nil Teachable.find_by(id: teachable_id)
   end
-
 end
