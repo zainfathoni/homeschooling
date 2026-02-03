@@ -20,12 +20,12 @@ student_names = [
 subject_configs = [
   { name: "Math", subject_type: "fixed" },
   { name: "Handwriting", subject_type: "fixed" },
-  { name: "Coding", subject_type: "scheduled", scheduled_days: [0, 1, 2, 3] },
+  { name: "Coding", subject_type: "scheduled", scheduled_days: [ 0, 1, 2, 3 ] },
   { name: "Islamic Study", subject_type: "pick1" },
   { name: "Reading", subject_type: "fixed", narration_required: true }
 ]
 
-pick1_options = ["Safar Book", "Quran Memorization", "Hadith Study"]
+pick1_options = [ "Safar Book", "Quran Memorization", "Hadith Study" ]
 
 all_students = []
 all_subjects = []
@@ -62,6 +62,39 @@ users.each_with_index do |user, user_idx|
 
     puts "  Created #{name} with #{subject_configs.size} subjects"
   end
+end
+
+# Create a family StudentGroup for Family 1 (Alex & Emma)
+puts "Creating student groups..."
+family1_students = all_students.select { |s| s.name.in?(%w[Alex Emma]) }
+if family1_students.size == 2
+  family1_user = users.first
+  family_group = StudentGroup.find_or_create_by!(group_type: "family") do |g|
+    # StudentGroup created, teachable will be added below
+  end
+
+  # Find or create the teachable for this group
+  group_teachable = Teachable.find_or_create_by!(
+    teachable_type: "StudentGroup",
+    teachable_id: family_group.id
+  ) do |t|
+    t.user = family1_user
+    t.name = "Alex & Emma (Family)"
+  end
+
+  # Add students to the group
+  family1_students.each do |student|
+    GroupMembership.find_or_create_by!(student_group: family_group, student: student)
+  end
+
+  # Create a group subject (shared between siblings)
+  group_subject = Subject.find_or_create_by!(name: "Family Read-Aloud", teachable: group_teachable) do |s|
+    s.subject_type = "fixed"
+    s.narration_required = false
+  end
+  all_subjects << group_subject
+
+  puts "  Created family group '#{group_teachable.name}' with #{family1_students.size} students and 1 shared subject"
 end
 
 # Create completions for the past 2 weeks
@@ -113,6 +146,8 @@ puts "  Created #{narration_count} narrations"
 puts "\nSeed complete!"
 puts "  Users: #{User.count}"
 puts "  Students: #{Student.count}"
+puts "  StudentGroups: #{StudentGroup.count}"
+puts "  GroupMemberships: #{GroupMembership.count}"
 puts "  Teachables: #{Teachable.count}"
 puts "  Subjects: #{Subject.count}"
 puts "  Completions: #{Completion.count}"
