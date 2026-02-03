@@ -44,7 +44,7 @@ class TeachableWorkflowTest < ActionDispatch::IntegrationTest
 
   test "subject belongs to teachable for individual student" do
     subject = subjects(:one)
-    
+
     assert subject.teachable.present?, "Subject should belong to a Teachable"
     assert subject.teachable.student?, "Teachable should be a Student type"
     assert_equal @student, subject.teachable.student
@@ -102,9 +102,9 @@ class TeachableWorkflowTest < ActionDispatch::IntegrationTest
 
     # Should include both individual subjects and group subjects
     individual_subjects = Subject.where(teachable: student_one.teachable)
-    assert individual_subjects.all? { |s| all_subjects.include?(s) }, 
+    assert individual_subjects.all? { |s| all_subjects.include?(s) },
       "all_subjects should include all individual subjects"
-    
+
     assert_includes all_subjects, group_subject,
       "all_subjects should include group subjects"
   end
@@ -142,7 +142,7 @@ class TeachableWorkflowTest < ActionDispatch::IntegrationTest
 
   test "for_student? returns true for individual subject owner" do
     subject = subjects(:one)
-    
+
     assert subject.for_student?(@student), "for_student? should return true for owner"
     assert_not subject.for_student?(students(:two)), "for_student? should return false for non-owner"
   end
@@ -172,7 +172,7 @@ class TeachableWorkflowTest < ActionDispatch::IntegrationTest
 
   test "owner_student returns student for individual subject" do
     subject = subjects(:one)
-    
+
     assert_equal @student, subject.owner_student
   end
 
