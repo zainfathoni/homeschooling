@@ -17,8 +17,13 @@ class Student < ApplicationRecord
   end
 
   def all_subjects
-    group_ids = student_groups.joins(:teachable).pluck("teachables.id")
-    teachable_ids = [ teachable&.id, *group_ids ].compact
-    Subject.where(teachable_id: teachable_ids)
+    Subject.where(teachable_id: all_teachable_ids)
+  end
+
+  def all_teachable_ids
+    @all_teachable_ids ||= begin
+      group_ids = student_groups.joins(:teachable).pluck("teachables.id")
+      [ teachable&.id, *group_ids ].compact
+    end
   end
 end

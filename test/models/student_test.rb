@@ -35,6 +35,21 @@ class StudentTest < ActiveSupport::TestCase
     assert_includes @student.all_subjects, subject
   end
 
+  test "all_subjects memoizes teachable_ids to reduce queries" do
+    # First call calculates and caches teachable_ids
+    @student.all_subjects.to_a
+
+    # Second call should not re-query for group teachable ids
+    query_count = 0
+    callback = ->(*, payload) { query_count += 1 unless payload[:name] == "SCHEMA" }
+    ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+      @student.all_subjects.to_a
+    end
+
+    # Only 1 query for Subject.where(...), no query for group_ids pluck
+    assert_equal 1, query_count, "Expected memoization to skip teachable_ids query on second call"
+  end
+
   test "destroying student destroys teachable" do
     teachable_id = @student.teachable.id
     @student.destroy
