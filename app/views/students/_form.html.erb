@@ -10,12 +10,14 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :name, class: "block text-gray-700 font-medium mb-1" %>
-    <%= form.text_field :name,
-        class: "w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-coral focus:border-coral",
-        placeholder: "Enter student name" %>
-  </div>
+  <%= form.fields_for :teachable do |teachable_form| %>
+    <div>
+      <%= teachable_form.label :name, class: "block text-gray-700 font-medium mb-1" %>
+      <%= teachable_form.text_field :name,
+          class: "w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-coral focus:border-coral",
+          placeholder: "Enter student name" %>
+    </div>
+  <% end %>
 
   <div>
     <%= form.label :year_level, class: "block text-gray-700 font-medium mb-1" %>
