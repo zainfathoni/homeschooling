@@ -7,14 +7,10 @@ class Student < ApplicationRecord
   has_many :group_memberships, dependent: :destroy
   has_many :student_groups, through: :group_memberships
 
-  delegate :user, :user_id, to: :teachable, allow_nil: true
+  delegate :user, :user_id, :name, to: :teachable, allow_nil: true
 
   validates :name, presence: true, if: -> { teachable.blank? }
   validates_associated :teachable
-
-  def name
-    teachable&.name || super
-  end
 
   def all_subjects
     Subject.where(teachable_id: all_teachable_ids)

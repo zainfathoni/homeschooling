@@ -47,7 +47,7 @@ class TeachableTest < ActiveSupport::TestCase
   end
 
   test "valid with all required attributes" do
-    new_student = Student.create!(name: "New Student")
+    new_student = Student.new
     teachable = Teachable.new(name: "Test Student", user: @user, teachable: new_student)
     assert teachable.valid?
   end
