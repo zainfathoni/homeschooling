@@ -481,6 +481,47 @@ family_picture_study:
   subject_type: scheduled
 ```
 
+## Open Questions
+
+### Weekly Totals Scope
+
+**Question:** When displaying weekly completion totals, should they be teachable-scoped or student-scoped?
+
+**Current Implementation (Teachable-scoped):**
+```ruby
+# CompletionsController#calculate_week_totals
+subjects = Subject.where(teachable: @subject.teachable)
+week_completions = Completion.joins(:subject)
+                             .where(subjects: { teachable_id: @subject.teachable_id })
+                             .where(date: week_start..week_end)
+                             .count
+```
+
+**Behavior:**
+- When viewing a **personal subject** → weekly totals show only personal subjects
+- When viewing a **group subject** → weekly totals show only group subjects (excludes personal ones)
+
+**Alternative (Student-scoped):**
+```ruby
+# Show ALL subjects accessible to the student (personal + groups)
+subjects = current_student.all_subjects
+week_completions = Completion.joins(:subject)
+                             .where(subjects: { teachable_id: subjects.map(&:teachable_id) })
+                             .where(date: week_start..week_end)
+                             .count
+```
+
+**Trade-offs:**
+
+| Approach | Pros | Cons |
+|----------|------|------|
+| **Teachable-scoped** (current) | Clean separation between personal vs group work | Student can't see total progress across all contexts |
+| **Student-scoped** | Student sees complete picture of their week | Harder to distinguish group vs personal progress |
+
+**Decision needed:** Which behavior aligns better with the paper planner model and parent workflow?
+
+**Tracked in:** `hs-teach-review.11`
+
 ## References
 
 - [The Rails Delegated Type Pattern](https://dev.37signals.com/the-rails-delegated-type-pattern/) - 37signals
