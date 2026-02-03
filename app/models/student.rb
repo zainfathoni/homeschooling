@@ -2,7 +2,7 @@ class Student < ApplicationRecord
   has_one :teachable, as: :teachable, dependent: :destroy
   accepts_nested_attributes_for :teachable
 
-  has_many :subjects, dependent: :destroy
+  has_many :subjects, through: :teachable
   has_many :narrations, dependent: :destroy
   has_many :group_memberships, dependent: :destroy
   has_many :student_groups, through: :group_memberships
