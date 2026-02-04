@@ -1,5 +1,6 @@
 class SubjectsController < ApplicationController
   before_action :set_student
+  before_action :set_teachable, only: [ :new, :create ]
   before_action :set_subject, only: [ :edit, :update, :destroy ]
 
   def index
@@ -7,11 +8,11 @@ class SubjectsController < ApplicationController
   end
 
   def new
-    @subject = Subject.new(teachable: @student.teachable)
+    @subject = Subject.new(teachable: @teachable)
   end
 
   def create
-    @subject = Subject.new(subject_params.merge(teachable: @student.teachable))
+    @subject = Subject.new(subject_params.merge(teachable: @teachable))
 
     if @subject.save
       redirect_to student_subjects_path(@student), notice: "Subject was successfully created."
@@ -48,6 +49,16 @@ class SubjectsController < ApplicationController
     @subject = @student.all_subjects.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     redirect_to student_subjects_path(@student), alert: "Subject not found"
+  end
+
+  def set_teachable
+    if params[:teachable_id].present?
+      @teachable = Teachable.for_user(Current.user).find(params[:teachable_id])
+    else
+      @teachable = @student.teachable
+    end
+  rescue ActiveRecord::RecordNotFound
+    redirect_to student_subjects_path(@student), alert: "Teachable not found"
   end
 
   def subject_params

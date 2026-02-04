@@ -1,1 +1,2 @@
-# Empty fixture - no student groups in test data
+family_group:
+  group_type: family

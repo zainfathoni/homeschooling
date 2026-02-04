@@ -1,1 +1,7 @@
-# Empty fixture - no group memberships in test data
+student_one_in_family:
+  student: one
+  student_group: family_group
+
+student_three_in_family:
+  student: three
+  student_group: family_group
