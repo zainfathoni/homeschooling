@@ -518,7 +518,7 @@ week_completions = Completion.joins(:subject)
 | **Teachable-scoped** (current) | Clean separation between personal vs group work | Student can't see total progress across all contexts |
 | **Student-scoped** | Student sees complete picture of their week | Harder to distinguish group vs personal progress |
 
-**Decision needed:** Which behavior aligns better with the paper planner model and parent workflow?
+**Decision (2026-02-04):** Keep **teachable-scoped** (Option A) for now. This maintains clean separation between personal and group work contexts. Migration to student-scoped totals is trivial if needed later—requires changing only one line in `CompletionsController#calculate_week_totals`.
 
 **Tracked in:** `hs-teach-review.11`
 
