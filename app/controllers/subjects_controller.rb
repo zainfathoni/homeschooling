@@ -4,7 +4,7 @@ class SubjectsController < ApplicationController
   before_action :set_subject, only: [ :edit, :update, :destroy ]
 
   def index
-    @subjects = @student.all_subjects.includes(:subject_options, :teachable)
+    @subjects = @student.all_subjects.includes(:subject_options, teachable: :teachable)
   end
 
   def new
