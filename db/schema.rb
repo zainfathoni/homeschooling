@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_03_075322) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_05_141008) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -101,11 +101,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_03_075322) do
     t.string "name"
     t.boolean "narration_required", default: false, null: false
     t.json "scheduled_days"
-    t.integer "student_id"
     t.string "subject_type", default: "fixed", null: false
-    t.integer "teachable_id"
+    t.integer "teachable_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["student_id"], name: "index_subjects_on_student_id"
     t.index ["teachable_id"], name: "index_subjects_on_teachable_id"
   end
 
