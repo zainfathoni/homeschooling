@@ -2,6 +2,7 @@ class Student < ApplicationRecord
   has_one :teachable, as: :teachable, dependent: :destroy
   accepts_nested_attributes_for :teachable
 
+  # Returns only personal subjects; use #all_subjects for personal + group subjects
   has_many :subjects, through: :teachable
   has_many :narrations, dependent: :destroy
   has_many :group_memberships, dependent: :destroy
