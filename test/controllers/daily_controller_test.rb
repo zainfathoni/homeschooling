@@ -182,11 +182,14 @@ class DailyControllerTest < ActionDispatch::IntegrationTest
     post select_student_path(@student)
 
     narration_subject = subjects(:narration_required_subject)
+    # Create narration for this subject on the test date
+    narration = Narration.create!(subject: narration_subject, narration_type: "text", content: "Test narration")
+    Recording.create!(student: @student, date: Date.new(2026, 1, 28), recordable: narration)
 
     travel_to Date.new(2026, 1, 28) do
       get today_path
       assert_response :success
-      # Narration exists for this date in fixtures
+      # Narration exists for this date
       assert_match(/narrated/, response.body)
     end
   end
@@ -198,7 +201,7 @@ class DailyControllerTest < ActionDispatch::IntegrationTest
     narration_subject = subjects(:narration_required_subject)
     # Test on a day without narration
     monday = Date.new(2026, 1, 26)
-    narration_subject.narrations.where(date: monday).destroy_all
+    narration_subject.narrations.for_date(monday).destroy_all
 
     travel_to monday do
       get today_path

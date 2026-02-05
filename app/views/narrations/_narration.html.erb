@@ -1,10 +1,11 @@
 <%# locals: (narration:) %>
+<% recording = narration.recording %>
 <%= turbo_frame_tag dom_id(narration) do %>
   <div class="bg-white rounded-xl p-4 shadow-sm">
     <div class="flex items-start justify-between mb-2">
       <div>
         <span class="font-medium text-gray-800"><%= narration.subject.name %></span>
-        <span class="text-sm text-gray-500 ml-2"><%= narration.date.strftime("%b %d, %Y") %></span>
+        <span class="text-sm text-gray-500 ml-2"><%= narration.date&.strftime("%b %d, %Y") %></span>
       </div>
       <span class="text-lg">
         <%= { "text" => "📝", "voice" => "🎙️", "photo" => "📷" }[narration.narration_type] %>
@@ -27,10 +28,10 @@
     <% end %>
 
     <div class="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100">
-      <%= link_to "Edit", edit_student_narration_path(narration.student, narration),
+      <%= link_to "Edit", edit_student_narration_path(narration.student, recording),
           class: "text-sm text-gray-500 hover:text-coral",
           data: { turbo_frame: "_top" } %>
-      <%= link_to "Delete", student_narration_path(narration.student, narration),
+      <%= link_to "Delete", student_narration_path(narration.student, recording),
           class: "text-sm text-gray-500 hover:text-red-500",
           data: { turbo_method: :delete, turbo_confirm: "Delete this narration?" } %>
     </div>

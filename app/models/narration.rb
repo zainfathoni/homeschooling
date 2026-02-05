@@ -3,7 +3,7 @@ class Narration < ApplicationRecord
   has_one_attached :media
 
   has_one :recording, as: :recordable, dependent: :destroy, inverse_of: :recordable
-  delegate :student, :student_id, :date, to: :recording
+  delegate :student, :student_id, :date, to: :recording, allow_nil: true
 
   validates :narration_type, presence: true, inclusion: { in: %w[text voice photo] }
   validates :content, presence: true, if: :text?

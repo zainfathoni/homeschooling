@@ -45,25 +45,42 @@ class NarrationsController < ApplicationController
 
   def create
     @narration = Narration.new(narration_params.except(:date))
-    @recording = Recording.new(
-      student: @student,
-      date: narration_params[:date],
-      recordable: @narration
-    )
+    @date = narration_params[:date] || Date.current
 
-    if @recording.save
+    if @narration.valid?
+      ActiveRecord::Base.transaction do
+        @narration.save!
+        @recording = Recording.create!(
+          student: @student,
+          date: @date,
+          recordable: @narration
+        )
+      end
       redirect_to student_narrations_path(@student), notice: "Narration was successfully created."
     else
-      @date = narration_params[:date]
       @subjects = @student.all_subjects
       render :new, status: :unprocessable_entity
     end
+  rescue ActiveRecord::RecordInvalid
+    @subjects = @student.all_subjects
+    render :new, status: :unprocessable_entity
   end
 
   def update
     @narration = @recording.recordable
-    
-    if @narration.update(narration_params.except(:date)) && @recording.update(date: narration_params[:date])
+
+    recording_updates = {}
+    recording_updates[:date] = narration_params[:date] if narration_params[:date].present?
+
+    success = ActiveRecord::Base.transaction do
+      @narration.update!(narration_params.except(:date))
+      @recording.update!(recording_updates) if recording_updates.any?
+      true
+    rescue ActiveRecord::RecordInvalid
+      false
+    end
+
+    if success
       redirect_to student_narrations_path(@student), notice: "Narration was successfully updated."
     else
       @date = @recording.date

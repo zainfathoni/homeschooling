@@ -55,11 +55,11 @@ class NarrationTest < ActiveSupport::TestCase
     # Try to create a narration where student doesn't match subject owner
     # Subject one belongs to student one
     narration = narrations(:text_narration) # already has correct student
-    
+
     # Change the recording to use wrong student
     narration.recording.update(student: students(:two))
     narration.reload
-    
+
     # Validation should fail
     assert_not narration.valid?
     assert_includes narration.errors[:subject], "must belong to the same student"
@@ -71,13 +71,13 @@ class NarrationTest < ActiveSupport::TestCase
       narration_type: "text",
       content: "Test"
     )
-    
+
     recording = Recording.new(
       student: students(:one),
       date: Date.current,
       recordable: narration
     )
-    
+
     assert recording.valid?
   end
 
@@ -191,7 +191,7 @@ class NarrationTest < ActiveSupport::TestCase
       narration_type: "text",
       content: content
     )
-    
+
     recording = Recording.create!(
       student: student,
       date: date,

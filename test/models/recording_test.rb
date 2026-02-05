@@ -46,7 +46,7 @@ class RecordingTest < ActiveSupport::TestCase
   test "destroying recording destroys recordable" do
     recording = recordings(:quick_note_recording)
     quick_note_id = recording.recordable_id
-    
+
     recording.destroy
     assert_nil QuickNote.find_by(id: quick_note_id)
   end

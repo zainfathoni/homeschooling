@@ -32,7 +32,7 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as @user
     get student_narrations_path(@student)
     assert_response :success
-    assert_select "a[href='#{student_narration_path(@student, @narration)}'][data-turbo-method='delete']", text: "Delete"
+    assert_select "a[href='#{student_narration_path(@student, @recording)}'][data-turbo-method='delete']", text: "Delete"
   end
 
   test "filters narrations by date" do
@@ -128,14 +128,14 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
 
   test "shows edit narration form" do
     sign_in_as @user
-    get edit_student_narration_path(@student, @narration)
+    get edit_student_narration_path(@student, @recording)
     assert_response :success
     assert_match @narration.content, response.body
   end
 
   test "updates narration content" do
     sign_in_as @user
-    patch student_narration_path(@student, @narration), params: {
+    patch student_narration_path(@student, @recording), params: {
       narration: { content: "Updated content about fractions." }
     }
     assert_redirected_to student_narrations_path(@student)
@@ -144,7 +144,7 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
 
   test "updates narration with turbo stream redirects" do
     sign_in_as @user
-    patch student_narration_path(@student, @narration), params: {
+    patch student_narration_path(@student, @recording), params: {
       narration: { content: "Updated via Turbo." }
     }, as: :turbo_stream
 
@@ -175,7 +175,7 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
 
   test "shows single narration" do
     sign_in_as @user
-    get student_narration_path(@student, @narration)
+    get student_narration_path(@student, @recording)
     assert_response :success
     assert_match @narration.content, response.body
   end
@@ -191,15 +191,19 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
   test "cannot access narration from another student" do
     sign_in_as @user
     other_student = students(:three)
+    other_subject = other_student.all_subjects.first || Subject.create!(name: "Test", subject_type: "fixed", teachable: other_student.teachable)
     other_narration = Narration.create!(
-      student: other_student,
-      subject: other_student.all_subjects.first || Subject.create!(name: "Test", subject_type: "fixed", teachable: other_student.teachable),
-      date: Date.current,
+      subject: other_subject,
       narration_type: "text",
       content: "Other student narration"
     )
+    other_recording = Recording.create!(
+      student: other_student,
+      date: Date.current,
+      recordable: other_narration
+    )
 
-    get student_narration_path(@student, other_narration)
+    get student_narration_path(@student, other_recording)
     assert_redirected_to student_narrations_path(@student)
   end
 

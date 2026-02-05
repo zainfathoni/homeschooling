@@ -118,12 +118,15 @@ class TodayControllerTest < ActionDispatch::IntegrationTest
     sign_in_as @user
     post select_student_path(@student)
 
+    # Create narration for narration_required_subject on 2026-01-28
+    narration_subject = subjects(:narration_required_subject)
+    narration = Narration.create!(subject: narration_subject, narration_type: "text", content: "Test")
+    Recording.create!(student: @student, date: Date.new(2026, 1, 28), recordable: narration)
+
     travel_to Date.new(2026, 1, 28) do
       get week_path
       assert_response :success
 
-      # Narration exists for narration_required_subject on 2026-01-28
-      narration_subject = subjects(:narration_required_subject)
       # Check for the narration indicator link
       assert_select "a.bg-green-500[href*='narrations'][href*='subject_id=#{narration_subject.id}'][href*='date=2026-01-28']"
     end
@@ -133,11 +136,15 @@ class TodayControllerTest < ActionDispatch::IntegrationTest
     sign_in_as @user
     post select_student_path(@student)
 
+    # Create narration for narration_required_subject on 2026-01-28
+    narration_subject = subjects(:narration_required_subject)
+    narration = Narration.create!(subject: narration_subject, narration_type: "text", content: "Test")
+    Recording.create!(student: @student, date: Date.new(2026, 1, 28), recordable: narration)
+
     travel_to Date.new(2026, 1, 28) do
       get week_path
       assert_response :success
 
-      narration_subject = subjects(:narration_required_subject)
       # Verify link has correct student and filters
       assert_select "a[href='#{student_narrations_path(@student, date: '2026-01-28', subject_id: narration_subject.id)}']"
     end
