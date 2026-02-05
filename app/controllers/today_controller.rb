@@ -23,9 +23,9 @@ class TodayController < ApplicationController
       @week_pick1_options = week_completion_records
                               .select { |_, _, option_name| option_name.present? }
                               .each_with_object({}) { |(subject_id, date, option_name), hash| hash[[ subject_id, date ]] = option_name }
-      @week_narrations = Narration.where(student_id: @student.id)
-                                  .where(date: @week_start..@week_end)
-                                  .pluck(:subject_id, :date)
+      @week_narrations = Narration.joins(:recording)
+                                  .where(recordings: { student_id: @student.id, date: @week_start..@week_end })
+                                  .pluck(:subject_id, "recordings.date")
                                   .group_by(&:first)
                                   .transform_values { |v| v.map(&:last).to_set }
     else
