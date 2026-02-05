@@ -36,16 +36,18 @@ class StudentGroupTest < ActiveSupport::TestCase
   end
 
   test "can have teachable association" do
-    group = StudentGroup.create!(group_type: :family)
-    teachable = Teachable.create!(name: "Family Study", user: @user, teachable: group)
+    group = StudentGroup.new(group_type: :family)
+    group.build_teachable(name: "Family Study", user: @user)
+    group.save!
 
-    assert_equal teachable, group.teachable
-    assert_equal group, teachable.teachable
+    assert_equal "Family Study", group.teachable.name
+    assert_equal group, group.teachable.teachable
   end
 
   test "destroying group destroys teachable" do
-    group = StudentGroup.create!(group_type: :family)
-    Teachable.create!(name: "Family Study", user: @user, teachable: group)
+    group = StudentGroup.new(group_type: :family)
+    group.build_teachable(name: "Family Study", user: @user)
+    group.save!
 
     assert_difference "Teachable.count", -1 do
       group.destroy
@@ -85,5 +87,28 @@ class StudentGroupTest < ActiveSupport::TestCase
     assert_no_difference "Student.count" do
       group.destroy
     end
+  end
+
+  test "delegates name to teachable" do
+    group = StudentGroup.new(group_type: :family)
+    group.build_teachable(name: "Test Group", user: @user)
+    group.save!
+
+    assert_equal "Test Group", group.name
+  end
+
+  test "name delegation returns nil when teachable is nil" do
+    group = StudentGroup.new(group_type: :family)
+    assert_nil group.name
+  end
+
+  test "accepts nested attributes for teachable" do
+    group = StudentGroup.new(
+      group_type: :family,
+      teachable_attributes: { name: "Nested Group", user: @user }
+    )
+    group.save!
+
+    assert_equal "Nested Group", group.teachable.name
   end
 end

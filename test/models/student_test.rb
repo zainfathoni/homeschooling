@@ -55,4 +55,19 @@ class StudentTest < ActiveSupport::TestCase
     @student.destroy
     assert_nil Teachable.find_by(id: teachable_id)
   end
+
+  test "validation error when teachable name is blank" do
+    student = Student.new
+    student.build_teachable(name: "", user: @user)
+
+    assert_not student.valid?
+    assert_includes student.errors[:name], "can't be blank"
+  end
+
+  test "valid when teachable has name" do
+    student = Student.new
+    student.build_teachable(name: "Valid Name", user: @user)
+
+    assert student.valid?
+  end
 end

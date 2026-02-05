@@ -11,6 +11,7 @@ class Student < ApplicationRecord
   delegate :user, :user_id, :name, to: :teachable, allow_nil: true
 
   validates_associated :teachable
+  validate :teachable_name_present
 
   def all_subjects
     Subject.where(teachable_id: all_teachable_ids)
@@ -21,5 +22,13 @@ class Student < ApplicationRecord
       group_ids = student_groups.joins(:teachable).pluck("teachables.id")
       [ teachable&.id, *group_ids ].compact
     end
+  end
+
+  private
+
+  def teachable_name_present
+    return if teachable.nil? || teachable.name.present?
+
+    errors.add(:name, "can't be blank")
   end
 end
