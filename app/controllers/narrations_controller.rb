@@ -23,12 +23,12 @@ class NarrationsController < ApplicationController
       subject_id: params[:subject_id],
       narration_type: "text"
     )
-    @subjects = @student.subjects
+    @subjects = @student.all_subjects
     @selected_option = SubjectOption.find_by(id: params[:option_id]) if params[:option_id].present?
   end
 
   def edit
-    @subjects = @student.subjects
+    @subjects = @student.all_subjects
   end
 
   def create
@@ -37,7 +37,7 @@ class NarrationsController < ApplicationController
     if @narration.save
       redirect_to student_narrations_path(@student), notice: "Narration was successfully created."
     else
-      @subjects = @student.subjects
+      @subjects = @student.all_subjects
       render :new, status: :unprocessable_entity
     end
   end
@@ -46,7 +46,7 @@ class NarrationsController < ApplicationController
     if @narration.update(narration_params)
       redirect_to student_narrations_path(@student), notice: "Narration was successfully updated."
     else
-      @subjects = @student.subjects
+      @subjects = @student.all_subjects
       render :edit, status: :unprocessable_entity
     end
   end

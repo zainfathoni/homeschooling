@@ -1,11 +1,11 @@
 one:
-  name: Alex
-  user: parent
+  avatar_url: null
+  year_level: 6
 
 two:
-  name: Sam
-  user: other
+  avatar_url: null
+  year_level: 8
 
 three:
-  name: Jordan
-  user: parent
+  avatar_url: null
+  year_level: 10

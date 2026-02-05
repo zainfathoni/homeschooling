@@ -157,7 +157,7 @@ class CompletionsControllerTest < ActionDispatch::IntegrationTest
     monday = Date.new(2026, 1, 26)
     narration_subject.completions.where(date: monday).destroy_all
     narration_subject.narrations.create!(
-      student: narration_subject.student,
+      student: narration_subject.owner_student,
       date: monday,
       narration_type: "text",
       content: "Test narration"

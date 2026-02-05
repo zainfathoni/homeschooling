@@ -119,4 +119,45 @@ class SubjectsControllerTest < ActionDispatch::IntegrationTest
     get student_subjects_path(@student)
     assert_redirected_to students_path
   end
+
+  test "creates subject for group teachable via teachable_id" do
+    sign_in_as @user
+    group_teachable = teachables(:family_group_teachable)
+
+    assert_difference "Subject.count", 1 do
+      post student_subjects_path(@student), params: {
+        teachable_id: group_teachable.id,
+        subject: { name: "Group Subject", subject_type: "fixed" }
+      }
+    end
+
+    new_subject = Subject.last
+    assert_equal "Group Subject", new_subject.name
+    assert_equal group_teachable, new_subject.teachable
+    assert_redirected_to student_subjects_path(@student)
+  end
+
+  test "cannot create subject for another user's teachable" do
+    sign_in_as @user
+    other_teachable = teachables(:student_two_teachable)
+
+    post student_subjects_path(@student), params: {
+      teachable_id: other_teachable.id,
+      subject: { name: "Unauthorized Subject", subject_type: "fixed" }
+    }
+
+    assert_redirected_to student_subjects_path(@student)
+    assert_equal "Teachable not found", flash[:alert]
+  end
+
+  test "shows index with group subjects" do
+    sign_in_as @user
+    group_teachable = teachables(:family_group_teachable)
+    group_subject = Subject.create!(name: "Family Art", subject_type: "fixed", teachable: group_teachable)
+
+    get student_subjects_path(@student)
+
+    assert_response :success
+    assert_match "Family Art", response.body
+  end
 end

@@ -6,11 +6,11 @@ class ReportsController < ApplicationController
     @end_date = Date.current
 
     if @student
-      @subjects = @student.subjects.includes(:completions)
+      @subjects = @student.all_subjects.includes(:completions, :teachable)
       @dates = (@start_date..@end_date).to_a
+      subject_ids = @subjects.pluck(:id)
 
-      completions_this_week = Completion.joins(:subject)
-                                        .where(subjects: { student_id: @student.id })
+      completions_this_week = Completion.where(subject_id: subject_ids)
                                         .where(date: @start_date..@end_date)
 
       @total_possible = @subjects.count * @dates.count

@@ -67,7 +67,7 @@ class NarrationTest < ActiveSupport::TestCase
       content: "Test"
     )
     assert_not narration.valid?
-    assert_includes narration.errors[:subject], "must belong to the same student"
+    assert_includes narration.errors[:subject], "must belong to the same student or group"
   end
 
   test "valid when student matches subject's student" do

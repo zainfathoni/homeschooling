@@ -1,26 +1,26 @@
 one:
   name: Math
-  student: one
+  teachable: student_one_teachable
   subject_type: fixed
 
 two:
   name: Reading
-  student: two
+  teachable: student_two_teachable
   subject_type: fixed
 
 scheduled_coding:
   name: Coding
-  student: one
+  teachable: student_one_teachable
   subject_type: scheduled
   scheduled_days: <%= [0, 1, 2, 3].to_json %>
 
 pick1_islamic:
   name: Islamic Study
-  student: one
+  teachable: student_one_teachable
   subject_type: pick1
 
 narration_required_subject:
   name: Reading Narration
-  student: one
+  teachable: student_one_teachable
   subject_type: fixed
   narration_required: true

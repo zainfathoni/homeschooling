@@ -30,7 +30,7 @@ class StudentsControllerTest < ActionDispatch::IntegrationTest
   test "create adds a new student" do
     sign_in_as @user
     assert_difference "Student.count", 1 do
-      post students_path, params: { student: { name: "New Student", year_level: 4 } }
+      post students_path, params: { student: { teachable_attributes: { name: "New Student" }, year_level: 4 } }
     end
     assert_redirected_to students_path
     assert_equal "New Student", Student.last.name
@@ -39,7 +39,7 @@ class StudentsControllerTest < ActionDispatch::IntegrationTest
   test "create fails with invalid data" do
     sign_in_as @user
     assert_no_difference "Student.count" do
-      post students_path, params: { student: { name: "" } }
+      post students_path, params: { student: { teachable_attributes: { name: "" } } }
     end
     assert_response :unprocessable_entity
   end
@@ -59,7 +59,7 @@ class StudentsControllerTest < ActionDispatch::IntegrationTest
 
   test "update changes student" do
     sign_in_as @user
-    patch student_path(@student), params: { student: { name: "Updated Name" } }
+    patch student_path(@student), params: { student: { teachable_attributes: { id: @student.teachable.id, name: "Updated Name" } } }
     assert_redirected_to students_path
     assert_equal "Updated Name", @student.reload.name
   end

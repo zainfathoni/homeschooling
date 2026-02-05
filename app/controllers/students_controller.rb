@@ -6,11 +6,14 @@ class StudentsController < ApplicationController
   end
 
   def new
-    @student = Current.user.students.build
+    @student = Student.new
+    @student.build_teachable
   end
 
   def create
-    @student = Current.user.students.build(student_params)
+    @student = Student.new(student_params)
+    @student.build_teachable(user: Current.user) unless @student.teachable
+    @student.teachable.user = Current.user if @student.teachable
 
     if @student.save
       redirect_to students_path, notice: "Student was successfully created."
@@ -58,6 +61,6 @@ class StudentsController < ApplicationController
   end
 
   def student_params
-    params.require(:student).permit(:name, :avatar_url, :year_level)
+    params.require(:student).permit(:avatar_url, :year_level, teachable_attributes: [ :id, :name ])
   end
 end

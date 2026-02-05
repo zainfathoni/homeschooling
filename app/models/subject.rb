@@ -1,5 +1,5 @@
 class Subject < ApplicationRecord
-  belongs_to :student
+  belongs_to :teachable
 
   has_many :completions, dependent: :destroy
   has_many :narrations, dependent: :destroy
@@ -12,6 +12,27 @@ class Subject < ApplicationRecord
   validates :scheduled_days, presence: true, if: :scheduled?
 
   enum :subject_type, { fixed: "fixed", scheduled: "scheduled", pick1: "pick1" }
+
+  # View compatibility helpers for transition from subject.student pattern
+  # For individual subjects: returns the owner
+  # For group subjects: returns the provided fallback (current_student)
+  def student_for_narration(current_student)
+    teachable.student? ? teachable.student : current_student
+  end
+
+  # Check if this subject is accessible by a given student
+  def for_student?(student)
+    if teachable.student?
+      teachable.student == student
+    else
+      teachable.student_group.students.include?(student)
+    end
+  end
+
+  # Returns the student if individual subject, nil if group
+  def owner_student
+    teachable.student? ? teachable.student : nil
+  end
 
   def has_narration_for?(date)
     narrations.for_date(date).exists?

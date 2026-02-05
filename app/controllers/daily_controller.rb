@@ -8,7 +8,7 @@ class DailyController < ApplicationController
       return
     end
 
-    all_subjects = @student.subjects.order(:name)
+    all_subjects = @student.all_subjects.includes(:teachable).order(:name)
     @subjects = all_subjects.select { |s| s.active_on?(@date) }
     @off_day_subjects = all_subjects.select { |s| s.scheduled? && !s.active_on?(@date) }
     completions_records = Completion.where(subject: @subjects, date: @date)
