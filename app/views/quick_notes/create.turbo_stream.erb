@@ -1,0 +1,7 @@
+<%= turbo_stream.prepend "quick_notes" do %>
+  <%= render partial: "quick_note", locals: { quick_note: @quick_note } %>
+<% end %>
+
+<%= turbo_stream.update "new_quick_note_form" do %>
+  <p class="text-green-600 text-sm">Note added successfully!</p>
+<% end %>
