@@ -1,9 +1,10 @@
+<% content_for(:page_date) { @date } %>
 <%= turbo_frame_tag "daily_focus" do %>
   <%# Mobile: full-screen layout with padding %>
   <%# Tablet (duet view): top margin to align with Weekly Completion bar %>
   <div class="min-h-screen bg-lavender p-4 pb-20 md:pb-4 md:min-h-0 md:p-0 md:mt-[8.9rem]">
     <div class="max-w-md mx-auto md:max-w-none">
-      <%= render "daily/focus", student: @student, date: @date, subjects: @subjects, completions: @completions, pick1_selections: @pick1_selections, off_day_subjects: @off_day_subjects, quick_notes: @quick_notes %>
+      <%= render "daily/focus", student: @student, date: @date, subjects: @subjects, completions: @completions, pick1_selections: @pick1_selections, off_day_subjects: @off_day_subjects, quick_note_recordings: @quick_note_recordings %>
     </div>
   </div>
 <% end %>
