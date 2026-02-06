@@ -90,15 +90,7 @@
           <% @subjects.each do |subject| %>
             <div class="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
               <span class="text-gray-800"><%= subject.name %></span>
-              <span class="text-xs px-2 py-1 rounded-full
-                <% if subject.subject_type == 'fixed' %>
-                  bg-blue-50 text-blue-600
-                <% elsif subject.subject_type == 'scheduled' %>
-                  bg-green-50 text-green-600
-                <% else %>
-                  bg-purple-50 text-purple-600
-                <% end %>
-              "><%= subject.subject_type.humanize %></span>
+              <span class="text-xs px-2 py-1 rounded-full <%= subject_type_badge_class(subject.subject_type) %>"><%= subject.subject_type.humanize %></span>
             </div>
           <% end %>
         </div>
