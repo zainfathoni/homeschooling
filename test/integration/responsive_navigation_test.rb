@@ -48,7 +48,7 @@ class ResponsiveNavigationTest < ActionDispatch::IntegrationTest
   test "sidebar renders on authenticated pages with all nav links" do
     get week_path
     assert_response :success
-    assert_select "aside[role='navigation']" do
+    assert_select "aside nav[role='navigation']" do
       assert_select "a[href='#{today_path}']", text: /Today/
       assert_select "a[href='#{week_path}']", text: /Weekly Schedule/
       assert_select "a[href='#{notes_path}']", text: /Notes/
@@ -74,7 +74,7 @@ class ResponsiveNavigationTest < ActionDispatch::IntegrationTest
     delete logout_path
     get login_path
     assert_response :success
-    assert_select "aside[role='navigation']", count: 0
+    assert_select "aside nav[role='navigation']", count: 0
   end
 
   test "sidebar shows user info and sign out" do
