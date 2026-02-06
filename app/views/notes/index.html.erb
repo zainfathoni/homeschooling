@@ -17,25 +17,25 @@
           class: "px-4 py-2 rounded-full text-sm font-medium transition-colors #{@filter == 'quick_notes' ? 'bg-coral text-white' : 'bg-white text-gray-600 hover:bg-gray-100'}" %>
     </div>
 
-    <% if @recordings.any? %>
-      <div class="space-y-4">
+    <div id="notes_timeline" class="space-y-4">
+      <% if @recordings.any? %>
         <% @recordings.each do |recording| %>
           <%= render partial: "recordings/#{recording.recordable_type.underscore}",
                      locals: { recording: recording, recordable: recording.recordable } %>
         <% end %>
-      </div>
-    <% else %>
-      <div class="bg-white rounded-xl p-8 text-center">
-        <p class="text-gray-500">
-          <% if @filter == "narrations" %>
-            No narrations yet. Add one from the daily view!
-          <% elsif @filter == "quick_notes" %>
-            No quick notes yet. Tap the + button to add one!
-          <% else %>
-            No notes yet. Start capturing learning moments!
-          <% end %>
-        </p>
-      </div>
-    <% end %>
+      <% else %>
+        <div id="notes_empty_state" class="bg-white rounded-xl p-8 text-center">
+          <p class="text-gray-500">
+            <% if @filter == "narrations" %>
+              No narrations yet. Add one from the daily view!
+            <% elsif @filter == "quick_notes" %>
+              No quick notes yet. Tap the + button to add one!
+            <% else %>
+              No notes yet. Start capturing learning moments!
+            <% end %>
+          </p>
+        </div>
+      <% end %>
+    </div>
   </div>
 </div>
