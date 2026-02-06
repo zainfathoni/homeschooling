@@ -1,0 +1,24 @@
+<%# locals: (recording:, recordable:) %>
+<% quick_note = recordable %>
+<%= turbo_frame_tag dom_id(quick_note) do %>
+  <div class="bg-white rounded-xl p-4 shadow-sm">
+    <div class="flex items-start justify-between mb-2">
+      <div class="flex items-center gap-2">
+        <span class="inline-block px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">Quick Note</span>
+        <span class="text-sm text-gray-500"><%= recording.date.strftime("%b %d, %Y") %></span>
+      </div>
+      <span class="text-lg">📝</span>
+    </div>
+
+    <p class="text-gray-700 whitespace-pre-wrap"><%= quick_note.content %></p>
+
+    <div class="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100">
+      <%= link_to "Edit", edit_student_quick_note_path(recording.student, recording),
+          class: "text-sm text-gray-500 hover:text-coral",
+          data: { turbo_frame: "_top" } %>
+      <%= link_to "Delete", student_quick_note_path(recording.student, recording),
+          class: "text-sm text-gray-500 hover:text-red-500",
+          data: { turbo_method: :delete, turbo_confirm: "Delete this note?" } %>
+    </div>
+  </div>
+<% end %>

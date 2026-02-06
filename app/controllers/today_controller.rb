@@ -47,6 +47,12 @@ class TodayController < ApplicationController
       @pick1_selections = daily_completions_records.where.not(subject_option_id: nil)
                                                    .pluck(:subject_id, :subject_option_id)
                                                    .to_h
+      @daily_quick_notes = @student.recordings
+                                   .where(recordable_type: "QuickNote")
+                                   .for_date(@date)
+                                   .includes(:recordable)
+                                   .recent
+                                   .map(&:recordable)
     end
   end
 

@@ -1,7 +1,14 @@
 <%= turbo_stream.prepend "quick_notes" do %>
-  <%= render partial: "quick_note", locals: { quick_note: @quick_note } %>
+  <%= render partial: "daily/quick_note_card", locals: { quick_note: @quick_note } %>
 <% end %>
 
 <%= turbo_stream.update "new_quick_note_form" do %>
-  <p class="text-green-600 text-sm">Note added successfully!</p>
+  <%= render "quick_notes/inline_form", student: @student, date: @date %>
 <% end %>
+
+<%# Also update the /notes timeline if it exists on the page %>
+<%= turbo_stream.prepend "notes_timeline" do %>
+  <%= render partial: "recordings/quick_note", locals: { recording: @recording, recordable: @quick_note } %>
+<% end %>
+
+<%= turbo_stream.remove "notes_empty_state" %>

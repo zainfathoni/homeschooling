@@ -206,17 +206,94 @@ class ResponsiveNavigationTest < ActionDispatch::IntegrationTest
     assert_match "Weekly Progress", response.body
   end
 
-  test "notes link navigates to narrations" do
+  test "notes link navigates to unified notes timeline" do
     get notes_path
-    assert_response :redirect
-    follow_redirect!
     assert_response :success
+    assert_match "Notes", response.body
   end
 
   test "settings link shows settings page" do
     get settings_path
     assert_response :success
     assert_match /settings/i, response.body
+  end
+
+  # Quick Note FAB Tests
+
+  test "quick note FAB renders on mobile when authenticated with student" do
+    get today_path
+    assert_response :success
+    # FAB container with Stimulus controller
+    assert_select "div[data-controller='quick-note-fab']" do
+      # FAB button with coral background
+      assert_select "button[data-action='click->quick-note-fab#open']"
+      # Modal container (hidden by default)
+      assert_select "div[data-quick-note-fab-target='modal'].hidden"
+    end
+  end
+
+  test "quick note FAB has md:hidden class for mobile-only display" do
+    get today_path
+    assert_response :success
+    assert_select "div[data-controller='quick-note-fab'].md\\:hidden"
+  end
+
+  test "quick note FAB modal contains form for creating notes" do
+    get today_path
+    assert_response :success
+    assert_select "div[data-quick-note-fab-target='modal']" do
+      assert_select "form[action='#{student_quick_notes_path(@student)}']"
+      assert_select "textarea[name='quick_note[content]']"
+      assert_select "input[type='submit']"
+    end
+  end
+
+  test "quick note FAB not rendered when not authenticated" do
+    delete logout_path
+    get login_path
+    assert_response :success
+    assert_select "div[data-controller='quick-note-fab']", count: 0
+  end
+
+  # Quick Notes Tablet Section Tests
+
+  test "quick notes section renders on tablet in duet view" do
+    get week_path
+    assert_response :success
+    assert_select "div.hidden.md\\:block" do
+      assert_select "h3", text: /Quick Notes/i
+    end
+  end
+
+  test "quick notes section contains inline form" do
+    get week_path
+    assert_response :success
+    assert_select "div#new_quick_note_form" do
+      assert_select "form[action='#{student_quick_notes_path(@student)}']"
+      assert_select "textarea[name='quick_note[content]']"
+      assert_select "input[type='submit'][value='Add Note']"
+    end
+  end
+
+  test "quick notes section shows existing notes for the day" do
+    travel_to Date.new(2026, 1, 28) do
+      quick_note = QuickNote.create!(content: "Test quick note for tablet")
+      Recording.create!(student: @student, date: Date.new(2026, 1, 28), recordable: quick_note)
+
+      get daily_path(date: "2026-01-28")
+      assert_response :success
+      assert_select "div#quick_notes" do
+        assert_match "Test quick note for tablet", response.body
+      end
+    end
+  end
+
+  test "quick notes section shows empty state when no notes" do
+    travel_to Date.new(2026, 1, 29) do
+      get daily_path(date: "2026-01-29")
+      assert_response :success
+      assert_match "No notes for this day", response.body
+    end
   end
 
   # Date Boundary Tests

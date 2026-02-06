@@ -1,0 +1,23 @@
+<%# locals: (student:, date:) %>
+<%# Mobile FAB for Quick Notes - positioned above bottom nav %>
+<div data-controller="quick-note-fab" class="md:hidden">
+  <%# FAB Button - fixed position above bottom nav %>
+  <button type="button"
+          data-action="click->quick-note-fab#open"
+          class="fixed bottom-24 right-4 z-40 bg-coral text-white rounded-full w-14 h-14 shadow-lg hover:bg-coral/90 active:scale-95 transition-transform flex items-center justify-center"
+          aria-label="Add quick note">
+    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+    </svg>
+  </button>
+
+  <%# Modal backdrop and container %>
+  <div data-quick-note-fab-target="modal"
+       data-action="click->quick-note-fab#backdropClick keydown.esc->quick-note-fab#close"
+       class="fixed inset-0 z-50 bg-black/50 items-end justify-center hidden"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="quick-note-modal-title">
+    <%= render "quick_notes/modal_form", student: student, date: date %>
+  </div>
+</div>

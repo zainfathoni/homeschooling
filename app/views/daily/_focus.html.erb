@@ -1,4 +1,4 @@
-<%# locals: (student:, date:, subjects:, completions:, pick1_selections:, off_day_subjects:) %>
+<%# locals: (student:, date:, subjects:, completions:, pick1_selections:, off_day_subjects:, quick_notes: []) %>
 <% completed_count = completions.size %>
 <% total_count = subjects.size %>
 
@@ -38,3 +38,5 @@
     </div>
   <% end %>
 </div>
+
+<%= render "daily/quick_notes_section", student: student, date: date, quick_notes: quick_notes %>
