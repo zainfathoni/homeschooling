@@ -43,3 +43,6 @@ Thumbs.db
 .bv/
 .beads/.bv.lock
 bv-pages/
+
+# Beads export state (machine-specific)
+.beads/export-state/
