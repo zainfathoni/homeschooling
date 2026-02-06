@@ -78,9 +78,11 @@ class StudentsController < ApplicationController
   def weekly_completion_stats
     week_start = Date.current.beginning_of_week(:monday)
     week_end = week_start + 4
-    subject_ids = @student.all_subjects.pluck(:id)
+    dates = (week_start..week_end).to_a
+    subjects = @student.all_subjects.to_a
+    subject_ids = subjects.map(&:id)
     completed = Completion.where(subject_id: subject_ids, date: week_start..week_end, completed: true).count
-    total = subject_ids.size * 5
+    total = dates.sum { |date| subjects.count { |s| s.active_on?(date) } }
     { completed: completed, total: total }
   end
 end
