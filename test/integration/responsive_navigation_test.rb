@@ -219,6 +219,43 @@ class ResponsiveNavigationTest < ActionDispatch::IntegrationTest
     assert_match /settings/i, response.body
   end
 
+  # Quick Note FAB Tests
+
+  test "quick note FAB renders on mobile when authenticated with student" do
+    get today_path
+    assert_response :success
+    # FAB container with Stimulus controller
+    assert_select "div[data-controller='quick-note-fab']" do
+      # FAB button with coral background
+      assert_select "button[data-action='click->quick-note-fab#open']"
+      # Modal container (hidden by default)
+      assert_select "div[data-quick-note-fab-target='modal'].hidden"
+    end
+  end
+
+  test "quick note FAB has md:hidden class for mobile-only display" do
+    get today_path
+    assert_response :success
+    assert_select "div[data-controller='quick-note-fab'].md\\:hidden"
+  end
+
+  test "quick note FAB modal contains form for creating notes" do
+    get today_path
+    assert_response :success
+    assert_select "div[data-quick-note-fab-target='modal']" do
+      assert_select "form[action='#{student_quick_notes_path(@student)}']"
+      assert_select "textarea[name='quick_note[content]']"
+      assert_select "input[type='submit']"
+    end
+  end
+
+  test "quick note FAB not rendered when not authenticated" do
+    delete logout_path
+    get login_path
+    assert_response :success
+    assert_select "div[data-controller='quick-note-fab']", count: 0
+  end
+
   # Date Boundary Tests
 
   test "daily focus for specific date shows correct subjects" do
