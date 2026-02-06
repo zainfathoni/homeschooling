@@ -206,11 +206,10 @@ class ResponsiveNavigationTest < ActionDispatch::IntegrationTest
     assert_match "Weekly Progress", response.body
   end
 
-  test "notes link navigates to narrations" do
+  test "notes link navigates to unified notes timeline" do
     get notes_path
-    assert_response :redirect
-    follow_redirect!
     assert_response :success
+    assert_match "Notes", response.body
   end
 
   test "settings link shows settings page" do

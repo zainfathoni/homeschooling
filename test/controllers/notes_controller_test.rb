@@ -6,13 +6,32 @@ class NotesControllerTest < ActionDispatch::IntegrationTest
     @student = students(:one)
   end
 
-  test "redirects to student narrations" do
+  test "shows unified notes timeline" do
     sign_in_as @user
     post select_student_path(@student)
 
     get notes_path
 
-    assert_redirected_to student_narrations_path(@student)
+    assert_response :success
+    assert_match "Notes", response.body
+  end
+
+  test "filters by narrations" do
+    sign_in_as @user
+    post select_student_path(@student)
+
+    get notes_path(filter: "narrations")
+
+    assert_response :success
+  end
+
+  test "filters by quick notes" do
+    sign_in_as @user
+    post select_student_path(@student)
+
+    get notes_path(filter: "quick_notes")
+
+    assert_response :success
   end
 
   test "redirects to students when no student selected" do

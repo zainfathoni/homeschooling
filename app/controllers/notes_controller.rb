@@ -7,6 +7,14 @@ class NotesController < ApplicationController
       return
     end
 
-    redirect_to student_narrations_path(@student)
+    @filter = params[:filter]
+    @recordings = @student.recordings.includes(:recordable).recent
+
+    case @filter
+    when "narrations"
+      @recordings = @recordings.where(recordable_type: "Narration")
+    when "quick_notes"
+      @recordings = @recordings.where(recordable_type: "QuickNote")
+    end
   end
 end
