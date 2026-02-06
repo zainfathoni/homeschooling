@@ -11,13 +11,14 @@ class ResponsiveNavigationTest < ActionDispatch::IntegrationTest
 
   # Bottom Navigation Tests
 
-  test "bottom nav renders with all four links when authenticated with student" do
+  test "bottom nav renders with all five links when authenticated with student" do
     get week_path
     assert_response :success
     assert_select "nav.fixed.bottom-0" do
       assert_select "a[href='#{today_path}']", text: /Today/
       assert_select "a[href='#{week_path}']", text: /Week/
       assert_select "a[href='#{notes_path}']", text: /Notes/
+      assert_select "a[href='#{students_path}']", text: /Students/
       assert_select "a[href='#{settings_path}']", text: /Settings/
     end
   end
@@ -31,7 +32,7 @@ class ResponsiveNavigationTest < ActionDispatch::IntegrationTest
   test "bottom nav links have 44px minimum touch targets" do
     get week_path
     assert_response :success
-    assert_select "nav.fixed.bottom-0 a.min-h-\\[44px\\]", minimum: 4
+    assert_select "nav.fixed.bottom-0 a.min-h-\\[44px\\]", minimum: 5
   end
 
   test "bottom nav not rendered when not authenticated" do
@@ -39,6 +40,54 @@ class ResponsiveNavigationTest < ActionDispatch::IntegrationTest
     get login_path
     assert_response :success
     assert_select "nav.fixed.bottom-0", count: 0
+  end
+
+  # Sidebar Navigation Tests (Desktop/Tablet)
+
+  test "sidebar renders on authenticated pages with all nav links" do
+    get week_path
+    assert_response :success
+    assert_select "aside[role='navigation']" do
+      assert_select "a[href='#{today_path}']", text: /Today/
+      assert_select "a[href='#{week_path}']", text: /Weekly Schedule/
+      assert_select "a[href='#{notes_path}']", text: /Notes/
+      assert_select "a[href='#{students_path}']", text: /Students/
+      assert_select "a[href='#{report_path}']", text: /Reports/
+      assert_select "a[href='#{settings_path}']", text: /Settings/
+    end
+  end
+
+  test "sidebar has hidden class on mobile and flex on desktop" do
+    get week_path
+    assert_response :success
+    assert_select "aside.hidden.md\\:flex"
+  end
+
+  test "sidebar highlights current section" do
+    get notes_path
+    assert_response :success
+    assert_select "aside a[href='#{notes_path}'][aria-current='page']"
+  end
+
+  test "sidebar not rendered when not authenticated" do
+    delete logout_path
+    get login_path
+    assert_response :success
+    assert_select "aside[role='navigation']", count: 0
+  end
+
+  test "sidebar shows user info and sign out" do
+    get week_path
+    assert_response :success
+    assert_select "aside" do
+      assert_select "button", text: /Sign out/
+    end
+  end
+
+  test "main content offset on desktop when sidebar present" do
+    get week_path
+    assert_response :success
+    assert_select "div.md\\:ml-56"
   end
 
   # Daily Focus View Tests
