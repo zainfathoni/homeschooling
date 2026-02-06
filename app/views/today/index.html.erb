@@ -1,3 +1,4 @@
+<% content_for(:page_date, @date) %>
 <% weekly_grid_content = capture do %>
   <div class="min-h-screen bg-lavender p-4 md:min-h-0 md:p-0">
     <header class="mb-6">
@@ -38,7 +39,7 @@
                  completions: @daily_completions,
                  pick1_selections: @pick1_selections,
                  off_day_subjects: @off_day_subjects,
-                 quick_notes: @daily_quick_notes || [] %>
+                 quick_note_recordings: @daily_quick_note_recordings || [] %>
     <% else %>
       <div class="bg-white rounded-xl p-6 text-center text-gray-500">
         Select a student to view daily tasks.

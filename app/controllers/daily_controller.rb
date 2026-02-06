@@ -17,12 +17,11 @@ class DailyController < ApplicationController
                                            .pluck(:subject_id, :subject_option_id)
                                            .to_h
 
-    @quick_notes = @student.recordings
-                           .where(recordable_type: "QuickNote")
-                           .for_date(@date)
-                           .includes(:recordable)
-                           .recent
-                           .map(&:recordable)
+    @quick_note_recordings = @student.recordings
+                                   .where(recordable_type: "QuickNote")
+                                   .for_date(@date)
+                                   .includes(:recordable)
+                                   .recent
   end
 
   private
