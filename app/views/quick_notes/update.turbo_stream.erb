@@ -1,0 +1,3 @@
+<%= turbo_stream.replace dom_id(@quick_note) do %>
+  <%= render partial: "quick_note", locals: { quick_note: @quick_note } %>
+<% end %>
