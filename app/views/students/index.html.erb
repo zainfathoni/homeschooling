@@ -9,7 +9,7 @@
     <div class="space-y-3">
       <% @students.each do |student| %>
         <div class="bg-white rounded-xl p-4 flex items-center justify-between shadow-sm">
-          <div class="flex items-center gap-3">
+          <%= link_to student_path(student), class: "flex items-center gap-3 hover:opacity-80" do %>
             <div class="w-10 h-10 bg-coral/20 rounded-full flex items-center justify-center text-coral font-bold">
               <%= student.name.first.upcase %>
             </div>
@@ -19,7 +19,7 @@
                 <p class="text-sm text-gray-500">Year <%= student.year_level %></p>
               <% end %>
             </div>
-          </div>
+          <% end %>
           <div class="flex items-center gap-2">
             <%= link_to "Subjects", student_subjects_path(student),
                 class: "text-coral hover:text-coral/80 px-3 py-1" %>
