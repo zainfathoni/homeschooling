@@ -35,11 +35,23 @@ class StudentsControllerTest < ActionDispatch::IntegrationTest
     assert_match "Subjects", response.body
   end
 
-  test "show displays weekly progress" do
+  test "show displays weekly progress with completion counts" do
     sign_in_as @user
+    subject = subjects(:one)
+    week_start = Date.current.beginning_of_week(:monday)
+    Completion.create!(subject: subject, date: week_start, completed: true)
+
     get student_path(@student)
     assert_response :success
     assert_match "This Week", response.body
+    assert_match(/\d+\/\d+ done/, response.body)
+  end
+
+  test "show lists student subjects by name" do
+    sign_in_as @user
+    get student_path(@student)
+    assert_response :success
+    assert_match subjects(:one).name, response.body
   end
 
   test "show redirects for other user's student" do

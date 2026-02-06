@@ -2,7 +2,7 @@
   <div class="max-w-2xl mx-auto space-y-6">
     <%# Header with back link %>
     <header class="flex items-center gap-3">
-      <%= link_to students_path, class: "text-gray-500 hover:text-gray-700" do %>
+      <%= link_to students_path, class: "text-gray-500 hover:text-gray-700", aria: { label: "Back to students" } do %>
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
         </svg>
@@ -13,8 +13,8 @@
     <%# Profile card %>
     <div class="bg-white rounded-2xl p-6 shadow-sm">
       <div class="flex items-center gap-4">
-        <% if @student.avatar_url.present? %>
-          <img src="<%= @student.avatar_url %>" alt="<%= @student.name %>"
+        <% if @student.safe_avatar_url.present? %>
+          <img src="<%= @student.safe_avatar_url %>" alt="<%= @student.name %>"
                class="w-16 h-16 rounded-full object-cover" />
         <% else %>
           <div class="w-16 h-16 bg-coral/20 rounded-full flex items-center justify-center text-coral text-2xl font-bold">
@@ -28,7 +28,7 @@
           <% end %>
         </div>
         <div class="ml-auto">
-          <%= link_to edit_student_path(@student), class: "text-coral hover:text-coral/80" do %>
+          <%= link_to edit_student_path(@student), class: "text-coral hover:text-coral/80", aria: { label: "Edit student" } do %>
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/>
             </svg>
@@ -40,7 +40,7 @@
     <%# Weekly progress %>
     <div class="bg-white rounded-2xl p-5 shadow-sm">
       <h3 class="text-sm font-semibold text-gray-500 tracking-wide uppercase mb-3">This Week</h3>
-      <% pct = @completion_stats[:total] > 0 ? (@completion_stats[:completed].to_f / @completion_stats[:total] * 100).round : 0 %>
+      <% pct = completion_percentage(@completion_stats) %>
       <div class="flex items-center gap-4">
         <div class="flex-1">
           <div class="w-full bg-gray-100 rounded-full h-3">
