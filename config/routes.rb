@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     end
     resources :subjects, only: [ :index, :new, :create, :edit, :update, :destroy ]
     resources :narrations
+    resources :quick_notes
   end
 
   get "today", to: "daily#show"

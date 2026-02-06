@@ -6,6 +6,7 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
     @student = students(:one)
     @subject = subjects(:one)
     @narration = narrations(:text_narration)
+    @recording = recordings(:text_narration_recording)
   end
 
   test "redirects when not logged in" do
@@ -24,14 +25,14 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as @user
     get student_narrations_path(@student)
     assert_response :success
-    assert_select "a[href='#{edit_student_narration_path(@student, @narration)}'][data-turbo-frame='_top']", text: "Edit"
+    assert_select "a[href='#{edit_student_narration_path(@student, @recording)}'][data-turbo-frame='_top']", text: "Edit"
   end
 
   test "narration card Delete link uses turbo method delete" do
     sign_in_as @user
     get student_narrations_path(@student)
     assert_response :success
-    assert_select "a[href='#{student_narration_path(@student, @narration)}'][data-turbo-method='delete']", text: "Delete"
+    assert_select "a[href='#{student_narration_path(@student, @recording)}'][data-turbo-method='delete']", text: "Delete"
   end
 
   test "filters narrations by date" do
@@ -127,14 +128,14 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
 
   test "shows edit narration form" do
     sign_in_as @user
-    get edit_student_narration_path(@student, @narration)
+    get edit_student_narration_path(@student, @recording)
     assert_response :success
     assert_match @narration.content, response.body
   end
 
   test "updates narration content" do
     sign_in_as @user
-    patch student_narration_path(@student, @narration), params: {
+    patch student_narration_path(@student, @recording), params: {
       narration: { content: "Updated content about fractions." }
     }
     assert_redirected_to student_narrations_path(@student)
@@ -143,7 +144,7 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
 
   test "updates narration with turbo stream redirects" do
     sign_in_as @user
-    patch student_narration_path(@student, @narration), params: {
+    patch student_narration_path(@student, @recording), params: {
       narration: { content: "Updated via Turbo." }
     }, as: :turbo_stream
 
@@ -154,8 +155,8 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
   test "deletes narration" do
     sign_in_as @user
 
-    assert_difference "Narration.count", -1 do
-      delete student_narration_path(@student, @narration)
+    assert_difference "Recording.count", -1 do
+      delete student_narration_path(@student, @recording)
     end
 
     assert_redirected_to student_narrations_path(@student)
@@ -164,8 +165,8 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
   test "deletes narration with turbo stream" do
     sign_in_as @user
 
-    assert_difference "Narration.count", -1 do
-      delete student_narration_path(@student, @narration), as: :turbo_stream
+    assert_difference "Recording.count", -1 do
+      delete student_narration_path(@student, @recording), as: :turbo_stream
     end
 
     assert_response :success
@@ -174,7 +175,7 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
 
   test "shows single narration" do
     sign_in_as @user
-    get student_narration_path(@student, @narration)
+    get student_narration_path(@student, @recording)
     assert_response :success
     assert_match @narration.content, response.body
   end
@@ -190,15 +191,19 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
   test "cannot access narration from another student" do
     sign_in_as @user
     other_student = students(:three)
+    other_subject = other_student.all_subjects.first || Subject.create!(name: "Test", subject_type: "fixed", teachable: other_student.teachable)
     other_narration = Narration.create!(
-      student: other_student,
-      subject: other_student.all_subjects.first || Subject.create!(name: "Test", subject_type: "fixed", teachable: other_student.teachable),
-      date: Date.current,
+      subject: other_subject,
       narration_type: "text",
       content: "Other student narration"
     )
+    other_recording = Recording.create!(
+      student: other_student,
+      date: Date.current,
+      recordable: other_narration
+    )
 
-    get student_narration_path(@student, other_narration)
+    get student_narration_path(@student, other_recording)
     assert_redirected_to student_narrations_path(@student)
   end
 
@@ -260,11 +265,14 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as @user
 
     narration = Narration.create!(
-      student: @student,
       subject: @subject,
-      date: Date.current,
       narration_type: "voice",
       media: fixture_file_upload("sample_audio.wav", "audio/wav")
+    )
+    Recording.create!(
+      student: @student,
+      date: Date.current,
+      recordable: narration
     )
 
     get student_narrations_path(@student)
@@ -285,14 +293,17 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as @user
 
     narration = Narration.create!(
-      student: @student,
       subject: @subject,
-      date: Date.current,
       narration_type: "voice",
       media: fixture_file_upload("sample_audio.wav", "audio/wav")
     )
+    recording = Recording.create!(
+      student: @student,
+      date: Date.current,
+      recordable: narration
+    )
 
-    get edit_student_narration_path(@student, narration)
+    get edit_student_narration_path(@student, recording)
     assert_response :success
     assert_select "audio[controls]"
     assert_match "Current recording", response.body
@@ -356,11 +367,14 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as @user
 
     narration = Narration.create!(
-      student: @student,
       subject: @subject,
-      date: Date.current,
       narration_type: "photo",
       media: fixture_file_upload("sample_image.png", "image/png")
+    )
+    Recording.create!(
+      student: @student,
+      date: Date.current,
+      recordable: narration
     )
 
     get student_narrations_path(@student)
@@ -372,14 +386,17 @@ class NarrationsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as @user
 
     narration = Narration.create!(
-      student: @student,
       subject: @subject,
-      date: Date.current,
       narration_type: "photo",
       media: fixture_file_upload("sample_image.png", "image/png")
     )
+    recording = Recording.create!(
+      student: @student,
+      date: Date.current,
+      recordable: narration
+    )
 
-    get edit_student_narration_path(@student, narration)
+    get edit_student_narration_path(@student, recording)
     assert_response :success
     assert_select "img"
     assert_match "Current photo", response.body

@@ -1,4 +1,4 @@
-<%# locals: (narration:, student:, subjects:) %>
+<%# locals: (narration:, student:, subjects:, date:) %>
 <%= form_with model: [student, narration], class: "space-y-6",
     data: { controller: "narration-type", narration_type_type_value: narration.narration_type || "text" } do |form| %>
   <% if narration.errors.any? %>
@@ -23,6 +23,7 @@
   <div>
     <%= form.label :date, class: "block text-gray-700 font-medium mb-1" %>
     <%= form.date_field :date,
+        value: date,
         class: "w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-coral focus:border-coral" %>
   </div>
 

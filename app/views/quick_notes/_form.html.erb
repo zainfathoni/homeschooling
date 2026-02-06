@@ -1,0 +1,33 @@
+<%# locals: (quick_note:, student:, date:) %>
+<%= form_with model: [student, quick_note], class: "space-y-6" do |form| %>
+  <% if quick_note.errors.any? %>
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+      <h3 class="text-red-800 font-medium">Please fix the following errors:</h3>
+      <ul class="list-disc list-inside text-red-600 mt-2">
+        <% quick_note.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :date, class: "block text-gray-700 font-medium mb-1" %>
+    <%= form.date_field :date,
+        value: date,
+        class: "w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-coral focus:border-coral" %>
+  </div>
+
+  <div>
+    <%= form.label :content, "What's on your mind?", class: "block text-gray-700 font-medium mb-1" %>
+    <%= form.text_area :content, rows: 6,
+        placeholder: "Field trip today, shortened lessons, general observations...",
+        class: "w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-coral focus:border-coral" %>
+  </div>
+
+  <div class="flex gap-3 pt-4">
+    <%= form.submit class: "bg-coral text-white px-6 py-2 rounded-lg font-medium hover:bg-coral/90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed",
+        data: { turbo_submits_with: "Saving..." } %>
+    <%= link_to "Cancel", student_quick_notes_path(student), class: "text-gray-600 hover:text-gray-800 px-4 py-2" %>
+  </div>
+<% end %>

@@ -1,0 +1,28 @@
+<div class="min-h-screen bg-lavender p-4">
+  <header class="mb-6 flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800">Quick Notes</h1>
+      <p class="text-gray-600"><%= @student.name %></p>
+    </div>
+    <%= link_to "Add Note", new_student_quick_note_path(@student),
+        class: "bg-coral text-white px-4 py-2 rounded-lg font-medium hover:bg-coral/90" %>
+  </header>
+
+  <%= turbo_frame_tag "quick_notes" do %>
+    <div class="space-y-3">
+      <% if @quick_notes.any? %>
+        <% @quick_notes.each do |quick_note| %>
+          <%= render partial: "quick_note", locals: { quick_note: quick_note } %>
+        <% end %>
+      <% else %>
+        <div class="bg-white rounded-xl p-6 text-center text-gray-500">
+          No quick notes yet. Add your first note to capture day-level observations.
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="mt-6">
+    <%= link_to "← Back to Students", students_path, class: "text-gray-600 hover:text-gray-800" %>
+  </div>
+</div>

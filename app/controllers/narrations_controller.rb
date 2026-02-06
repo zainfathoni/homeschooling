@@ -1,58 +1,96 @@
 class NarrationsController < ApplicationController
   before_action :set_student
-  before_action :set_narration, only: [ :show, :edit, :update, :destroy ]
+  before_action :set_recording, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @narrations = @student.narrations.includes(:subject).recent
+    @recordings = @student.recordings
+                          .where(recordable_type: "Narration")
+                          .recent
+    # Manually preload narrations and their subjects
+    ActiveRecord::Associations::Preloader.new(records: @recordings, associations: :recordable).call
+    narrations = @recordings.map(&:recordable).compact
+    ActiveRecord::Associations::Preloader.new(records: narrations, associations: :subject).call
 
     if params[:date].present?
-      @narrations = @narrations.for_date(Date.parse(params[:date]))
+      @recordings = @recordings.for_date(Date.parse(params[:date]))
     end
 
     if params[:subject_id].present?
-      @narrations = @narrations.for_subject(params[:subject_id])
+      @recordings = @recordings.joins("INNER JOIN narrations ON recordings.recordable_id = narrations.id")
+                              .where(narrations: { subject_id: params[:subject_id] })
     end
+
+    @narrations = @recordings.map(&:recordable)
   end
 
   def show
+    @narration = @recording.recordable
   end
 
   def new
-    @narration = @student.narrations.build(
-      date: params[:date] || Date.current,
+    @narration = Narration.new(
       subject_id: params[:subject_id],
       narration_type: "text"
     )
+    @date = params[:date] || Date.current
     @subjects = @student.all_subjects
     @selected_option = SubjectOption.find_by(id: params[:option_id]) if params[:option_id].present?
   end
 
   def edit
+    @narration = @recording.recordable
+    @date = @recording.date
     @subjects = @student.all_subjects
   end
 
   def create
-    @narration = @student.narrations.build(narration_params)
+    @narration = Narration.new(narration_params.except(:date))
+    @date = narration_params[:date] || Date.current
 
-    if @narration.save
+    if @narration.valid?
+      ActiveRecord::Base.transaction do
+        @narration.save!
+        @recording = Recording.create!(
+          student: @student,
+          date: @date,
+          recordable: @narration
+        )
+      end
       redirect_to student_narrations_path(@student), notice: "Narration was successfully created."
     else
       @subjects = @student.all_subjects
       render :new, status: :unprocessable_entity
     end
+  rescue ActiveRecord::RecordInvalid
+    @subjects = @student.all_subjects
+    render :new, status: :unprocessable_entity
   end
 
   def update
-    if @narration.update(narration_params)
+    @narration = @recording.recordable
+
+    recording_updates = {}
+    recording_updates[:date] = narration_params[:date] if narration_params[:date].present?
+
+    success = ActiveRecord::Base.transaction do
+      @narration.update!(narration_params.except(:date))
+      @recording.update!(recording_updates) if recording_updates.any?
+      true
+    rescue ActiveRecord::RecordInvalid
+      false
+    end
+
+    if success
       redirect_to student_narrations_path(@student), notice: "Narration was successfully updated."
     else
+      @date = @recording.date
       @subjects = @student.all_subjects
       render :edit, status: :unprocessable_entity
     end
   end
 
   def destroy
-    @narration.destroy
+    @recording.destroy
 
     respond_to do |format|
       format.html { redirect_to student_narrations_path(@student), notice: "Narration was successfully deleted." }
@@ -68,8 +106,8 @@ class NarrationsController < ApplicationController
     redirect_to students_path, alert: "Student not found"
   end
 
-  def set_narration
-    @narration = @student.narrations.find(params[:id])
+  def set_recording
+    @recording = @student.recordings.where(recordable_type: "Narration").find(params[:id])
   rescue ActiveRecord::RecordNotFound
     redirect_to student_narrations_path(@student), alert: "Narration not found"
   end

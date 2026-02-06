@@ -134,14 +134,23 @@ all_subjects.select(&:narration_required?).each do |subject|
     next unless subject.active_on?(date)
     next if rand > 0.5 # 50% have narrations
 
-    Narration.find_or_create_by!(subject: subject, student: student, date: date) do |n|
-      n.narration_type = "text"
-      n.content = "#{student.name} worked on #{subject.name} today. Great progress!"
-    end
+    # Check if a recording already exists for this subject/student/date
+    existing = Recording.joins("INNER JOIN narrations ON recordings.recordable_id = narrations.id AND recordings.recordable_type = 'Narration'")
+                        .where(student: student, date: date)
+                        .where(narrations: { subject_id: subject.id })
+                        .exists?
+    next if existing
+
+    narration = Narration.create!(
+      subject: subject,
+      narration_type: "text",
+      content: "#{student.name} worked on #{subject.name} today. Great progress!"
+    )
+    Recording.create!(student: student, date: date, recordable: narration)
     narration_count += 1
   end
 end
-puts "  Created #{narration_count} narrations"
+puts "  Created #{narration_count} narrations (with recordings)"
 
 puts "\nSeed complete!"
 puts "  Users: #{User.count}"

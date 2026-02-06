@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_05_141008) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_05_160336) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -63,15 +63,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_141008) do
   create_table "narrations", force: :cascade do |t|
     t.text "content"
     t.datetime "created_at", null: false
-    t.date "date", null: false
     t.string "narration_type", null: false
-    t.integer "student_id", null: false
     t.integer "subject_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["student_id", "date"], name: "index_narrations_on_student_id_and_date"
-    t.index ["student_id"], name: "index_narrations_on_student_id"
-    t.index ["subject_id", "date"], name: "index_narrations_on_subject_id_and_date"
     t.index ["subject_id"], name: "index_narrations_on_subject_id"
+  end
+
+  create_table "quick_notes", force: :cascade do |t|
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "recordings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.date "date", null: false
+    t.bigint "recordable_id", null: false
+    t.string "recordable_type", null: false
+    t.integer "student_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["recordable_type", "recordable_id"], name: "index_recordings_on_recordable_type_and_recordable_id", unique: true
+    t.index ["student_id", "date"], name: "index_recordings_on_student_id_and_date"
+    t.index ["student_id"], name: "index_recordings_on_student_id"
   end
 
   create_table "student_groups", force: :cascade do |t|
@@ -101,9 +114,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_141008) do
     t.string "name"
     t.boolean "narration_required", default: false, null: false
     t.json "scheduled_days"
+    t.integer "student_id"
     t.string "subject_type", default: "fixed", null: false
-    t.integer "teachable_id", null: false
+    t.integer "teachable_id"
     t.datetime "updated_at", null: false
+    t.index ["student_id"], name: "index_subjects_on_student_id"
     t.index ["teachable_id"], name: "index_subjects_on_teachable_id"
   end
 
@@ -133,8 +148,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_141008) do
   add_foreign_key "completions", "subjects"
   add_foreign_key "group_memberships", "student_groups"
   add_foreign_key "group_memberships", "students"
-  add_foreign_key "narrations", "students"
   add_foreign_key "narrations", "subjects"
+  add_foreign_key "recordings", "students"
   add_foreign_key "subject_options", "subjects"
   add_foreign_key "subjects", "teachables"
   add_foreign_key "teachables", "users"

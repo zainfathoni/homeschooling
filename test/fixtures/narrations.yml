@@ -1,20 +1,9 @@
 text_narration:
-  student: one
   subject: one
-  date: <%= Date.new(2026, 1, 26) %>
   narration_type: text
-  content: "Today I learned about fractions and how to add them together."
+  content: "Today I learned about fractions"
 
 another_text:
-  student: one
-  subject: scheduled_coding
-  date: <%= Date.new(2026, 1, 27) %>
+  subject: one
   narration_type: text
-  content: "Built a simple calculator in Python."
-
-weekly_grid_narration:
-  student: one
-  subject: narration_required_subject
-  date: <%= Date.new(2026, 1, 28) %>
-  narration_type: text
-  content: "Narrated reading for today."
+  content: "Practiced multiplication tables"
