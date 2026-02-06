@@ -256,6 +256,47 @@ class ResponsiveNavigationTest < ActionDispatch::IntegrationTest
     assert_select "div[data-controller='quick-note-fab']", count: 0
   end
 
+  # Quick Notes Tablet Section Tests
+
+  test "quick notes section renders on tablet in duet view" do
+    get week_path
+    assert_response :success
+    assert_select "div.hidden.md\\:block" do
+      assert_select "h3", text: /Quick Notes/i
+    end
+  end
+
+  test "quick notes section contains inline form" do
+    get week_path
+    assert_response :success
+    assert_select "div#new_quick_note_form" do
+      assert_select "form[action='#{student_quick_notes_path(@student)}']"
+      assert_select "textarea[name='quick_note[content]']"
+      assert_select "input[type='submit'][value='Add Note']"
+    end
+  end
+
+  test "quick notes section shows existing notes for the day" do
+    travel_to Date.new(2026, 1, 28) do
+      quick_note = QuickNote.create!(content: "Test quick note for tablet")
+      Recording.create!(student: @student, date: Date.new(2026, 1, 28), recordable: quick_note)
+
+      get daily_path(date: "2026-01-28")
+      assert_response :success
+      assert_select "div#quick_notes" do
+        assert_match "Test quick note for tablet", response.body
+      end
+    end
+  end
+
+  test "quick notes section shows empty state when no notes" do
+    travel_to Date.new(2026, 1, 29) do
+      get daily_path(date: "2026-01-29")
+      assert_response :success
+      assert_match "No notes for this day", response.body
+    end
+  end
+
   # Date Boundary Tests
 
   test "daily focus for specific date shows correct subjects" do
