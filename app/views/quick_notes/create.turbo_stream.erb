@@ -7,8 +7,8 @@
   <%= render "quick_notes/inline_form", student: @student, date: @date %>
 <% end %>
 
-<%# Update /notes timeline only when on that page (avoid target-not-found warnings) %>
-<% if request.referrer&.include?("/notes") %>
+<%# Update /notes timeline only when submitted from that page %>
+<% if params[:origin] == "notes" %>
   <%= turbo_stream.prepend "notes_timeline" do %>
     <%= render partial: "recordings/quick_note", locals: { recording: @recording, recordable: @quick_note } %>
   <% end %>

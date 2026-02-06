@@ -1,4 +1,4 @@
-<%# locals: (student:, date:) %>
+<%# locals: (student:, date:, origin: nil) %>
 <%# Mobile FAB for Quick Notes - positioned above bottom nav %>
 <div data-controller="quick-note-fab" class="md:hidden">
   <%# FAB Button - fixed position above bottom nav %>
@@ -18,6 +18,6 @@
        role="dialog"
        aria-modal="true"
        aria-labelledby="quick-note-modal-title">
-    <%= render "quick_notes/modal_form", student: student, date: date %>
+    <%= render "quick_notes/modal_form", student: student, date: date, origin: origin %>
   </div>
 </div>

@@ -1,4 +1,4 @@
-<% content_for(:page_date) { @date } %>
+<% content_for(:page_date, @date) %>
 <%= turbo_frame_tag "daily_focus" do %>
   <%# Mobile: full-screen layout with padding %>
   <%# Tablet (duet view): top margin to align with Weekly Completion bar %>

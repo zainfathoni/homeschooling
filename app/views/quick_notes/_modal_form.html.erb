@@ -1,4 +1,4 @@
-<%# locals: (student:, date:) %>
+<%# locals: (student:, date:, origin: nil) %>
 <div class="bg-white rounded-t-2xl p-6 w-full max-w-lg mx-auto">
   <div class="flex items-center justify-between mb-4">
     <h2 id="quick-note-modal-title" class="text-lg font-semibold text-gray-800">Quick Note</h2>
@@ -13,6 +13,7 @@
 
   <%= form_with url: student_quick_notes_path(student), method: :post, scope: :quick_note, class: "space-y-4", data: { action: "turbo:submit-end->quick-note-fab#close" } do |form| %>
     <%= form.hidden_field :date, value: date %>
+    <%= hidden_field_tag :origin, origin if origin.present? %>
 
     <div>
       <%= form.text_area :content, rows: 4,

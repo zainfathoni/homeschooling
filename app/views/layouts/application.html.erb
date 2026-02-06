@@ -28,7 +28,7 @@
       <%= yield %>
     </main>
     <div id="modals"></div>
-    <%= render "shared/quick_note_fab", student: current_student, date: content_for(:page_date).presence&.to_date || Date.current if authenticated? && current_student %>
+    <%= render "shared/quick_note_fab", student: current_student, date: content_for(:page_date).presence&.to_date || Date.current, origin: content_for(:page_origin).presence if authenticated? && current_student %>
     <%= render "shared/bottom_nav" if authenticated? && current_student %>
   </body>
 </html>
