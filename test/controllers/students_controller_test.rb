@@ -20,6 +20,46 @@ class StudentsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match @other_student.name, response.body
   end
 
+  test "show displays student profile" do
+    sign_in_as @user
+    get student_path(@student)
+    assert_response :success
+    assert_match @student.name, response.body
+    assert_select "h2", @student.name
+  end
+
+  test "show displays subjects for student" do
+    sign_in_as @user
+    get student_path(@student)
+    assert_response :success
+    assert_match "Subjects", response.body
+  end
+
+  test "show displays weekly progress with completion counts" do
+    sign_in_as @user
+    subject = subjects(:one)
+    week_start = Date.current.beginning_of_week(:monday)
+    Completion.create!(subject: subject, date: week_start, completed: true)
+
+    get student_path(@student)
+    assert_response :success
+    assert_match "This Week", response.body
+    assert_match(/\d+\/\d+ done/, response.body)
+  end
+
+  test "show lists student subjects by name" do
+    sign_in_as @user
+    get student_path(@student)
+    assert_response :success
+    assert_match subjects(:one).name, response.body
+  end
+
+  test "show redirects for other user's student" do
+    sign_in_as @user
+    get student_path(@other_student)
+    assert_redirected_to students_path
+  end
+
   test "new shows form" do
     sign_in_as @user
     get new_student_path

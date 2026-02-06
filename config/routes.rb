@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   get "signup", to: "registrations#new"
   post "signup", to: "registrations#create"
 
-  resources :students, only: [ :index, :new, :create, :edit, :update, :destroy ] do
+  resources :students, only: [ :index, :show, :new, :create, :edit, :update, :destroy ] do
     member do
       post :select
     end

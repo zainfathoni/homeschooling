@@ -70,4 +70,62 @@ class StudentTest < ActiveSupport::TestCase
 
     assert student.valid?
   end
+
+  test "rejects javascript url scheme" do
+    @student.avatar_url = "javascript:alert(1)"
+    assert_not @student.valid?
+    assert_includes @student.errors[:avatar_url], "must use http or https"
+  end
+
+  test "rejects data url scheme" do
+    @student.avatar_url = "data:text/html,test"
+    assert_not @student.valid?
+    assert_predicate @student.errors[:avatar_url], :present?
+  end
+
+  test "accepts http avatar url" do
+    @student.avatar_url = "http://example.com/avatar.png"
+    assert @student.valid?
+  end
+
+  test "accepts https avatar url" do
+    @student.avatar_url = "https://example.com/avatar.png"
+    assert @student.valid?
+  end
+
+  test "accepts blank avatar url" do
+    @student.avatar_url = nil
+    assert @student.valid?
+  end
+
+  test "rejects invalid avatar url" do
+    @student.avatar_url = "not a valid url with spaces%%"
+    assert_not @student.valid?
+    assert_includes @student.errors[:avatar_url], "is not a valid URL"
+  end
+
+  test "safe_avatar_url returns nil for javascript scheme" do
+    @student.avatar_url = "javascript:alert(1)"
+    assert_nil @student.safe_avatar_url
+  end
+
+  test "safe_avatar_url returns nil for data scheme" do
+    @student.avatar_url = "data:text/html,test"
+    assert_nil @student.safe_avatar_url
+  end
+
+  test "safe_avatar_url returns url for https scheme" do
+    @student.avatar_url = "https://example.com/avatar.png"
+    assert_equal "https://example.com/avatar.png", @student.safe_avatar_url
+  end
+
+  test "safe_avatar_url returns nil for blank url" do
+    @student.avatar_url = nil
+    assert_nil @student.safe_avatar_url
+  end
+
+  test "safe_avatar_url returns nil for invalid url" do
+    @student.avatar_url = "not a valid url%%"
+    assert_nil @student.safe_avatar_url
+  end
 end

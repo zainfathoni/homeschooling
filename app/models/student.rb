@@ -13,6 +13,16 @@ class Student < ApplicationRecord
 
   validates_associated :teachable
   validate :teachable_name_present
+  validate :avatar_url_uses_safe_scheme
+
+  def safe_avatar_url
+    return nil if avatar_url.blank?
+
+    uri = URI.parse(avatar_url)
+    %w[http https].include?(uri.scheme) ? avatar_url : nil
+  rescue URI::InvalidURIError
+    nil
+  end
 
   def all_subjects
     Subject.where(teachable_id: all_teachable_ids)
@@ -31,5 +41,16 @@ class Student < ApplicationRecord
     return if teachable.nil? || teachable.name.present?
 
     errors.add(:name, "can't be blank")
+  end
+
+  def avatar_url_uses_safe_scheme
+    return if avatar_url.blank?
+
+    uri = URI.parse(avatar_url)
+    unless %w[http https].include?(uri.scheme)
+      errors.add(:avatar_url, "must use http or https")
+    end
+  rescue URI::InvalidURIError
+    errors.add(:avatar_url, "is not a valid URL")
   end
 end
