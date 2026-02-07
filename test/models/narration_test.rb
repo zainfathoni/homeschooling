@@ -33,6 +33,12 @@ class NarrationTest < ActiveSupport::TestCase
     assert_not_includes narration.errors[:content], "can't be blank"
   end
 
+  test "content not required for video type" do
+    narration = Narration.new(subject: subjects(:one), narration_type: "video")
+    narration.valid?
+    assert_not_includes narration.errors[:content], "can't be blank"
+  end
+
   test "validates media presence for voice type" do
     narration = Narration.new(subject: subjects(:one), narration_type: "voice")
     assert_not narration.valid?
@@ -41,6 +47,12 @@ class NarrationTest < ActiveSupport::TestCase
 
   test "validates media presence for photo type" do
     narration = Narration.new(subject: subjects(:one), narration_type: "photo")
+    assert_not narration.valid?
+    assert_includes narration.errors[:media], "can't be blank"
+  end
+
+  test "validates media presence for video type" do
+    narration = Narration.new(subject: subjects(:one), narration_type: "video")
     assert_not narration.valid?
     assert_includes narration.errors[:media], "can't be blank"
   end
@@ -145,6 +157,12 @@ class NarrationTest < ActiveSupport::TestCase
     assert narration.text?
     assert_not narration.voice?
     assert_not narration.photo?
+    assert_not narration.video?
+  end
+
+  test "video type is a valid narration_type" do
+    narration = Narration.new(subject: subjects(:one), narration_type: "video")
+    assert narration.video?
   end
 
   # Scopes

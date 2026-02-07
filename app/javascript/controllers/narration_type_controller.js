@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["textInput", "voiceInput", "photoInput", "typeButton", "typeField"]
+  static targets = ["textInput", "voiceInput", "photoInput", "videoInput", "typeButton", "typeField"]
   static values = { type: { type: String, default: "text" } }
 
   connect() {
@@ -40,6 +40,9 @@ export default class extends Controller {
     }
     if (this.hasPhotoInputTarget) {
       this.photoInputTarget.classList.toggle("hidden", this.typeValue !== "photo")
+    }
+    if (this.hasVideoInputTarget) {
+      this.videoInputTarget.classList.toggle("hidden", this.typeValue !== "video")
     }
   }
 }

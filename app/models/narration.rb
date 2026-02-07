@@ -5,12 +5,12 @@ class Narration < ApplicationRecord
   has_one :recording, as: :recordable, dependent: :destroy, inverse_of: :recordable
   delegate :student, :student_id, :date, to: :recording, allow_nil: true
 
-  validates :narration_type, presence: true, inclusion: { in: %w[text voice photo] }
+  validates :narration_type, presence: true, inclusion: { in: %w[text voice photo video] }
   validates :content, presence: true, if: :text?
-  validates :media, presence: true, if: -> { voice? || photo? }
+  validates :media, presence: true, if: -> { voice? || photo? || video? }
   validate :student_matches_subject
 
-  enum :narration_type, { text: "text", voice: "voice", photo: "photo" }
+  enum :narration_type, { text: "text", voice: "voice", photo: "photo", video: "video" }
 
   scope :for_date, ->(date) { joins(:recording).where(recordings: { date: date }) }
   scope :for_student, ->(student) { joins(:recording).where(recordings: { student: student }) }
