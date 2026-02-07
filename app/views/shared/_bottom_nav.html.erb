@@ -16,14 +16,14 @@
       <span class="text-[10px] mt-0.5">Notes</span>
     <% end %>
 
-    <%= link_to report_path, class: nav_link_classes(report_path, base_classes: "flex flex-col items-center py-3 px-2 min-w-[48px] min-h-[44px]"), "aria-label": "Reports" do %>
-      <%= render "icons/reports", css_class: "w-6 h-6" %>
-      <span class="text-[10px] mt-0.5">Reports</span>
-    <% end %>
-
     <%= link_to students_path, class: nav_link_classes(students_path, base_classes: "flex flex-col items-center py-3 px-2 min-w-[48px] min-h-[44px]"), "aria-label": "Students" do %>
       <%= render "icons/students", css_class: "w-6 h-6" %>
       <span class="text-[10px] mt-0.5">Students</span>
+    <% end %>
+
+    <%= link_to report_path, class: nav_link_classes(report_path, base_classes: "flex flex-col items-center py-3 px-2 min-w-[48px] min-h-[44px]"), "aria-label": "Reports" do %>
+      <%= render "icons/reports", css_class: "w-6 h-6" %>
+      <span class="text-[10px] mt-0.5">Reports</span>
     <% end %>
 
     <%= link_to settings_path, class: nav_link_classes(settings_path, base_classes: "flex flex-col items-center py-3 px-2 min-w-[48px] min-h-[44px]"), "aria-label": "Settings" do %>
