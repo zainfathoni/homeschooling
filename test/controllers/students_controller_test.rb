@@ -136,4 +136,42 @@ class StudentsControllerTest < ActionDispatch::IntegrationTest
     post select_student_path(@other_student)
     assert_redirected_to students_path
   end
+
+  test "update attaches avatar image" do
+    sign_in_as @user
+    patch student_path(@student), params: {
+      student: {
+        avatar: fixture_file_upload("sample_image.png", "image/png"),
+        teachable_attributes: { id: @student.teachable.id, name: @student.name }
+      }
+    }
+    assert_redirected_to students_path
+    assert @student.reload.avatar.attached?
+  end
+
+  test "create with avatar attaches image" do
+    sign_in_as @user
+    assert_difference "Student.count", 1 do
+      post students_path, params: {
+        student: {
+          avatar: fixture_file_upload("sample_image.png", "image/png"),
+          teachable_attributes: { name: "New Student With Avatar" }
+        }
+      }
+    end
+    assert_redirected_to students_path
+    assert Student.last.avatar.attached?
+  end
+
+  test "show displays uploaded avatar" do
+    sign_in_as @user
+    @student.avatar.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/sample_image.png")),
+      filename: "avatar.png",
+      content_type: "image/png"
+    )
+    get student_path(@student)
+    assert_response :success
+    assert_select "img[alt='#{@student.name}']"
+  end
 end

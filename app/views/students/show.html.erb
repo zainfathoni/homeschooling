@@ -13,7 +13,9 @@
     <%# Profile card %>
     <div class="bg-white rounded-2xl p-6 shadow-sm">
       <div class="flex items-center gap-4">
-        <% if @student.safe_avatar_url.present? %>
+        <% if @student.avatar.attached? %>
+          <%= image_tag @student.avatar.variant(:thumb), alt: @student.name, class: "w-16 h-16 rounded-full object-cover" %>
+        <% elsif @student.safe_avatar_url.present? %>
           <img src="<%= @student.safe_avatar_url %>" alt="<%= @student.name %>"
                class="w-16 h-16 rounded-full object-cover" />
         <% else %>

@@ -128,4 +128,56 @@ class StudentTest < ActiveSupport::TestCase
     @student.avatar_url = "not a valid url%%"
     assert_nil @student.safe_avatar_url
   end
+
+  # Avatar upload tests
+  test "can attach avatar image" do
+    @student.avatar.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/sample_image.png")),
+      filename: "avatar.png",
+      content_type: "image/png"
+    )
+    assert @student.avatar.attached?
+  end
+
+  test "avatar? returns true when avatar is attached" do
+    @student.avatar.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/sample_image.png")),
+      filename: "avatar.png",
+      content_type: "image/png"
+    )
+    assert @student.avatar?
+  end
+
+  test "avatar? returns true when avatar_url is present" do
+    @student.avatar_url = "https://example.com/avatar.png"
+    assert @student.avatar?
+  end
+
+  test "avatar? returns false when neither avatar nor url present" do
+    @student.avatar_url = nil
+    assert_not @student.avatar?
+  end
+
+  test "rejects non-image avatar content type" do
+    @student.avatar.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/sample_audio.wav")),
+      filename: "audio.wav",
+      content_type: "audio/wav"
+    )
+    assert_not @student.valid?
+    assert_includes @student.errors[:avatar], "must be a JPEG, PNG, GIF, or WebP image"
+  end
+
+  test "accepts valid image content types" do
+    %w[image/jpeg image/png image/gif image/webp].each do |content_type|
+      student = Student.new
+      student.build_teachable(name: "Test", user: @user)
+      student.avatar.attach(
+        io: File.open(Rails.root.join("test/fixtures/files/sample_image.png")),
+        filename: "avatar.#{content_type.split('/').last}",
+        content_type: content_type
+      )
+      assert student.valid?, "Expected #{content_type} to be valid"
+    end
+  end
 end
