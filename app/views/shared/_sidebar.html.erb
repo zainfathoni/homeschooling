@@ -1,0 +1,27 @@
+<%# Desktop sidebar navigation - visible on tablet+ (hidden on mobile) %>
+<aside class="hidden md:flex md:flex-col md:w-56 md:fixed md:inset-y-0 bg-white border-r border-gray-200 z-40">
+  <div class="flex items-center h-16 px-4 border-b border-gray-100">
+    <span class="text-lg font-bold text-gray-900">Homeschool</span>
+  </div>
+
+  <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto" role="navigation" aria-label="Main navigation">
+    <%= sidebar_link "Today", today_path, "today" %>
+    <%= sidebar_link "Weekly Schedule", week_path, "week" %>
+    <%= sidebar_link "Notes", notes_path, "notes" %>
+    <%= sidebar_link "Students", students_path, "students" %>
+    <%= sidebar_link "Reports", report_path, "reports" %>
+    <%= sidebar_link "Settings", settings_path, "settings" %>
+  </nav>
+
+  <div class="px-3 py-4 border-t border-gray-100">
+    <div class="flex items-center gap-3 px-3 py-2">
+      <span class="w-8 h-8 rounded-full bg-lavender flex items-center justify-center text-sm font-bold text-gray-700">
+        <%= Current.user.name.first.upcase %>
+      </span>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-medium text-gray-900 truncate"><%= Current.user.name %></p>
+      </div>
+    </div>
+    <%= button_to "Sign out", logout_path, method: :delete, class: "w-full mt-2 text-left px-3 py-2 text-sm text-gray-600 hover:text-coral hover:bg-gray-50 rounded-lg transition-colors cursor-pointer" %>
+  </div>
+</aside>

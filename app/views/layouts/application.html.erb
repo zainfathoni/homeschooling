@@ -24,9 +24,15 @@
   </head>
 
   <body class="bg-lavender min-h-screen pb-20 md:pb-0">
-    <main class="container mx-auto px-5 py-8">
-      <%= yield %>
-    </main>
+    <% show_sidebar = authenticated? && current_student %>
+    <% if show_sidebar %>
+      <%= render "shared/sidebar" %>
+    <% end %>
+    <div class="<%= show_sidebar ? 'md:ml-56' : '' %>">
+      <main class="container mx-auto px-5 py-8">
+        <%= yield %>
+      </main>
+    </div>
     <div id="modals"></div>
     <%= render "shared/quick_note_fab", student: current_student, date: content_for(:page_date).presence&.to_date || Date.current, origin: content_for(:page_origin).presence if authenticated? && current_student %>
     <%= render "shared/bottom_nav" if authenticated? && current_student %>
