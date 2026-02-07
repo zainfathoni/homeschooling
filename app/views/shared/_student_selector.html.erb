@@ -6,7 +6,7 @@
             method: :post,
             class: "flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-colors cursor-pointer #{student == current_student ? 'bg-coral text-white shadow-sm' : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'}",
             data: { turbo: false } do %>
-          <%= student_avatar(student, size: :small, class: student == current_student ? nil : nil) %>
+          <%= student_avatar(student, size: :small) %>
           <span><%= student.name %></span>
         <% end %>
       <% end %>

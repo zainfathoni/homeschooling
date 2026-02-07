@@ -23,14 +23,27 @@ module StudentsHelper
   #   size: :small (28px), :medium (40px), :large (64px) - default :medium
   #   class: additional CSS classes
   def student_avatar(student, size: :medium, **options)
-    sizes = { small: 7, medium: 10, large: 16 }
-    px = sizes[size] || sizes[:medium]
-    size_class = "w-#{px} h-#{px}"
+    # Explicit class mappings to avoid Tailwind purge issues with interpolation
+    size_classes = {
+      small:  "w-7 h-7",
+      medium: "w-10 h-10",
+      large:  "w-16 h-16"
+    }
+    text_sizes = {
+      small:  "text-sm",
+      medium: "text-base",
+      large:  "text-2xl"
+    }
+    size_class = size_classes[size] || size_classes[:medium]
+    text_size = text_sizes[size] || text_sizes[:medium]
     base_class = "#{size_class} rounded-full object-cover"
     extra_class = options[:class]
 
+    # Select variant based on display size for better image optimization
+    variant_name = size == :large ? :medium : :thumb
+
     if student.avatar.attached?
-      image_tag student.avatar.variant(:thumb),
+      image_tag student.avatar.variant(variant_name),
                 alt: student.name,
                 class: [ base_class, extra_class ].compact.join(" ")
     elsif student.safe_avatar_url.present?
@@ -39,7 +52,6 @@ module StudentsHelper
               class: [ base_class, extra_class ].compact.join(" ")
     else
       initials_class = "#{size_class} rounded-full flex items-center justify-center"
-      text_size = size == :small ? "text-sm" : (size == :large ? "text-2xl" : "text-base")
       tag.div class: [ initials_class, "bg-coral/20 text-coral font-bold", text_size, extra_class ].compact.join(" "),
               aria: { label: student.name } do
         student.name.first.upcase

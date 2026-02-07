@@ -182,7 +182,9 @@ class StudentTest < ActiveSupport::TestCase
         content_type: "image/png"
       )
     end
-    # Mock byte_size to simulate an oversized file
+    # Override byte_size to simulate an oversized file
+    # Note: Using define_singleton_method as ActiveStorage::Blob doesn't support
+    # Minitest's stub method directly, and the test object is discarded after use
     blob = @student.avatar.blob
     blob.define_singleton_method(:byte_size) { 6.megabytes }
     assert_not @student.valid?
