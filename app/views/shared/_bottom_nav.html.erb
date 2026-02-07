@@ -1,6 +1,6 @@
 <%# Mobile bottom navigation - hidden on tablet+ (md:hidden) %>
-<nav class="fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 md:hidden z-50" role="navigation" aria-label="Main navigation">
-  <div class="flex justify-around">
+<nav class="fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 md:hidden z-50 overflow-x-auto" role="navigation" aria-label="Main navigation">
+  <div class="flex justify-around min-w-max px-2">
     <%= link_to today_path, class: nav_link_classes(today_path, base_classes: "flex flex-col items-center py-3 px-2 min-w-[48px] min-h-[44px]"), "aria-label": "Today" do %>
       <%= render "icons/today", css_class: "w-6 h-6" %>
       <span class="text-[10px] mt-0.5">Today</span>
