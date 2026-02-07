@@ -74,7 +74,7 @@ class StudentsController < ApplicationController
   end
 
   def student_params
-    params.require(:student).permit(:avatar_url, :year_level, teachable_attributes: [ :id, :name ])
+    params.require(:student).permit(:avatar, :avatar_url, :year_level, teachable_attributes: [ :id, :name ])
   end
 
   def weekly_completion_stats

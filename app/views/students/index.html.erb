@@ -10,9 +10,7 @@
       <% @students.each do |student| %>
         <div class="bg-white rounded-xl p-4 flex items-center justify-between shadow-sm">
           <%= link_to student_path(student), class: "flex items-center gap-3 hover:opacity-80" do %>
-            <div class="w-10 h-10 bg-coral/20 rounded-full flex items-center justify-center text-coral font-bold">
-              <%= student.name.first.upcase %>
-            </div>
+            <%= student_avatar(student, size: :medium) %>
             <div>
               <p class="font-medium text-gray-800"><%= student.name %></p>
               <% if student.year_level %>
