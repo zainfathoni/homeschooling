@@ -6,15 +6,7 @@
             method: :post,
             class: "flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-colors cursor-pointer #{student == current_student ? 'bg-coral text-white shadow-sm' : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'}",
             data: { turbo: false } do %>
-          <% if student.avatar.attached? %>
-            <%= image_tag student.avatar.variant(:thumb), class: "w-7 h-7 rounded-full object-cover", alt: student.name %>
-          <% elsif student.safe_avatar_url.present? %>
-            <img src="<%= student.safe_avatar_url %>" class="w-7 h-7 rounded-full object-cover" alt="<%= student.name %>" />
-          <% else %>
-            <span class="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold <%= student == current_student ? 'bg-white/20' : 'bg-lavender' %>">
-              <%= student.name.first.upcase %>
-            </span>
-          <% end %>
+          <%= student_avatar(student, size: :small, class: student == current_student ? nil : nil) %>
           <span><%= student.name %></span>
         <% end %>
       <% end %>

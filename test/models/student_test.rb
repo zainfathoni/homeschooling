@@ -131,20 +131,24 @@ class StudentTest < ActiveSupport::TestCase
 
   # Avatar upload tests
   test "can attach avatar image" do
-    @student.avatar.attach(
-      io: File.open(Rails.root.join("test/fixtures/files/sample_image.png")),
-      filename: "avatar.png",
-      content_type: "image/png"
-    )
+    file_fixture("sample_image.png").open do |file|
+      @student.avatar.attach(
+        io: file,
+        filename: "avatar.png",
+        content_type: "image/png"
+      )
+    end
     assert @student.avatar.attached?
   end
 
   test "avatar? returns true when avatar is attached" do
-    @student.avatar.attach(
-      io: File.open(Rails.root.join("test/fixtures/files/sample_image.png")),
-      filename: "avatar.png",
-      content_type: "image/png"
-    )
+    file_fixture("sample_image.png").open do |file|
+      @student.avatar.attach(
+        io: file,
+        filename: "avatar.png",
+        content_type: "image/png"
+      )
+    end
     assert @student.avatar?
   end
 
@@ -159,24 +163,43 @@ class StudentTest < ActiveSupport::TestCase
   end
 
   test "rejects non-image avatar content type" do
-    @student.avatar.attach(
-      io: File.open(Rails.root.join("test/fixtures/files/sample_audio.wav")),
-      filename: "audio.wav",
-      content_type: "audio/wav"
-    )
+    file_fixture("sample_audio.wav").open do |file|
+      @student.avatar.attach(
+        io: file,
+        filename: "audio.wav",
+        content_type: "audio/wav"
+      )
+    end
     assert_not @student.valid?
     assert_includes @student.errors[:avatar], "must be a JPEG, PNG, GIF, or WebP image"
+  end
+
+  test "rejects oversized avatar" do
+    file_fixture("sample_image.png").open do |file|
+      @student.avatar.attach(
+        io: file,
+        filename: "large_avatar.png",
+        content_type: "image/png"
+      )
+    end
+    # Mock byte_size to simulate an oversized file
+    blob = @student.avatar.blob
+    blob.define_singleton_method(:byte_size) { 6.megabytes }
+    assert_not @student.valid?
+    assert_includes @student.errors[:avatar], "must be smaller than 5MB"
   end
 
   test "accepts valid image content types" do
     %w[image/jpeg image/png image/gif image/webp].each do |content_type|
       student = Student.new
       student.build_teachable(name: "Test", user: @user)
-      student.avatar.attach(
-        io: File.open(Rails.root.join("test/fixtures/files/sample_image.png")),
-        filename: "avatar.#{content_type.split('/').last}",
-        content_type: content_type
-      )
+      file_fixture("sample_image.png").open do |file|
+        student.avatar.attach(
+          io: file,
+          filename: "avatar.#{content_type.split('/').last}",
+          content_type: content_type
+        )
+      end
       assert student.valid?, "Expected #{content_type} to be valid"
     end
   end

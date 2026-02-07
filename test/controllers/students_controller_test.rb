@@ -165,11 +165,13 @@ class StudentsControllerTest < ActionDispatch::IntegrationTest
 
   test "show displays uploaded avatar" do
     sign_in_as @user
-    @student.avatar.attach(
-      io: File.open(Rails.root.join("test/fixtures/files/sample_image.png")),
-      filename: "avatar.png",
-      content_type: "image/png"
-    )
+    file_fixture("sample_image.png").open do |file|
+      @student.avatar.attach(
+        io: file,
+        filename: "avatar.png",
+        content_type: "image/png"
+      )
+    end
     get student_path(@student)
     assert_response :success
     assert_select "img[alt='#{@student.name}']"

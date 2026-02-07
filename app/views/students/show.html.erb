@@ -13,16 +13,7 @@
     <%# Profile card %>
     <div class="bg-white rounded-2xl p-6 shadow-sm">
       <div class="flex items-center gap-4">
-        <% if @student.avatar.attached? %>
-          <%= image_tag @student.avatar.variant(:thumb), alt: @student.name, class: "w-16 h-16 rounded-full object-cover" %>
-        <% elsif @student.safe_avatar_url.present? %>
-          <img src="<%= @student.safe_avatar_url %>" alt="<%= @student.name %>"
-               class="w-16 h-16 rounded-full object-cover" />
-        <% else %>
-          <div class="w-16 h-16 bg-coral/20 rounded-full flex items-center justify-center text-coral text-2xl font-bold">
-            <%= @student.name.first.upcase %>
-          </div>
-        <% end %>
+        <%= student_avatar(@student, size: :large) %>
         <div>
           <h2 class="text-xl font-bold text-gray-800"><%= @student.name %></h2>
           <% if @student.year_level %>
