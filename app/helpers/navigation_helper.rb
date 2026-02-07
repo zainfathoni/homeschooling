@@ -1,6 +1,12 @@
 module NavigationHelper
+  SECTION_ROOTS = %w[/students /notes].freeze
+
   def nav_active?(path)
-    current_page?(path)
+    if SECTION_ROOTS.include?(path)
+      request.path.start_with?(path)
+    else
+      current_page?(path)
+    end
   end
 
   def nav_link_classes(path, base_classes: "")

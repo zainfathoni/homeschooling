@@ -11,7 +11,7 @@ class ResponsiveNavigationTest < ActionDispatch::IntegrationTest
 
   # Bottom Navigation Tests
 
-  test "bottom nav renders with all five links when authenticated with student" do
+  test "bottom nav renders with all six links when authenticated with student" do
     get week_path
     assert_response :success
     assert_select "nav.fixed.bottom-0" do
@@ -68,6 +68,12 @@ class ResponsiveNavigationTest < ActionDispatch::IntegrationTest
     get notes_path
     assert_response :success
     assert_select "aside a[href='#{notes_path}'][aria-current='page']"
+  end
+
+  test "sidebar keeps Students active on student detail page" do
+    get student_path(@student)
+    assert_response :success
+    assert_select "aside a[href='#{students_path}'][aria-current='page']"
   end
 
   test "sidebar not rendered when not authenticated" do
