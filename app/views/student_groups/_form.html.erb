@@ -1,0 +1,66 @@
+<%= form_with model: student_group, class: "space-y-4" do |form| %>
+  <% if student_group.errors.any? %>
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+      <h3 class="text-red-800 font-medium">Please fix the following errors:</h3>
+      <ul class="list-disc list-inside text-red-600 mt-2">
+        <% student_group.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form.fields_for :teachable do |teachable_form| %>
+    <div>
+      <%= teachable_form.label :name, "Group Name", class: "block text-gray-700 font-medium mb-1" %>
+      <%= teachable_form.text_field :name,
+          class: "w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-coral focus:border-coral",
+          placeholder: "Enter group name" %>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :group_type, "Group Type", class: "block text-gray-700 font-medium mb-2" %>
+    <div class="flex gap-2">
+      <% StudentGroup.group_types.each_key do |type| %>
+        <label class="flex-1 cursor-pointer">
+          <%= form.radio_button :group_type, type, class: "sr-only peer" %>
+          <span class="block py-2 px-4 text-center rounded-lg border-2 border-gray-300
+                       peer-checked:border-coral peer-checked:bg-coral/10 transition-colors">
+            <%= type == "family" ? "Family Study" : "Joint Tutoring" %>
+          </span>
+        </label>
+      <% end %>
+    </div>
+  </div>
+
+  <div>
+    <h3 class="text-gray-700 font-medium mb-2">Students</h3>
+    <% if @students.present? %>
+      <div class="space-y-2">
+        <% @students.each do |student| %>
+          <label class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 cursor-pointer hover:border-coral">
+            <%= check_box_tag "student_group[student_ids][]", student.id,
+                student_group.student_ids.include?(student.id),
+                class: "w-5 h-5 rounded border-gray-300 text-coral focus:ring-coral" %>
+            <div>
+              <p class="text-gray-800 font-medium"><%= student.name %></p>
+              <% if student.year_level %>
+                <p class="text-sm text-gray-500">Year <%= student.year_level %></p>
+              <% end %>
+            </div>
+          </label>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="bg-gray-50 border border-dashed border-gray-200 rounded-lg p-4 text-sm text-gray-500">
+        Add students first, then come back to create a group.
+      </div>
+    <% end %>
+  </div>
+
+  <div class="flex gap-3 pt-4">
+    <%= form.submit class: "bg-coral text-white px-6 py-2 rounded-lg font-medium hover:bg-coral/90 cursor-pointer" %>
+    <%= link_to "Cancel", student_groups_path, class: "text-gray-600 hover:text-gray-800 px-4 py-2" %>
+  </div>
+<% end %>

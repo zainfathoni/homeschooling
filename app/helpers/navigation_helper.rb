@@ -1,5 +1,5 @@
 module NavigationHelper
-  SECTION_ROOTS = %w[/students /notes].freeze
+  SECTION_ROOTS = %w[/students /student_groups /notes].freeze
 
   def nav_active?(path)
     if SECTION_ROOTS.include?(path)

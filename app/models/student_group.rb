@@ -7,8 +7,17 @@ class StudentGroup < ApplicationRecord
 
   enum :group_type, { family: "family", joint: "joint" }
 
-  delegate :user, :user_id, :name, to: :teachable, allow_nil: true
+  delegate :user, :user_id, :name, :teachable_id, to: :teachable, allow_nil: true
 
   validates :group_type, presence: true
   validates_associated :teachable
+  validate :teachable_name_present
+
+  private
+
+  def teachable_name_present
+    return if teachable.nil? || teachable.name.present?
+
+    errors.add(:name, "can't be blank")
+  end
 end

@@ -1,0 +1,68 @@
+<div class="min-h-screen bg-lavender p-4">
+  <header class="mb-6 flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800"><%= @student_group.name %></h1>
+      <p class="text-gray-600"><%= @student_group.group_type == "family" ? "Family Study" : "Joint Tutoring" %></p>
+    </div>
+    <div class="flex items-center gap-2">
+      <%= link_to "Edit", edit_student_group_path(@student_group),
+          class: "text-gray-600 hover:text-gray-800 px-3 py-1" %>
+      <%= button_to "Delete", student_group_path(@student_group),
+          method: :delete,
+          class: "text-red-600 hover:text-red-800 px-3 py-1",
+          data: { turbo_confirm: "Are you sure you want to delete #{@student_group.name}?" } %>
+    </div>
+  </header>
+
+  <div class="bg-white rounded-xl p-6 shadow-sm space-y-6">
+    <div>
+      <h2 class="text-sm font-semibold text-gray-500 tracking-wide uppercase mb-3">Students</h2>
+      <% if @student_group.students.any? %>
+        <div class="space-y-2">
+          <% @student_group.students.each do |student| %>
+            <div class="flex items-center gap-3">
+              <%= student_avatar(student, size: :small) %>
+              <div>
+                <p class="text-gray-800 font-medium"><%= student.name %></p>
+                <% if student.year_level %>
+                  <p class="text-sm text-gray-500">Year <%= student.year_level %></p>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-sm text-gray-500">No students in this group yet.</p>
+      <% end %>
+    </div>
+
+    <div>
+      <h2 class="text-sm font-semibold text-gray-500 tracking-wide uppercase mb-3">Group Subjects</h2>
+      <% if @student_group.teachable&.subjects&.any? %>
+        <div class="space-y-2">
+          <% @student_group.teachable.subjects.each do |subject| %>
+            <div class="flex items-center justify-between border-b border-gray-50 pb-2 last:border-0 last:pb-0">
+              <span class="text-gray-800"><%= subject.name %></span>
+              <span class="text-xs px-2 py-1 rounded-full <%= subject_type_badge_class(subject.subject_type) %>">
+                <%= subject.subject_type.humanize %>
+              </span>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-sm text-gray-500">No subjects assigned yet.</p>
+      <% end %>
+      <% if @student_group.students.any? %>
+        <div class="mt-4">
+          <%= link_to "Manage Subjects",
+              new_student_subject_path(@student_group.students.first, teachable_id: @student_group.teachable_id),
+              class: "text-coral hover:text-coral/80" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="mt-6">
+    <%= link_to "← Back to Groups", student_groups_path, class: "text-gray-600 hover:text-gray-800" %>
+  </div>
+</div>

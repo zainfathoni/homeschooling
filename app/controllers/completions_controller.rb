@@ -69,9 +69,8 @@ class CompletionsController < ApplicationController
     week_start = @dates.first
     week_end = @dates.last
 
-    # Get ALL subjects for the current student (personal + group)
-    # This provides a complete picture of the student's progress
-    subjects = current_student.all_subjects
+    # Scope weekly totals to the subject's teachable (personal or group).
+    subjects = Subject.where(teachable_id: @subject.teachable_id)
     week_completions = Completion.where(subject: subjects)
                                  .where(date: week_start..week_end)
                                  .count

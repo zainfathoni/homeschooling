@@ -1,2 +1,5 @@
 family_group:
   group_type: family
+
+joint_group:
+  group_type: joint

@@ -21,3 +21,9 @@ family_group_teachable:
   user: parent
   teachable_type: StudentGroup
   teachable_id: <%= ActiveRecord::FixtureSet.identify(:family_group) %>
+
+joint_group_teachable:
+  name: Joint Tutoring
+  user: parent
+  teachable_type: StudentGroup
+  teachable_id: <%= ActiveRecord::FixtureSet.identify(:joint_group) %>

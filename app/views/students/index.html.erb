@@ -1,8 +1,12 @@
 <div class="min-h-screen bg-lavender p-4">
   <header class="mb-6 flex items-center justify-between">
     <h1 class="text-2xl font-bold text-gray-800">Students</h1>
-    <%= link_to "Add Student", new_student_path,
-        class: "bg-coral text-white px-4 py-2 rounded-lg font-medium hover:bg-coral/90" %>
+    <div class="flex items-center gap-2">
+      <%= link_to "Groups", student_groups_path,
+          class: "text-gray-600 hover:text-gray-800 px-4 py-2" %>
+      <%= link_to "Add Student", new_student_path,
+          class: "bg-coral text-white px-4 py-2 rounded-lg font-medium hover:bg-coral/90" %>
+    </div>
   </header>
 
   <% if @students.any? %>

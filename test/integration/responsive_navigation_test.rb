@@ -19,7 +19,7 @@ class ResponsiveNavigationTest < ActionDispatch::IntegrationTest
       assert_select "a[href='#{week_path}']", text: /Week/
       assert_select "a[href='#{notes_path}']", text: /Notes/
       assert_select "a[href='#{report_path}']", text: /Reports/
-      assert_select "a[href='#{students_path}']", text: /Students/
+      assert_select "a[href='#{student_groups_path}']", text: /Groups/
       assert_select "a[href='#{settings_path}']", text: /Settings/
     end
   end
@@ -53,6 +53,7 @@ class ResponsiveNavigationTest < ActionDispatch::IntegrationTest
       assert_select "a[href='#{week_path}']", text: /Weekly Schedule/
       assert_select "a[href='#{notes_path}']", text: /Notes/
       assert_select "a[href='#{students_path}']", text: /Students/
+      assert_select "a[href='#{student_groups_path}']", text: /Groups/
       assert_select "a[href='#{report_path}']", text: /Reports/
       assert_select "a[href='#{settings_path}']", text: /Settings/
     end

@@ -1,0 +1,9 @@
+<div class="bg-white rounded-2xl p-5 shadow-sm">
+  <div class="flex items-center justify-between">
+    <div>
+      <h3 class="text-sm font-semibold text-gray-500 tracking-wide uppercase mb-1">Groups</h3>
+      <p class="text-gray-800 font-medium"><%= pluralize(Current.user.student_groups.count, "group") %></p>
+    </div>
+    <%= link_to "Manage Groups", student_groups_path, class: "text-coral hover:text-coral/80 text-sm" %>
+  </div>
+</div>

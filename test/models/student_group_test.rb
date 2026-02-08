@@ -13,6 +13,14 @@ class StudentGroupTest < ActiveSupport::TestCase
     assert_includes group.errors[:group_type], "can't be blank"
   end
 
+  test "requires teachable name when teachable is present" do
+    group = StudentGroup.new(group_type: :family)
+    group.build_teachable(name: "", user: @user)
+
+    assert_not group.valid?
+    assert_includes group.errors[:name], "can't be blank"
+  end
+
   test "valid with group_type family" do
     group = StudentGroup.new(group_type: :family)
     assert group.valid?

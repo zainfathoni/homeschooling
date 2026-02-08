@@ -1,0 +1,51 @@
+<div class="min-h-screen bg-lavender p-4">
+  <header class="mb-6 flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800">Student Groups</h1>
+      <p class="text-gray-600">Family Study and Joint Tutoring</p>
+    </div>
+    <%= link_to "Add Group", new_student_group_path,
+        class: "bg-coral text-white px-4 py-2 rounded-lg font-medium hover:bg-coral/90" %>
+  </header>
+
+  <% if @student_groups.any? %>
+    <div class="space-y-3">
+      <% @student_groups.each do |group| %>
+        <div class="bg-white rounded-xl p-4 shadow-sm">
+          <div class="flex items-center justify-between">
+            <%= link_to student_group_path(group), class: "flex items-center gap-3 hover:opacity-80" do %>
+              <div class="w-10 h-10 rounded-full bg-coral/10 flex items-center justify-center text-coral font-semibold">
+                <%= group.group_type == "family" ? "F" : "J" %>
+              </div>
+              <div>
+                <p class="font-medium text-gray-800"><%= group.name %></p>
+                <p class="text-sm text-gray-500">
+                  <%= group.group_type == "family" ? "Family Study" : "Joint Tutoring" %>
+                  · <%= pluralize(group.students.size, "student") %>
+                </p>
+              </div>
+            <% end %>
+            <div class="flex items-center gap-2">
+              <% if group.students.any? %>
+                <%= link_to "Subjects", student_subjects_path(group.students.first, teachable_id: group.teachable_id),
+                    class: "text-coral hover:text-coral/80 px-3 py-1" %>
+              <% else %>
+                <span class="text-gray-300 px-3 py-1" aria-hidden="true">Subjects</span>
+              <% end %>
+              <%= link_to "Edit", edit_student_group_path(group),
+                  class: "text-gray-600 hover:text-gray-800 px-3 py-1" %>
+              <%= button_to "Delete", student_group_path(group),
+                  method: :delete,
+                  class: "text-red-600 hover:text-red-800 px-3 py-1",
+                  data: { turbo_confirm: "Are you sure you want to delete #{group.name}?" } %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="bg-white rounded-xl p-6 text-center text-gray-500">
+      No groups yet. Add a Family Study or Joint Tutoring group to get started.
+    </div>
+  <% end %>
+</div>
