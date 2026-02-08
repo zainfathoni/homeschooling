@@ -24,3 +24,8 @@ narration_required_subject:
   teachable: student_one_teachable
   subject_type: fixed
   narration_required: true
+
+family_science:
+  name: Science (Family)
+  teachable: family_group_teachable
+  subject_type: fixed
