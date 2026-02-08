@@ -92,7 +92,9 @@
       <% end %>
     </div>
 
-    <%= render "shared/groups_banner" %>
+    <% if @student.student_groups.any? %>
+      <%= render "shared/groups_banner" %>
+    <% end %>
 
     <%# Recent notes %>
     <% if @recent_narrations.any? || @recent_quick_notes.any? %>

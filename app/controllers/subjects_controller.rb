@@ -40,7 +40,7 @@ class SubjectsController < ApplicationController
   private
 
   def set_student
-    @student = Current.user.students.find(params[:student_id])
+    @student = Current.user.students.includes(:student_groups).find(params[:student_id])
   rescue ActiveRecord::RecordNotFound
     redirect_to students_path, alert: "Student not found"
   end

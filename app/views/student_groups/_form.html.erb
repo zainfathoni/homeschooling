@@ -41,7 +41,7 @@
         <% @students.each do |student| %>
           <label class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 cursor-pointer hover:border-coral">
             <%= check_box_tag "student_group[student_ids][]", student.id,
-                student_group.students.include?(student),
+                student_group.student_ids.include?(student.id),
                 class: "w-5 h-5 rounded border-gray-300 text-coral focus:ring-coral" %>
             <div>
               <p class="text-gray-800 font-medium"><%= student.name %></p>
