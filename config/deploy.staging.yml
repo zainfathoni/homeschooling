@@ -1,19 +1,19 @@
-# Kamal 2.0 deployment configuration for Homeschooling Rails
-# Deploy to same VPS as kelas.rumahberbagi.com
+# Kamal 2.0 deployment configuration for Homeschooling Rails (Staging)
+# Deploy to same VPS as production, different subdomain
 
-service: homeschooling
+service: homeschooling-staging
 
-# Docker image configuration
+# Docker image configuration (same as production)
 image: zainfathoni/homeschooling
 
-# Deployment servers (same VPS as kelas.rumahberbagi.com)
+# Deployment servers (same VPS)
 servers:
   web:
     hosts:
       - 103.235.75.227
     options:
       volume:
-        - /data/homeschooling/storage:/rails/storage
+        - /data/homeschooling-staging/storage:/rails/storage
 
 # Container registry (GitHub Container Registry)
 registry:
@@ -25,7 +25,7 @@ registry:
 # Kamal Proxy configuration
 proxy:
   ssl: true
-  host: hs.zavi.family
+  host: test.hs.zavi.family
   app_port: 3000
   healthcheck:
     path: /up
@@ -40,8 +40,9 @@ env:
     RAILS_ENV: production
     RAILS_LOG_TO_STDOUT: "true"
     RAILS_SERVE_STATIC_FILES: "true"
-    # Run Solid Queue inside Puma (single server setup)
     SOLID_QUEUE_IN_PUMA: true
+    # Staging identifier
+    STAGING_ENVIRONMENT: "true"
 
 # Build configuration
 builder:
@@ -52,7 +53,7 @@ asset_path: /rails/public/assets
 
 # Persistent storage for SQLite database and Active Storage
 volumes:
-  - "/data/homeschooling/storage:/rails/storage"
+  - "/data/homeschooling-staging/storage:/rails/storage"
 
 # Aliases for convenience
 aliases:
