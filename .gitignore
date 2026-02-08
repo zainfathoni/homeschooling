@@ -50,4 +50,4 @@ memory/
 
 # Kamal deployment secrets
 .kamal/secrets
-.kamal/secrets-common
+.kamal/secrets-*
