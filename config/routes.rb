@@ -14,6 +14,7 @@ Rails.application.routes.draw do
     resources :narrations
     resources :quick_notes
   end
+  resources :student_groups
 
   get "today", to: "daily#show"
   get "daily/:date", to: "daily#show", as: :daily

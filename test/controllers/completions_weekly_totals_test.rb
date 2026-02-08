@@ -51,7 +51,7 @@ class CompletionsWeeklyTotalsTest < ActionDispatch::IntegrationTest
       "Expected group subject #{group_subject.name} in all_subjects"
   end
 
-  test "weekly totals response includes completions from both personal and group subjects" do
+  test "weekly totals response includes completions for subject teachable" do
     personal_subject = subjects(:one) # Math
     group_subject = subjects(:family_science)
 
@@ -70,8 +70,7 @@ class CompletionsWeeklyTotalsTest < ActionDispatch::IntegrationTest
     assert_match(/progress_bar/, @response.body, "Response should include progress_bar update")
     assert_match(/progress_ring/, @response.body, "Response should include progress_ring update")
 
-    # The progress ring shows task count - verify it includes the toggled completion
-    # Format is "X/Y tasks" where X is completed count
+    # The progress ring shows task count in a X/Y format
     assert_match(%r{<span class="text-xl font-bold text-gray-800">\d+/\d+</span>}, @response.body,
       "Response should show completion count in progress ring")
   end

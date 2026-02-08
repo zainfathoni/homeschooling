@@ -5,3 +5,7 @@ student_one_in_family:
 student_three_in_family:
   student: three
   student_group: family_group
+
+student_one_in_joint:
+  student: one
+  student_group: joint_group
