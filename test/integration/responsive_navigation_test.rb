@@ -135,20 +135,45 @@ class ResponsiveNavigationTest < ActionDispatch::IntegrationTest
   test "week view includes duet layout structure" do
     get week_path
     assert_response :success
-    # Single responsive grid layout (mobile: stacked, tablet: side-by-side)
-    assert_select "div.md\\:grid.md\\:grid-cols-5"
-    # Weekly grid column (full width mobile, 60% tablet)
+    # iPad Duet layout (lg:1024px+): 3-panel with student list
+    assert_select "div.lg\\:grid.lg\\:grid-cols-12"
+    # Student list panel (lg only)
+    assert_select "div.lg\\:col-span-3"
+    # Weekly grid column
+    assert_select "div.lg\\:col-span-5"
+    # Daily focus column
+    assert_select "div.lg\\:col-span-4"
+  end
+
+  test "week view includes tablet fallback layout" do
+    get week_path
+    assert_response :success
+    # Tablet layout (md:768px to lg:1024px): 2-panel without student list
+    assert_select "div.md\\:grid.md\\:grid-cols-5.lg\\:hidden"
+    # Weekly grid (60%)
     assert_select "div.md\\:col-span-3"
-    # Daily focus column (hidden mobile, 40% tablet)
-    assert_select "div.hidden.md\\:block.md\\:col-span-2"
+    # Daily focus (40%)
+    assert_select "div.md\\:col-span-2"
   end
 
   test "week view shows daily focus in tablet split panel" do
     travel_to Date.new(2026, 1, 28) do
       get week_path
       assert_response :success
-      # The turbo frame should be in the right panel (hidden on mobile, visible on tablet)
-      assert_select "div.md\\:col-span-2 turbo-frame#daily_focus"
+      # The turbo frame should be in the panels (lg and md layouts)
+      assert_select "turbo-frame#daily_focus", minimum: 1
+    end
+  end
+
+  test "week view includes student list panel for iPad Duet" do
+    get week_path
+    assert_response :success
+    # Student list panel header
+    assert_select "h2", text: "Students"
+    # Student list should show current students
+    assert_select "div.lg\\:col-span-3" do
+      # Should have student buttons
+      assert_select "form[action*='/select']", minimum: 1
     end
   end
 

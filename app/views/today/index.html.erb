@@ -1,4 +1,9 @@
 <% content_for(:page_date, @date) %>
+
+<% student_list_content = capture do %>
+  <%= render "shared/student_list_panel", students: @students, current_student: current_student %>
+<% end %>
+
 <% weekly_grid_content = capture do %>
   <div class="min-h-screen bg-lavender p-4 md:min-h-0 md:p-0">
     <header class="mb-6">
@@ -48,4 +53,4 @@
   </div>
 <% end %>
 
-<%= render "layouts/duet", weekly_grid: weekly_grid_content, daily_focus: daily_focus_content %>
+<%= render "layouts/duet", student_list: student_list_content, weekly_grid: weekly_grid_content, daily_focus: daily_focus_content %>

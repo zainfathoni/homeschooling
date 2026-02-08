@@ -1,0 +1,38 @@
+<%# locals: (students:, current_student:) %>
+<%# Left panel for iPad Duet view: compact student list for quick selection %>
+
+<div class="h-full bg-white rounded-xl shadow-sm overflow-hidden flex flex-col">
+  <header class="px-4 py-3 border-b border-gray-200 bg-gray-50">
+    <h2 class="text-lg font-semibold text-gray-800">Students</h2>
+  </header>
+
+  <div class="flex-1 overflow-auto p-2 space-y-2">
+    <% students.each do |student| %>
+      <% is_selected = student == current_student %>
+      <%= button_to select_student_path(student),
+          method: :post,
+          class: "w-full flex items-center gap-3 p-3 rounded-lg transition-all cursor-pointer text-left
+                  #{is_selected ? 'bg-coral/10 border-2 border-coral' : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'}",
+          data: { turbo: false } do %>
+        <%= student_avatar(student, size: :medium) %>
+        <div class="flex-1 min-w-0">
+          <p class="font-medium text-gray-800 truncate"><%= student.name %></p>
+          <% if student.year_level %>
+            <p class="text-xs text-gray-500">Year <%= student.year_level %></p>
+          <% end %>
+        </div>
+        <% if is_selected %>
+          <span class="text-coral text-xl">✓</span>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <footer class="p-3 border-t border-gray-200">
+    <%= link_to new_student_path,
+        class: "flex items-center justify-center gap-2 w-full py-2 text-coral font-medium hover:bg-coral/5 rounded-lg transition" do %>
+      <span class="text-lg">+</span>
+      <span>Add Student</span>
+    <% end %>
+  </footer>
+</div>
