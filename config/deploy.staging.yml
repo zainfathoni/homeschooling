@@ -1,0 +1,63 @@
+# Kamal 2.0 deployment configuration for Homeschooling Rails (Staging)
+# Deploy to same VPS as production, different subdomain
+
+service: homeschooling-staging
+
+# Docker image configuration (same as production)
+image: zainfathoni/homeschooling
+
+# Deployment servers (same VPS)
+servers:
+  web:
+    hosts:
+      - 103.235.75.227
+    options:
+      volume:
+        - /data/homeschooling-staging/storage:/rails/storage
+
+# Container registry (GitHub Container Registry)
+registry:
+  server: ghcr.io
+  username: zainfathoni
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+# Kamal Proxy configuration
+proxy:
+  ssl: true
+  host: test.hs.zavi.family
+  app_port: 3000
+  healthcheck:
+    path: /up
+    interval: 5
+    timeout: 5
+
+# Environment variables
+env:
+  secret:
+    - RAILS_MASTER_KEY
+  clear:
+    RAILS_ENV: production
+    RAILS_LOG_TO_STDOUT: "true"
+    RAILS_SERVE_STATIC_FILES: "true"
+    SOLID_QUEUE_IN_PUMA: true
+    # Staging identifier
+    STAGING_ENVIRONMENT: "true"
+
+# Build configuration
+builder:
+  arch: amd64
+
+# Asset bridge for zero-downtime deployments
+asset_path: /rails/public/assets
+
+# Persistent storage for SQLite database and Active Storage
+volumes:
+  - "/data/homeschooling-staging/storage:/rails/storage"
+
+# Aliases for convenience
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  shell: app exec --interactive --reuse "bash"
+  logs: app logs -f
+  dbc: app exec --interactive --reuse "bin/rails dbconsole"
