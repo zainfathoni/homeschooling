@@ -1,41 +1,153 @@
-<div class="min-h-screen bg-lavender p-4">
-  <div class="max-w-lg mx-auto">
-    <h1 class="text-2xl font-bold text-gray-800 mb-6">Weekly Report</h1>
-
-    <%= render "shared/student_selector" %>
-
-    <% if @student %>
-      <div class="bg-white rounded-xl p-6 shadow-sm mb-6">
-        <p class="text-lg text-gray-800">
-          <span class="font-bold text-coral text-3xl"><%= @total_completed %></span>
-          <span class="text-gray-500">/</span>
-          <span class="font-bold text-3xl"><%= @total_possible %></span>
-          <span class="text-gray-600 ml-2">completed this week</span>
+<div class="max-w-lg mx-auto">
+  <div class="flex items-start justify-between gap-3 mb-4">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800">Weekly Report</h1>
+      <% if @student %>
+        <p class="text-sm text-gray-500">
+          <%= @week_start.strftime("%b %d") %> – <%= @week_end.strftime("%b %d, %Y") %>
         </p>
-      </div>
+      <% end %>
+    </div>
+  </div>
 
-      <div class="bg-white rounded-xl p-4 shadow-sm">
-        <h2 class="text-lg font-semibold text-gray-800 mb-4">Daily Breakdown</h2>
+  <%= render "shared/student_selector" %>
+
+  <% if @student %>
+    <%# Week navigation %>
+    <div class="flex items-center justify-between mb-4">
+      <%= link_to report_path(week: @prev_week),
+          class: "flex items-center gap-1 text-coral font-medium min-h-[44px] min-w-[44px] justify-center" do %>
+        <span>← Prev</span>
+      <% end %>
+      <span class="text-sm font-medium text-gray-600">
+        <%= @week_start.strftime("%b %d") %> – <%= @week_end.strftime("%b %d") %>
+      </span>
+      <% if @next_week_disabled %>
+        <span class="flex items-center gap-1 text-gray-300 font-medium min-h-[44px] min-w-[44px] justify-center">
+          Next →
+        </span>
+      <% else %>
+        <%= link_to report_path(week: @next_week),
+            class: "flex items-center gap-1 text-coral font-medium min-h-[44px] min-w-[44px] justify-center" do %>
+          <span>Next →</span>
+        <% end %>
+      <% end %>
+    </div>
+
+    <%# Overall summary card %>
+    <div class="bg-white rounded-xl p-5 shadow-sm mb-4">
+      <div class="flex items-baseline gap-2">
+        <span class="font-bold text-coral text-3xl"><%= @total_completed %></span>
+        <span class="text-gray-400">/</span>
+        <span class="font-bold text-3xl text-gray-800"><%= @total_possible %></span>
+        <span class="text-gray-600 ml-2">completed this week</span>
+      </div>
+      <% pct = @total_possible.zero? ? 0 : ((@total_completed.to_f / @total_possible) * 100).round %>
+      <div class="mt-3">
+        <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+          <div class="h-2 bg-coral rounded-full" style="width: <%= pct %>%"></div>
+        </div>
+        <p class="text-xs text-gray-500 mt-1"><%= pct %>% complete</p>
+      </div>
+    </div>
+
+    <%# Per-subject breakdown %>
+    <div class="bg-white rounded-xl p-4 shadow-sm mb-4">
+      <h2 class="text-lg font-semibold text-gray-800 mb-3">Subjects</h2>
+      <% if @subject_reports.any? %>
         <ul class="space-y-3">
-          <% @dates.each do |date| %>
-            <% completions_on_date = @subjects.sum { |s| s.completions.any? { |c| c.date == date } ? 1 : 0 } %>
-            <li class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-              <span class="text-gray-700"><%= date.strftime("%A, %b %d") %></span>
-              <span class="<%= completions_on_date == @subjects.count && @subjects.any? ? 'text-coral font-semibold' : 'text-gray-500' %>">
-                <%= completions_on_date %>/<%= @subjects.count %>
-              </span>
+          <% @subject_reports.each do |r| %>
+            <% subject = r[:subject] %>
+            <% spct = r[:possible].zero? ? 0 : (r[:rate] * 100).round %>
+            <li class="border border-gray-100 rounded-xl p-3">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <p class="font-semibold text-gray-800"><%= subject.name %></p>
+                  <p class="text-sm text-gray-500">
+                    <%= r[:completed] %>/<%= r[:possible] %>
+                    <% if subject.scheduled? %>
+                      <span class="text-xs text-gray-400">(scheduled)</span>
+                    <% elsif subject.pick1? %>
+                      <span class="text-xs text-gray-400">(pick 1)</span>
+                    <% end %>
+                  </p>
+                </div>
+                <span class="text-sm font-semibold <%= spct == 100 ? 'text-coral' : 'text-gray-500' %>">
+                  <%= spct %>%
+                </span>
+              </div>
+              <div class="mt-2 h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-2 bg-coral rounded-full" style="width: <%= spct %>%"></div>
+              </div>
+              <div class="mt-2 flex flex-wrap gap-1.5">
+                <% r[:active_dates].each do |date| %>
+                  <% c = @completions_by_subject_and_date[[subject.id, date]] %>
+                  <span class="text-xs px-2 py-1 rounded-full <%= c ? 'bg-coral/10 text-coral' : 'bg-gray-100 text-gray-400' %>">
+                    <%= date.strftime("%a") %>
+                    <% if c&.subject_option && subject.pick1? %>
+                      · <%= c.subject_option.name %>
+                    <% end %>
+                  </span>
+                <% end %>
+              </div>
             </li>
           <% end %>
         </ul>
-      </div>
-    <% else %>
-      <div class="bg-white rounded-xl p-6 shadow-sm">
-        <p class="text-gray-500">No student found. Please set up a student first.</p>
-      </div>
-    <% end %>
-
-    <div class="mt-6">
-      <%= link_to "← Back to Today", today_path, class: "text-coral hover:underline" %>
+      <% else %>
+        <p class="text-sm text-gray-500">No subjects configured yet.</p>
+      <% end %>
     </div>
+
+    <%# Daily breakdown %>
+    <div class="bg-white rounded-xl p-4 shadow-sm mb-4">
+      <h2 class="text-lg font-semibold text-gray-800 mb-3">Daily Breakdown</h2>
+      <ul class="space-y-2">
+        <% @dates.each do |date| %>
+          <% d = @daily[date] %>
+          <li class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+            <span class="text-gray-700"><%= date.strftime("%A, %b %d") %></span>
+            <span class="<%= d[:possible] > 0 && d[:completed] == d[:possible] ? 'text-coral font-semibold' : 'text-gray-500' %>">
+              <%= d[:completed] %>/<%= d[:possible] %>
+            </span>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <%# Notes & narrations %>
+    <div class="bg-white rounded-xl p-4 shadow-sm mb-4">
+      <h2 class="text-lg font-semibold text-gray-800 mb-3">Notes & Narrations</h2>
+      <% if @weekly_recordings.any? %>
+        <ul class="space-y-3">
+          <% @weekly_recordings.each do |rec| %>
+            <li class="border border-gray-100 rounded-xl p-3">
+              <p class="text-xs text-gray-400 mb-1"><%= rec.date.strftime("%a, %b %d") %></p>
+              <% if rec.recordable_type == "Narration" %>
+                <% n = rec.recordable %>
+                <p class="text-sm font-semibold text-gray-700"><%= n.subject.name %></p>
+                <% if n.text? %>
+                  <p class="text-sm text-gray-600 mt-0.5"><%= n.content %></p>
+                <% else %>
+                  <p class="text-sm text-gray-500 mt-0.5 italic"><%= n.narration_type.humanize %> narration</p>
+                <% end %>
+              <% elsif rec.recordable_type == "QuickNote" %>
+                <p class="text-sm font-semibold text-gray-700">Quick Note</p>
+                <p class="text-sm text-gray-600 mt-0.5"><%= rec.recordable.content %></p>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="text-sm text-gray-500">No notes or narrations this week.</p>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="bg-white rounded-xl p-6 shadow-sm">
+      <p class="text-gray-500">No student found. Please set up a student first.</p>
+    </div>
+  <% end %>
+
+  <div class="mt-4">
+    <%= link_to "← Back to Today", today_path, class: "text-coral hover:underline" %>
   </div>
 </div>
