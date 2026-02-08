@@ -46,3 +46,4 @@ bv-pages/
 
 # Beads export state (machine-specific)
 .beads/export-state/
+memory/
