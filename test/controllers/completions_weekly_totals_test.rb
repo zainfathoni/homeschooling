@@ -6,17 +6,17 @@ class CompletionsWeeklyTotalsTest < ActionDispatch::IntegrationTest
     @student = students(:one)
     @monday = Date.new(2026, 1, 26) # A Monday
 
-    # Clear all completions for clean tests
-    Completion.destroy_all
+    # Clear all completions for clean tests (delete_all is faster than destroy_all)
+    Completion.delete_all
 
     sign_in_as @user
   end
 
-  test "weekly totals include personal subjects" do
+  test "toggle creates completion for personal subject" do
     personal_subject = subjects(:one) # Math - belongs to student one
     assert personal_subject.active_on?(@monday)
 
-    # Toggle completion via Turbo Stream to get week totals in response
+    # Toggle completion via Turbo Stream
     post toggle_completion_path(subject_id: personal_subject.id, date: @monday),
       headers: { "Accept" => "text/vnd.turbo-stream.html" }
 
@@ -25,7 +25,7 @@ class CompletionsWeeklyTotalsTest < ActionDispatch::IntegrationTest
     assert personal_subject.completions.exists?(date: @monday)
   end
 
-  test "weekly totals include group subjects for student members" do
+  test "group subjects visible in student all_subjects" do
     group_subject = subjects(:family_science)
     assert group_subject.active_on?(@monday)
 
@@ -51,7 +51,7 @@ class CompletionsWeeklyTotalsTest < ActionDispatch::IntegrationTest
       "Expected group subject #{group_subject.name} in all_subjects"
   end
 
-  test "weekly totals count completions from both personal and group subjects" do
+  test "weekly totals response includes completions from both personal and group subjects" do
     personal_subject = subjects(:one) # Math
     group_subject = subjects(:family_science)
 
@@ -66,8 +66,13 @@ class CompletionsWeeklyTotalsTest < ActionDispatch::IntegrationTest
 
     assert_response :success
 
-    # The controller calculates @total_completed from current_student.all_subjects
-    # We can verify by checking the response includes the correct total
-    # Note: exact assertions depend on the view rendering
+    # Verify the Turbo Stream response includes the progress_bar and progress_ring targets
+    assert_match(/progress_bar/, @response.body, "Response should include progress_bar update")
+    assert_match(/progress_ring/, @response.body, "Response should include progress_ring update")
+
+    # The progress ring shows task count - verify it includes the toggled completion
+    # Format is "X/Y tasks" where X is completed count
+    assert_match(%r{<span class="text-xl font-bold text-gray-800">\d+/\d+</span>}, @response.body,
+      "Response should show completion count in progress ring")
   end
 end
