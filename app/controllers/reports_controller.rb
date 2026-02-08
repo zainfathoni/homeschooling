@@ -3,7 +3,7 @@ class ReportsController < ApplicationController
     @students = Current.user.students
     @student = current_student
 
-    anchor = params[:week].present? ? Date.parse(params[:week]) : Date.current
+    anchor = parse_week_param
     @week_start = anchor.beginning_of_week
     @week_end = @week_start + 4.days
     @dates = (@week_start..@week_end).to_a
@@ -23,6 +23,14 @@ class ReportsController < ApplicationController
   end
 
   private
+
+  def parse_week_param
+    return Date.current unless params[:week].present?
+
+    Date.parse(params[:week])
+  rescue ArgumentError
+    Date.current
+  end
 
   def set_week_nav
     @prev_week = @week_start - 7.days
@@ -45,7 +53,7 @@ class ReportsController < ApplicationController
 
     @weekly_recordings = Recording
       .where(student: @student, date: @week_start..@week_end)
-      .includes(:recordable)
+      .includes(recordable: :subject)
       .order(date: :desc, created_at: :desc)
 
     build_subject_reports(completions)
@@ -53,12 +61,20 @@ class ReportsController < ApplicationController
   end
 
   def build_subject_reports(completions)
-    completions_count_by_subject = completions.group(:subject_id).count
+    # Index subjects for lookup
+    subjects_by_id = @subjects.index_by(&:id)
+
+    # Group completions by subject for counting
+    completions_by_subject = completions.group_by(&:subject_id)
 
     @subject_reports = @subjects.map do |subject|
       active_dates = @dates.select { |d| subject.active_on?(d) }
       possible = active_dates.size
-      completed = completions_count_by_subject[subject.id].to_i
+
+      # Only count completions on active days to avoid completed > possible
+      subject_completions = completions_by_subject[subject.id] || []
+      completed = subject_completions.count { |c| subject.active_on?(c.date) }
+
       rate = possible.zero? ? 0.0 : (completed.to_f / possible)
 
       {
@@ -75,11 +91,22 @@ class ReportsController < ApplicationController
   end
 
   def build_daily_breakdown(completions)
-    completed_by_date = completions.group(:date).count
+    # Index subjects for lookup
+    subjects_by_id = @subjects.index_by(&:id)
+
+    # Group completions by date
+    completions_by_date = completions.group_by(&:date)
 
     @daily = @dates.each_with_object({}) do |date, h|
       possible = @subjects.count { |s| s.active_on?(date) }
-      completed = completed_by_date[date].to_i
+
+      # Only count completions for subjects active on that date
+      date_completions = completions_by_date[date] || []
+      completed = date_completions.count do |c|
+        subject = subjects_by_id[c.subject_id]
+        subject && subject.active_on?(date)
+      end
+
       h[date] = { possible: possible, completed: completed }
     end
   end

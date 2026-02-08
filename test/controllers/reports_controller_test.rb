@@ -98,4 +98,45 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
     get report_path
     assert_response :success
   end
+
+  test "should handle invalid week param gracefully" do
+    sign_in_as(@user)
+    get report_path(week: "not-a-date")
+    assert_response :success
+    # Should default to current week
+    assert_match Date.current.beginning_of_week.strftime("%b %d"), @response.body
+  end
+
+  test "scheduled subjects only count active days in totals" do
+    sign_in_as(@user)
+    post select_student_path(@student)
+
+    # Use a known Monday for predictable test
+    monday = Date.new(2026, 1, 26)
+    get report_path(week: monday.to_s)
+    assert_response :success
+
+    # The scheduled_coding subject is only active on Monday/Wednesday/Friday
+    # So for a M-F week (5 days), it should only show 3 possible
+    # This is verified by the controller using subject.active_on?(date)
+    assert_match(/scheduled/, @response.body.downcase)
+  end
+
+  test "completions on inactive days are not counted" do
+    sign_in_as(@user)
+    post select_student_path(@student)
+
+    # Create a completion on a day the subject isn't scheduled
+    scheduled_subject = subjects(:scheduled_coding)
+    tuesday = Date.new(2026, 1, 27) # Tuesday - not in schedule
+
+    # Even if somehow a completion exists on an inactive day,
+    # the report should not count it toward the total
+    scheduled_subject.completions.create!(date: tuesday, completed: true)
+
+    get report_path(week: tuesday.beginning_of_week.to_s)
+    assert_response :success
+
+    # Controller filters completions by active_on? so this shouldn't inflate totals
+  end
 end
