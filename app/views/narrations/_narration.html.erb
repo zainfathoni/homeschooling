@@ -8,7 +8,7 @@
         <span class="text-sm text-gray-500 ml-2"><%= narration.date&.strftime("%b %d, %Y") %></span>
       </div>
       <span class="text-lg">
-        <%= { "text" => "📝", "voice" => "🎙️", "photo" => "📷" }[narration.narration_type] %>
+        <%= { "text" => "📝", "voice" => "🎙️", "photo" => "📷", "video" => "🎬" }[narration.narration_type] %>
       </span>
     </div>
 
@@ -17,13 +17,19 @@
       <p class="text-gray-700 whitespace-pre-wrap"><%= narration.content %></p>
     <% when "voice" %>
       <% if narration.media.attached? %>
-        <audio controls class="w-full" src="<%= url_for(narration.media) %>">
+        <audio controls class="w-full" src="<%= url_for(narration.media) %>" aria-label="Voice narration">
           Your browser does not support audio playback.
         </audio>
       <% end %>
     <% when "photo" %>
       <% if narration.media.attached? %>
         <%= image_tag narration.media, class: "w-full rounded-lg", loading: "lazy" %>
+      <% end %>
+    <% when "video" %>
+      <% if narration.media.attached? %>
+        <video controls class="w-full rounded-lg" src="<%= url_for(narration.media) %>" preload="metadata" aria-label="Video narration">
+          Your browser does not support video playback.
+        </video>
       <% end %>
     <% end %>
 

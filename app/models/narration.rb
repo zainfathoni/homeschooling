@@ -5,12 +5,20 @@ class Narration < ApplicationRecord
   has_one :recording, as: :recordable, dependent: :destroy, inverse_of: :recordable
   delegate :student, :student_id, :date, to: :recording, allow_nil: true
 
-  validates :narration_type, presence: true, inclusion: { in: %w[text voice photo] }
-  validates :content, presence: true, if: :text?
-  validates :media, presence: true, if: -> { voice? || photo? }
-  validate :student_matches_subject
+  # Define enum first so narration_types.keys is available for validation
+  enum :narration_type, { text: "text", voice: "voice", photo: "photo", video: "video" }
 
-  enum :narration_type, { text: "text", voice: "voice", photo: "photo" }
+  validates :narration_type, presence: true, inclusion: { in: narration_types.keys }
+  validates :content, presence: true, if: :text?
+  validates :media, presence: true, if: -> { voice? || photo? || video? }
+  validate :student_matches_subject
+  validate :media_content_type_matches_narration_type
+
+  ALLOWED_CONTENT_TYPES = {
+    "voice" => %r{\Aaudio/},
+    "photo" => %r{\Aimage/},
+    "video" => %r{\Avideo/}
+  }.freeze
 
   scope :for_date, ->(date) { joins(:recording).where(recordings: { date: date }) }
   scope :for_student, ->(student) { joins(:recording).where(recordings: { student: student }) }
@@ -38,6 +46,22 @@ class Narration < ApplicationRecord
       unless teachable.student_group.students.include?(student)
         errors.add(:subject, "student must be a member of the group")
       end
+    end
+  end
+
+  # Validates that the attached media content type matches the narration type.
+  # - voice: must be audio/*
+  # - photo: must be image/*
+  # - video: must be video/*
+  def media_content_type_matches_narration_type
+    return unless media.attached? && narration_type.present?
+
+    allowed_pattern = ALLOWED_CONTENT_TYPES[narration_type]
+    return unless allowed_pattern # text type has no media requirement
+
+    content_type = media.content_type
+    unless content_type&.match?(allowed_pattern)
+      errors.add(:media, "must be a #{narration_type} file")
     end
   end
 end

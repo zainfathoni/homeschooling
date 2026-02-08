@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["textInput", "voiceInput", "photoInput", "typeButton", "typeField"]
+  static targets = ["textInput", "voiceInput", "photoInput", "videoInput", "typeButton", "typeField"]
   static values = { type: { type: String, default: "text" } }
 
   connect() {
@@ -31,15 +31,20 @@ export default class extends Controller {
       button.classList.toggle("text-gray-700", !isActive)
     })
 
-    // Show/hide inputs
-    if (this.hasTextInputTarget) {
-      this.textInputTarget.classList.toggle("hidden", this.typeValue !== "text")
-    }
-    if (this.hasVoiceInputTarget) {
-      this.voiceInputTarget.classList.toggle("hidden", this.typeValue !== "voice")
-    }
-    if (this.hasPhotoInputTarget) {
-      this.photoInputTarget.classList.toggle("hidden", this.typeValue !== "photo")
-    }
+    // Show/hide inputs and disable hidden inputs to prevent form submission conflicts
+    this.toggleSection(this.textInputTarget, this.typeValue === "text")
+    this.toggleSection(this.voiceInputTarget, this.typeValue === "voice")
+    this.toggleSection(this.photoInputTarget, this.typeValue === "photo")
+    this.toggleSection(this.videoInputTarget, this.typeValue === "video")
+  }
+
+  toggleSection(section, isActive) {
+    if (!section) return
+
+    section.classList.toggle("hidden", !isActive)
+    // Disable inputs in hidden sections to prevent them from being submitted
+    section.querySelectorAll("input, textarea").forEach(input => {
+      input.disabled = !isActive
+    })
   }
 }

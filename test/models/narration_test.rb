@@ -33,6 +33,12 @@ class NarrationTest < ActiveSupport::TestCase
     assert_not_includes narration.errors[:content], "can't be blank"
   end
 
+  test "content not required for video type" do
+    narration = Narration.new(subject: subjects(:one), narration_type: "video")
+    narration.valid?
+    assert_not_includes narration.errors[:content], "can't be blank"
+  end
+
   test "validates media presence for voice type" do
     narration = Narration.new(subject: subjects(:one), narration_type: "voice")
     assert_not narration.valid?
@@ -41,6 +47,12 @@ class NarrationTest < ActiveSupport::TestCase
 
   test "validates media presence for photo type" do
     narration = Narration.new(subject: subjects(:one), narration_type: "photo")
+    assert_not narration.valid?
+    assert_includes narration.errors[:media], "can't be blank"
+  end
+
+  test "validates media presence for video type" do
+    narration = Narration.new(subject: subjects(:one), narration_type: "video")
     assert_not narration.valid?
     assert_includes narration.errors[:media], "can't be blank"
   end
@@ -145,6 +157,80 @@ class NarrationTest < ActiveSupport::TestCase
     assert narration.text?
     assert_not narration.voice?
     assert_not narration.photo?
+    assert_not narration.video?
+  end
+
+  test "video type is a valid narration_type" do
+    narration = Narration.new(subject: subjects(:one), narration_type: "video")
+    assert narration.video?
+  end
+
+  # Content type validation
+
+  test "voice narration rejects non-audio media" do
+    narration = Narration.new(subject: subjects(:one), narration_type: "voice")
+    narration.media.attach(
+      io: StringIO.new("fake image data"),
+      filename: "test.jpg",
+      content_type: "image/jpeg"
+    )
+    assert_not narration.valid?
+    assert_includes narration.errors[:media], "must be a voice file"
+  end
+
+  test "photo narration rejects non-image media" do
+    narration = Narration.new(subject: subjects(:one), narration_type: "photo")
+    narration.media.attach(
+      io: StringIO.new("fake audio data"),
+      filename: "test.mp3",
+      content_type: "audio/mpeg"
+    )
+    assert_not narration.valid?
+    assert_includes narration.errors[:media], "must be a photo file"
+  end
+
+  test "video narration rejects non-video media" do
+    narration = Narration.new(subject: subjects(:one), narration_type: "video")
+    narration.media.attach(
+      io: StringIO.new("fake image data"),
+      filename: "test.jpg",
+      content_type: "image/jpeg"
+    )
+    assert_not narration.valid?
+    assert_includes narration.errors[:media], "must be a video file"
+  end
+
+  test "voice narration accepts audio media" do
+    narration = Narration.new(subject: subjects(:one), narration_type: "voice")
+    narration.media.attach(
+      io: StringIO.new("fake audio data"),
+      filename: "test.mp3",
+      content_type: "audio/mpeg"
+    )
+    narration.valid?
+    assert_not_includes narration.errors[:media], "must be a voice file"
+  end
+
+  test "photo narration accepts image media" do
+    narration = Narration.new(subject: subjects(:one), narration_type: "photo")
+    narration.media.attach(
+      io: StringIO.new("fake image data"),
+      filename: "test.jpg",
+      content_type: "image/jpeg"
+    )
+    narration.valid?
+    assert_not_includes narration.errors[:media], "must be a photo file"
+  end
+
+  test "video narration accepts video media" do
+    narration = Narration.new(subject: subjects(:one), narration_type: "video")
+    narration.media.attach(
+      io: StringIO.new("fake video data"),
+      filename: "test.mp4",
+      content_type: "video/mp4"
+    )
+    narration.valid?
+    assert_not_includes narration.errors[:media], "must be a video file"
   end
 
   # Scopes
