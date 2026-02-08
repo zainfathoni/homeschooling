@@ -2,24 +2,112 @@ class ReportsController < ApplicationController
   def index
     @students = Current.user.students
     @student = current_student
-    @start_date = Date.current.beginning_of_week
-    @end_date = Date.current
+
+    anchor = parse_week_param
+    @week_start = anchor.beginning_of_week
+    @week_end = @week_start + 4.days
+    @dates = (@week_start..@week_end).to_a
 
     if @student
-      @subjects = @student.all_subjects.includes(:completions, :teachable)
-      @dates = (@start_date..@end_date).to_a
-      subject_ids = @subjects.pluck(:id)
-
-      completions_this_week = Completion.where(subject_id: subject_ids)
-                                        .where(date: @start_date..@end_date)
-
-      @total_possible = @subjects.count * @dates.count
-      @total_completed = completions_this_week.count
+      load_weekly_report
     else
       @subjects = []
-      @dates = []
+      @subject_reports = []
       @total_possible = 0
       @total_completed = 0
+      @daily = {}
+      @weekly_recordings = []
+    end
+
+    set_week_nav
+  end
+
+  private
+
+  def parse_week_param
+    return Date.current unless params[:week].present?
+
+    Date.parse(params[:week])
+  rescue ArgumentError
+    Date.current
+  end
+
+  def set_week_nav
+    @prev_week = @week_start - 7.days
+    @next_week = @week_start + 7.days
+    @next_week_disabled = @next_week > Date.current.beginning_of_week
+  end
+
+  def load_weekly_report
+    @subjects = @student.all_subjects.includes(:teachable, :subject_options)
+
+    subject_ids = @subjects.map(&:id)
+
+    completions = Completion
+      .where(subject_id: subject_ids, date: @week_start..@week_end)
+      .includes(:subject_option)
+
+    @completions_by_subject_and_date = completions.each_with_object({}) do |c, h|
+      h[[ c.subject_id, c.date ]] = c
+    end
+
+    @weekly_recordings = Recording
+      .where(student: @student, date: @week_start..@week_end)
+      .includes(recordable: :subject)
+      .order(date: :desc, created_at: :desc)
+
+    build_subject_reports(completions)
+    build_daily_breakdown(completions)
+  end
+
+  def build_subject_reports(completions)
+    # Index subjects for lookup
+    subjects_by_id = @subjects.index_by(&:id)
+
+    # Group completions by subject for counting
+    completions_by_subject = completions.group_by(&:subject_id)
+
+    @subject_reports = @subjects.map do |subject|
+      active_dates = @dates.select { |d| subject.active_on?(d) }
+      possible = active_dates.size
+
+      # Only count completions on active days to avoid completed > possible
+      subject_completions = completions_by_subject[subject.id] || []
+      completed = subject_completions.count { |c| subject.active_on?(c.date) }
+
+      rate = possible.zero? ? 0.0 : (completed.to_f / possible)
+
+      {
+        subject: subject,
+        active_dates: active_dates,
+        possible: possible,
+        completed: completed,
+        rate: rate
+      }
+    end
+
+    @total_possible = @subject_reports.sum { |r| r[:possible] }
+    @total_completed = @subject_reports.sum { |r| r[:completed] }
+  end
+
+  def build_daily_breakdown(completions)
+    # Index subjects for lookup
+    subjects_by_id = @subjects.index_by(&:id)
+
+    # Group completions by date
+    completions_by_date = completions.group_by(&:date)
+
+    @daily = @dates.each_with_object({}) do |date, h|
+      possible = @subjects.count { |s| s.active_on?(date) }
+
+      # Only count completions for subjects active on that date
+      date_completions = completions_by_date[date] || []
+      completed = date_completions.count do |c|
+        subject = subjects_by_id[c.subject_id]
+        subject && subject.active_on?(date)
+      end
+
+      h[date] = { possible: possible, completed: completed }
     end
   end
 end
