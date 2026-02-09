@@ -1,6 +1,6 @@
 <%# Mobile bottom navigation - hidden on tablet+ (md:hidden) %>
-<nav class="fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 md:hidden z-50 overflow-x-auto" role="navigation" aria-label="Main navigation">
-  <div class="flex justify-around min-w-max px-2">
+<nav class="fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 md:hidden z-50" role="navigation" aria-label="Main navigation">
+  <div class="flex justify-around px-2">
     <%= link_to today_path, class: nav_link_classes(today_path, base_classes: "flex flex-col items-center py-3 px-2 min-w-[48px] min-h-[44px]"), "aria-label": "Today" do %>
       <%= render "icons/today", css_class: "w-6 h-6" %>
       <span class="text-[10px] mt-0.5">Today</span>
@@ -14,16 +14,6 @@
     <%= link_to notes_path, class: nav_link_classes(notes_path, base_classes: "flex flex-col items-center py-3 px-2 min-w-[48px] min-h-[44px]"), "aria-label": "Notes" do %>
       <%= render "icons/notes", css_class: "w-6 h-6" %>
       <span class="text-[10px] mt-0.5">Notes</span>
-    <% end %>
-
-    <%= link_to student_groups_path, class: nav_link_classes(student_groups_path, base_classes: "flex flex-col items-center py-3 px-2 min-w-[48px] min-h-[44px]"), "aria-label": "Groups" do %>
-      <%= render "icons/groups", css_class: "w-6 h-6" %>
-      <span class="text-[10px] mt-0.5">Groups</span>
-    <% end %>
-
-    <%= link_to report_path, class: nav_link_classes(report_path, base_classes: "flex flex-col items-center py-3 px-2 min-w-[48px] min-h-[44px]"), "aria-label": "Reports" do %>
-      <%= render "icons/reports", css_class: "w-6 h-6" %>
-      <span class="text-[10px] mt-0.5">Reports</span>
     <% end %>
 
     <%= link_to settings_path, class: nav_link_classes(settings_path, base_classes: "flex flex-col items-center py-3 px-2 min-w-[48px] min-h-[44px]"), "aria-label": "Settings" do %>
