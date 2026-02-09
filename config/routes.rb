@@ -6,6 +6,12 @@ Rails.application.routes.draw do
   get "signup", to: "registrations#new"
   post "signup", to: "registrations#create"
 
+  # Setup flow for new users
+  get "setup", to: "setup#welcome", as: :setup
+  get "setup/student", to: "setup#student", as: :setup_student
+  post "setup/student", to: "setup#create_student"
+  get "setup/complete", to: "setup#complete", as: :setup_complete
+
   resources :students, only: [ :index, :show, :new, :create, :edit, :update, :destroy ] do
     member do
       post :select

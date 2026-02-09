@@ -1,4 +1,11 @@
 class HomeController < ApplicationController
   def show
+    # Redirect new users to setup flow
+    unless Current.user.students.exists?
+      redirect_to setup_path
+    else
+      # Existing users go straight to the weekly view
+      redirect_to week_path
+    end
   end
 end
