@@ -39,13 +39,10 @@ Thumbs.db
 /config/master.key
 /config/credentials/*.key
 
-# bv (beads viewer) local config and caches
+# Beads (no longer used in this project)
+.beads/
 .bv/
-.beads/.bv.lock
 bv-pages/
-
-# Beads export state (machine-specific)
-.beads/export-state/
 memory/
 
 # Kamal deployment secrets
