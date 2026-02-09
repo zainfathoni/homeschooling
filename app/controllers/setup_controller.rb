@@ -1,7 +1,7 @@
 class SetupController < ApplicationController
   layout "setup"
 
-  before_action :redirect_if_setup_complete, only: [ :welcome, :student ]
+  before_action :redirect_if_setup_complete, only: [ :welcome, :student, :create_student ]
 
   def welcome
   end
@@ -44,6 +44,6 @@ class SetupController < ApplicationController
   end
 
   def student_params
-    params.require(:student).permit(:avatar, :avatar_url, :year_level, teachable_attributes: [ :id, :name ])
+    params.require(:student).permit(:avatar, :avatar_url, :year_level, teachable_attributes: [ :name ])
   end
 end
