@@ -173,16 +173,28 @@ class GroupSubjectVisibilityTest < ActionDispatch::IntegrationTest
   end
 
   # ==========================================================================
-  # CROSS-USER ISOLATION - Users cannot access other users' group subjects
+  # CROSS-USER ISOLATION - Users cannot access other users' students/subjects
   # ==========================================================================
 
-  test "another user cannot access group subjects through their own students" do
-    # other_user has student_two (Sam), who is NOT in family_group
-    # Attempting to access family_science through Sam should fail
+  test "user cannot access another user's student" do
+    # other_user tries to access parent's student (student_in_group)
+    # This should fail because other_user doesn't own this student
     sign_in_as @other_user
 
-    get edit_student_subject_path(@student_not_in_group, @group_subject)
-    assert_redirected_to student_subjects_path(@student_not_in_group)
+    # Attempting to access someone else's student should redirect
+    get student_subjects_path(@student_in_group)
+    assert_redirected_to students_path
+    assert_equal "Student not found", flash[:alert]
+  end
+
+  test "user cannot edit group subject through another user's student" do
+    # other_user tries to access family_science through parent's student
+    # This should fail at the student lookup level
+    sign_in_as @other_user
+
+    get edit_student_subject_path(@student_in_group, @group_subject)
+    assert_redirected_to students_path
+    assert_equal "Student not found", flash[:alert]
   end
 
   # ==========================================================================
