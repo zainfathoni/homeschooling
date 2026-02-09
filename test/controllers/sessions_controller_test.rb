@@ -15,7 +15,8 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     post login_path, params: { email: @user.email, password: "password123" }
     assert_redirected_to root_path
     follow_redirect!
-    assert_select "h1", /Welcome/
+    # User with students gets redirected to week view
+    assert_redirected_to week_path
   end
 
   test "should reject invalid password" do
@@ -33,7 +34,9 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   test "session persists across requests" do
     post login_path, params: { email: @user.email, password: "password123" }
     get root_path
+    # User with students gets redirected to week view
+    assert_redirected_to week_path
+    follow_redirect!
     assert_response :success
-    assert_select "h1", /Welcome, #{@user.name}/
   end
 end

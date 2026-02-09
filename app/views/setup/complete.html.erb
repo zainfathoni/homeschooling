@@ -1,0 +1,55 @@
+<% content_for(:title) { "All Set! - Homeschooling" } %>
+
+<div class="bg-white rounded-2xl shadow-lg p-8 text-center">
+  <!-- Success icon -->
+  <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+    <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+    </svg>
+  </div>
+
+  <h1 class="text-2xl font-bold text-gray-900 mb-3">You're All Set! 🎉</h1>
+  <p class="text-gray-600 mb-8">
+    Your first student has been added. Now let's add some subjects to track.
+  </p>
+
+  <!-- Next steps -->
+  <div class="text-left bg-lavender/50 rounded-xl p-5 mb-8">
+    <h2 class="font-medium text-gray-800 mb-3">Next steps:</h2>
+    <ol class="space-y-2 text-sm text-gray-600">
+      <li class="flex items-start gap-2">
+        <span class="bg-coral text-white w-5 h-5 rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">1</span>
+        <span>Add subjects your student will be learning</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="bg-gray-300 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">2</span>
+        <span>Check off lessons as you complete them</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="bg-gray-300 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">3</span>
+        <span>Record narrations to capture learning moments</span>
+      </li>
+    </ol>
+  </div>
+
+  <!-- CTA -->
+  <% if current_student %>
+    <%= link_to new_student_subject_path(current_student), class: "inline-flex items-center justify-center gap-2 w-full bg-coral text-white px-6 py-3 rounded-xl font-medium hover:bg-coral/90 transition min-h-[48px]" do %>
+      Add First Subject
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+      </svg>
+    <% end %>
+  <% else %>
+    <%= link_to week_path, class: "inline-flex items-center justify-center gap-2 w-full bg-coral text-white px-6 py-3 rounded-xl font-medium hover:bg-coral/90 transition min-h-[48px]" do %>
+      Go to Dashboard
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+      </svg>
+    <% end %>
+  <% end %>
+
+  <p class="text-gray-400 text-xs mt-4">
+    <%= link_to "Skip for now →", week_path, class: "hover:text-gray-600" %>
+  </p>
+</div>

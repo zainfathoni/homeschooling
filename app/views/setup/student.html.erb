@@ -1,0 +1,62 @@
+<% content_for(:title) { "Add Student - Homeschooling" } %>
+
+<div class="bg-white rounded-2xl shadow-lg p-8">
+  <!-- Back link -->
+  <div class="mb-6">
+    <%= link_to setup_path, class: "inline-flex items-center gap-1 text-gray-500 hover:text-gray-700 text-sm" do %>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+      </svg>
+      Back
+    <% end %>
+  </div>
+
+  <!-- Header -->
+  <div class="text-center mb-6">
+    <div class="w-16 h-16 bg-coral/10 rounded-full flex items-center justify-center mx-auto mb-4">
+      <svg class="w-8 h-8 text-coral" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+      </svg>
+    </div>
+    <h1 class="text-xl font-bold text-gray-900 mb-2">Add Your First Student</h1>
+    <p class="text-gray-500 text-sm">Enter your student's name to get started.</p>
+  </div>
+
+  <!-- Form -->
+  <%= form_with model: @student, url: setup_student_path, class: "space-y-5" do |form| %>
+    <% if @student.errors.any? %>
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+        <h3 class="text-red-800 font-medium text-sm">Please fix the following:</h3>
+        <ul class="list-disc list-inside text-red-600 text-sm mt-1">
+          <% @student.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= form.fields_for :teachable do |teachable_form| %>
+      <div>
+        <%= teachable_form.label :name, "Student Name", class: "block text-gray-700 font-medium mb-1.5" %>
+        <%= teachable_form.text_field :name,
+            class: "w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-coral focus:border-coral text-lg",
+            placeholder: "e.g., Sarah",
+            autofocus: true %>
+      </div>
+    <% end %>
+
+    <div>
+      <%= form.label :year_level, "Year Level (optional)", class: "block text-gray-700 font-medium mb-1.5" %>
+      <%= form.number_field :year_level,
+          class: "w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-coral focus:border-coral",
+          placeholder: "e.g., 6",
+          min: 1,
+          max: 12 %>
+      <p class="text-gray-400 text-xs mt-1">You can add this later if you're not sure.</p>
+    </div>
+
+    <div class="pt-2">
+      <%= form.submit "Continue", class: "w-full bg-coral text-white px-6 py-3 rounded-xl font-medium hover:bg-coral/90 cursor-pointer transition min-h-[48px]" %>
+    </div>
+  <% end %>
+</div>
