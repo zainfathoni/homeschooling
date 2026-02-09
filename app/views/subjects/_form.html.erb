@@ -1,4 +1,4 @@
-<%= form_with model: [student, subject], class: "space-y-6", data: { controller: "subject-type" } do |form| %>
+<%= form_with model: subject, url: url, class: "space-y-6", data: { controller: "subject-type" } do |form| %>
   <% if subject.teachable&.student_group? %>
     <div class="bg-coral/10 border border-coral/20 rounded-lg p-3 text-sm text-gray-700">
       Creating a group subject for <span class="font-medium"><%= subject.teachable.name %></span>.
@@ -104,6 +104,6 @@
 
   <div class="flex gap-3 pt-4">
     <%= form.submit class: "bg-coral text-white px-6 py-2 rounded-lg font-medium hover:bg-coral/90 cursor-pointer" %>
-    <%= link_to "Cancel", student_subjects_path(student), class: "text-gray-600 hover:text-gray-800 px-4 py-2" %>
+    <%= link_to "Cancel", cancel_path, class: "text-gray-600 hover:text-gray-800 px-4 py-2" %>
   </div>
 <% end %>

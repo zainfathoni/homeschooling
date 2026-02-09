@@ -37,28 +37,39 @@
     </div>
 
     <div>
-      <h2 class="text-sm font-semibold text-gray-500 tracking-wide uppercase mb-3">Group Subjects</h2>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-sm font-semibold text-gray-500 tracking-wide uppercase">Group Subjects</h2>
+        <%= link_to "View All", student_group_subjects_path(@student_group),
+            class: "text-sm text-coral hover:text-coral/80" %>
+      </div>
       <% if @student_group.teachable&.subjects&.any? %>
         <div class="space-y-2">
           <% @student_group.teachable.subjects.each do |subject| %>
             <div class="flex items-center justify-between border-b border-gray-50 pb-2 last:border-0 last:pb-0">
-              <span class="text-gray-800"><%= subject.name %></span>
-              <span class="text-xs px-2 py-1 rounded-full <%= subject_type_badge_class(subject.subject_type) %>">
-                <%= subject.subject_type.humanize %>
-              </span>
+              <div class="flex items-center gap-2">
+                <span class="text-gray-800"><%= subject.name %></span>
+                <span class="text-xs px-2 py-1 rounded-full <%= subject_type_badge_class(subject.subject_type) %>">
+                  <%= subject.subject_type.humanize %>
+                </span>
+              </div>
+              <div class="flex items-center gap-2">
+                <%= link_to "Edit", edit_student_group_subject_path(@student_group, subject),
+                    class: "text-gray-600 hover:text-gray-800 text-sm" %>
+                <%= button_to "Delete", student_group_subject_path(@student_group, subject),
+                    method: :delete,
+                    class: "text-red-600 hover:text-red-800 text-sm",
+                    data: { turbo_confirm: "Are you sure you want to delete #{subject.name}?" } %>
+              </div>
             </div>
           <% end %>
         </div>
       <% else %>
         <p class="text-sm text-gray-500">No subjects assigned yet.</p>
       <% end %>
-      <% if @student_group.students.any? %>
-        <div class="mt-4">
-          <%= link_to "Manage Subjects",
-              new_student_subject_path(@student_group.students.first, teachable_id: @student_group.teachable_id),
-              class: "text-coral hover:text-coral/80" %>
-        </div>
-      <% end %>
+      <div class="mt-4">
+        <%= link_to "Add Subject", new_student_group_subject_path(@student_group),
+            class: "text-coral hover:text-coral/80" %>
+      </div>
     </div>
   </div>
 
