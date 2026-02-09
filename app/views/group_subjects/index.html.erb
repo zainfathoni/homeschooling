@@ -22,7 +22,7 @@
                   <% if subject.scheduled? %>
                     (<%= scheduled_days_label(subject.scheduled_days) %>)
                   <% elsif subject.pick1? && subject.subject_options.any? %>
-                    (<%= subject.subject_options.count %> options)
+                    (<%= subject.subject_options.size %> options)
                   <% end %>
                 </p>
               </div>

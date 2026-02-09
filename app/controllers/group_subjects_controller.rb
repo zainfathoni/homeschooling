@@ -57,7 +57,7 @@ class GroupSubjectsController < ApplicationController
     )
 
     if permitted[:scheduled_days].present?
-      permitted[:scheduled_days] = permitted[:scheduled_days].map(&:to_i)
+      permitted[:scheduled_days] = permitted[:scheduled_days].reject(&:blank?).map(&:to_i)
     end
 
     permitted

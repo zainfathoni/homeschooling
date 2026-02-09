@@ -40,7 +40,7 @@
             </div>
             <div class="flex items-center gap-2">
               <% if subject.teachable&.student_group? %>
-                <%= link_to "Manage in Group", student_group_path(subject.teachable.teachable),
+                <%= link_to "Manage in Group", student_group_subjects_path(subject.teachable.teachable),
                     class: "text-coral hover:text-coral/80 px-3 py-1 text-sm" %>
               <% else %>
                 <%= link_to "Edit", edit_student_subject_path(@student, subject),
