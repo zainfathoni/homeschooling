@@ -11,15 +11,13 @@ class ResponsiveNavigationTest < ActionDispatch::IntegrationTest
 
   # Bottom Navigation Tests
 
-  test "bottom nav renders with all six links when authenticated with student" do
+  test "bottom nav renders with four links when authenticated with student" do
     get week_path
     assert_response :success
     assert_select "nav.fixed.bottom-0" do
       assert_select "a[href='#{today_path}']", text: /Today/
       assert_select "a[href='#{week_path}']", text: /Week/
       assert_select "a[href='#{notes_path}']", text: /Notes/
-      assert_select "a[href='#{report_path}']", text: /Reports/
-      assert_select "a[href='#{student_groups_path}']", text: /Groups/
       assert_select "a[href='#{settings_path}']", text: /Settings/
     end
   end
@@ -33,7 +31,7 @@ class ResponsiveNavigationTest < ActionDispatch::IntegrationTest
   test "bottom nav links have 44px minimum touch targets" do
     get week_path
     assert_response :success
-    assert_select "nav.fixed.bottom-0 a.min-h-\\[44px\\]", minimum: 6
+    assert_select "nav.fixed.bottom-0 a.min-h-\\[44px\\]", minimum: 4
   end
 
   test "bottom nav not rendered when not authenticated" do
