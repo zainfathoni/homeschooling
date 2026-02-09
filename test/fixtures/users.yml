@@ -2,8 +2,18 @@ parent:
   email: parent@example.com
   password_digest: <%= BCrypt::Password.create('password123') %>
   name: Parent User
+  role: parent
 
 other:
   email: other@example.com
   password_digest: <%= BCrypt::Password.create('password123') %>
   name: Other User
+  role: parent
+
+# Student user: Alex (student one) logging in as themselves
+alex_student_user:
+  email: alex@example.com
+  password_digest: <%= BCrypt::Password.create('password123') %>
+  name: Alex
+  role: student
+  student: one

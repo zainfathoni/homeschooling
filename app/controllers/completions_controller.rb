@@ -5,7 +5,7 @@ class CompletionsController < ApplicationController
     @subject = Subject.find(params[:subject_id])
     @date = Date.parse(params[:date])
 
-    authorize_subject!
+    return unless authorize_subject!
 
     unless @subject.active_on?(@date)
       head :unprocessable_entity
@@ -90,8 +90,15 @@ class CompletionsController < ApplicationController
   end
 
   def authorize_subject!
-    unless @subject.teachable.user_id == Current.user.id
-      redirect_to today_path, alert: "Not authorized"
+    # Authorization per ADR-004:
+    # - Group subjects: only the owning parent can complete
+    # - Individual subjects: owning parent OR the student themselves can complete
+    unless Current.user.can_complete?(@subject)
+      message = @subject.teachable.student_group? ? "Only parents can complete group subjects" : "Not authorized"
+      redirect_to today_path, alert: message
+      return false
     end
+
+    true
   end
 end
