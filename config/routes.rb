@@ -20,7 +20,10 @@ Rails.application.routes.draw do
     resources :narrations
     resources :quick_notes
   end
-  resources :student_groups
+  resources :student_groups do
+    resources :subjects, only: [ :index, :new, :create, :edit, :update, :destroy ],
+                          controller: "group_subjects"
+  end
 
   get "today", to: "daily#show"
   get "daily/:date", to: "daily#show", as: :daily

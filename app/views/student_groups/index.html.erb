@@ -26,12 +26,8 @@
               </div>
             <% end %>
             <div class="flex items-center gap-2">
-              <% if group.students.any? %>
-                <%= link_to "Subjects", student_subjects_path(group.students.first, teachable_id: group.teachable_id),
-                    class: "text-coral hover:text-coral/80 px-3 py-1" %>
-              <% else %>
-                <span class="text-gray-300 px-3 py-1" aria-hidden="true">Subjects</span>
-              <% end %>
+              <%= link_to "Subjects", student_group_subjects_path(group),
+                  class: "text-coral hover:text-coral/80 px-3 py-1" %>
               <%= link_to "Edit", edit_student_group_path(group),
                   class: "text-gray-600 hover:text-gray-800 px-3 py-1" %>
               <%= button_to "Delete", student_group_path(group),

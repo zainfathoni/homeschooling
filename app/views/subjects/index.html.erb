@@ -22,7 +22,12 @@
             <div class="flex items-center gap-3">
               <span class="text-lg">📚</span>
               <div>
-                <p class="font-medium text-gray-800"><%= subject.name %></p>
+                <p class="font-medium text-gray-800">
+                  <%= subject.name %>
+                  <% if subject.teachable&.student_group? %>
+                    <span class="text-xs px-2 py-0.5 rounded-full bg-coral/10 text-coral font-medium ml-1"><%= subject.teachable.name %></span>
+                  <% end %>
+                </p>
                 <p class="text-sm text-gray-500">
                   <%= subject.subject_type.titleize %>
                   <% if subject.scheduled? %>
@@ -34,12 +39,17 @@
               </div>
             </div>
             <div class="flex items-center gap-2">
-              <%= link_to "Edit", edit_student_subject_path(@student, subject),
-                  class: "text-gray-600 hover:text-gray-800 px-3 py-1" %>
-              <%= button_to "Delete", student_subject_path(@student, subject),
-                  method: :delete,
-                  class: "text-red-600 hover:text-red-800 px-3 py-1",
-                  data: { turbo_confirm: "Are you sure you want to delete #{subject.name}?" } %>
+              <% if subject.teachable&.student_group? %>
+                <%= link_to "Manage in Group", student_group_subjects_path(subject.teachable.teachable),
+                    class: "text-coral hover:text-coral/80 px-3 py-1 text-sm" %>
+              <% else %>
+                <%= link_to "Edit", edit_student_subject_path(@student, subject),
+                    class: "text-gray-600 hover:text-gray-800 px-3 py-1" %>
+                <%= button_to "Delete", student_subject_path(@student, subject),
+                    method: :delete,
+                    class: "text-red-600 hover:text-red-800 px-3 py-1",
+                    data: { turbo_confirm: "Are you sure you want to delete #{subject.name}?" } %>
+              <% end %>
             </div>
           </div>
         </div>

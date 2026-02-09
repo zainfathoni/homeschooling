@@ -5,6 +5,8 @@
   </header>
 
   <div class="bg-white rounded-xl p-6 shadow-sm">
-    <%= render "form", student: @student, subject: @subject %>
+    <%= render "form", subject: @subject,
+        url: student_subjects_path(@student, teachable_id: @subject.teachable_id),
+        cancel_path: student_subjects_path(@student) %>
   </div>
 </div>
