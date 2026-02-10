@@ -9,7 +9,7 @@ Replace paper-based weekly planners with a digital tool that:
 - Tracks daily subject completion across the week
 - Supports "Pick 1" subject categories (choose one resource per category)
 - Handles day-specific subjects (e.g., Coding only Mon-Thu)
-- Captures narrations (text, voice, photo) as learning evidence
+- Captures narrations (text, voice, photo, video) as learning evidence
 - Works seamlessly on both mobile phones and iPads
 
 ## Target Users
@@ -129,7 +129,7 @@ See [ADR 004: Teachable Delegated Type](decisions/004-teachable-delegated-type.m
 
 ### 5. Narrations
 
-- Text, voice, or photo entries
+- Text, voice, photo, or video entries
 - Linked to subject and date
 - Filterable by student
 
