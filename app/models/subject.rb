@@ -19,12 +19,11 @@ class Subject < ApplicationRecord
   def pick1_balance(date_range)
     selected_counts = completions
       .where(date: date_range)
-      .joins(:subject_option)
-      .group("subject_options.name")
+      .group(:subject_option_id)
       .count
 
     counts = subject_options.each_with_object({}) do |option, h|
-      h[option.name] = selected_counts[option.name] || 0
+      h[option.name] = selected_counts[option.id] || 0
     end
 
     total = counts.values.sum

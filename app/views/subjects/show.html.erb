@@ -58,7 +58,14 @@
                   <span class="text-sm text-gray-500"><%= count %> (<%= pct %>%)</span>
                 </div>
                 <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div class="h-2 rounded-full <%= count.zero? ? 'bg-gray-300' : 'bg-coral' %>" style="width: <%= pct %>%"></div>
+                  <div class="h-2 rounded-full <%= count.zero? ? 'bg-gray-300' : 'bg-coral' %>"
+                       style="width: <%= pct %>%"
+                       role="progressbar"
+                       aria-valuenow="<%= pct.to_i %>"
+                       aria-valuemin="0"
+                       aria-valuemax="100"
+                       aria-label="<%= "#{option.name}: #{pct}% of selections" %>">
+                  </div>
                 </div>
                 <% if count.zero? %>
                   <p class="text-xs text-amber-600 mt-0.5">Never selected in this period</p>
