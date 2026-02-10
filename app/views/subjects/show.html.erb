@@ -1,0 +1,79 @@
+<div class="min-h-screen bg-lavender p-4">
+  <div class="max-w-lg mx-auto">
+    <header class="mb-6">
+      <h1 class="text-2xl font-bold text-gray-800"><%= @subject.name %></h1>
+      <p class="text-sm text-gray-500">
+        <%= @subject.subject_type.titleize %>
+        <% if @subject.teachable&.student_group? %>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-coral/10 text-coral font-medium ml-1"><%= @subject.teachable.name %></span>
+        <% end %>
+      </p>
+    </header>
+
+    <% if @subject.pick1? && @pick1_balance %>
+      <div class="bg-white rounded-xl p-5 shadow-sm mb-4">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Pick1 Balance</h2>
+
+        <%= form_with url: student_subject_path(@student, @subject), method: :get, data: { controller: "date-range" } do |f| %>
+          <div class="flex flex-wrap items-end gap-2 mb-4">
+            <div class="flex-1 min-w-[120px]">
+              <label for="start_date" class="block text-xs text-gray-500 mb-1">From</label>
+              <%= f.date_field :start_date, value: @date_range.first, class: "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm", data: { date_range_target: "startDate" } %>
+            </div>
+            <div class="flex-1 min-w-[120px]">
+              <label for="end_date" class="block text-xs text-gray-500 mb-1">To</label>
+              <%= f.date_field :end_date, value: @date_range.last, class: "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm", data: { date_range_target: "endDate" } %>
+            </div>
+            <%= f.submit "Apply", class: "bg-coral text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-coral/90 cursor-pointer" %>
+          </div>
+          <div class="flex gap-2 mb-4">
+            <button type="button" data-action="click->date-range#preset" data-weeks="4"
+                    class="text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50 min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer">
+              Last 4 weeks
+            </button>
+            <button type="button" data-action="click->date-range#preset" data-weeks="8"
+                    class="text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50 min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer">
+              Last 8 weeks
+            </button>
+            <button type="button" data-action="click->date-range#preset" data-weeks="12"
+                    class="text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50 min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer">
+              Last 12 weeks
+            </button>
+          </div>
+        <% end %>
+
+        <p class="text-sm text-gray-500 mb-4">
+          <%= @date_range.first.strftime("%b %d, %Y") %> – <%= @date_range.last.strftime("%b %d, %Y") %>
+          · <%= @pick1_balance[:total] %> <%= "selection".pluralize(@pick1_balance[:total]) %>
+        </p>
+
+        <% if @subject.subject_options.any? %>
+          <ul class="space-y-3">
+            <% @subject.subject_options.each do |option| %>
+              <% count = @pick1_balance[:counts][option.name] || 0 %>
+              <% pct = @pick1_balance[:percentages][option.name] || 0.0 %>
+              <li>
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-sm font-medium text-gray-800"><%= option.name %></span>
+                  <span class="text-sm text-gray-500"><%= count %> (<%= pct %>%)</span>
+                </div>
+                <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div class="h-2 rounded-full <%= count.zero? ? 'bg-gray-300' : 'bg-coral' %>" style="width: <%= pct %>%"></div>
+                </div>
+                <% if count.zero? %>
+                  <p class="text-xs text-amber-600 mt-0.5">Never selected in this period</p>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="text-sm text-gray-500">No options configured for this subject.</p>
+        <% end %>
+      </div>
+    <% end %>
+
+    <div class="mt-6">
+      <%= link_to "← Back to Subjects", student_subjects_path(@student), class: "text-coral hover:underline" %>
+    </div>
+  </div>
+</div>

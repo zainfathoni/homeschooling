@@ -1,9 +1,16 @@
 class GroupSubjectsController < ApplicationController
   before_action :set_student_group
-  before_action :set_subject, only: [ :edit, :update, :destroy ]
+  before_action :set_subject, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @subjects = @student_group.teachable.subjects.includes(:subject_options)
+  end
+
+  def show
+    @date_range = parse_date_range
+    if @subject.pick1?
+      @pick1_balance = @subject.pick1_balance(@date_range)
+    end
   end
 
   def new
@@ -48,6 +55,16 @@ class GroupSubjectsController < ApplicationController
     @subject = @student_group.teachable.subjects.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     redirect_to student_group_path(@student_group), alert: "Subject not found"
+  end
+
+  def parse_date_range
+    if params[:start_date].present? && params[:end_date].present?
+      Date.parse(params[:start_date])..Date.parse(params[:end_date])
+    else
+      4.weeks.ago.to_date..Date.current
+    end
+  rescue ArgumentError
+    4.weeks.ago.to_date..Date.current
   end
 
   def subject_params

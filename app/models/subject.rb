@@ -16,6 +16,26 @@ class Subject < ApplicationRecord
   # View compatibility helpers for transition from subject.student pattern
   # For individual subjects: returns the owner
   # For group subjects: returns the provided fallback (current_student)
+  def pick1_balance(date_range)
+    selected_counts = completions
+      .where(date: date_range)
+      .joins(:subject_option)
+      .group("subject_options.name")
+      .count
+
+    counts = subject_options.each_with_object({}) do |option, h|
+      h[option.name] = selected_counts[option.name] || 0
+    end
+
+    total = counts.values.sum
+
+    percentages = counts.transform_values do |count|
+      total.zero? ? 0.0 : (count.to_f / total * 100).round(1)
+    end
+
+    { counts: counts, total: total, percentages: percentages }
+  end
+
   def student_for_narration(current_student)
     teachable.student? ? teachable.student : current_student
   end
