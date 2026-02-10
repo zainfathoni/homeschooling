@@ -16,12 +16,12 @@ Rails.application.routes.draw do
     member do
       post :select
     end
-    resources :subjects, only: [ :index, :new, :create, :edit, :update, :destroy ]
+    resources :subjects, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
     resources :narrations
     resources :quick_notes
   end
   resources :student_groups do
-    resources :subjects, only: [ :index, :new, :create, :edit, :update, :destroy ],
+    resources :subjects, only: [ :index, :show, :new, :create, :edit, :update, :destroy ],
                           controller: "group_subjects"
   end
 

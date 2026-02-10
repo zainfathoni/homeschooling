@@ -1,10 +1,17 @@
 class SubjectsController < ApplicationController
   before_action :set_student
   before_action :set_teachable, only: [ :new, :create ]
-  before_action :set_subject, only: [ :edit, :update, :destroy ]
+  before_action :set_subject, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @subjects = @student.all_subjects.includes(:subject_options, teachable: :teachable)
+  end
+
+  def show
+    @date_range = parse_date_range
+    if @subject.pick1?
+      @pick1_balance = @subject.pick1_balance(@date_range)
+    end
   end
 
   def new
@@ -59,6 +66,16 @@ class SubjectsController < ApplicationController
     end
   rescue ActiveRecord::RecordNotFound
     redirect_to student_subjects_path(@student), alert: "Teachable not found"
+  end
+
+  def parse_date_range
+    if params[:start_date].present? && params[:end_date].present?
+      Date.parse(params[:start_date])..Date.parse(params[:end_date])
+    else
+      4.weeks.ago.to_date..Date.current
+    end
+  rescue ArgumentError
+    4.weeks.ago.to_date..Date.current
   end
 
   def subject_params

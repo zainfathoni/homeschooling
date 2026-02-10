@@ -39,6 +39,10 @@
               </div>
             </div>
             <div class="flex items-center gap-2">
+              <% if subject.pick1? %>
+                <%= link_to "Balance", student_subject_path(@student, subject),
+                    class: "text-coral hover:text-coral/80 px-3 py-1 text-sm" %>
+              <% end %>
               <% if subject.teachable&.student_group? %>
                 <%= link_to "Manage in Group", student_group_subjects_path(subject.teachable.teachable),
                     class: "text-coral hover:text-coral/80 px-3 py-1 text-sm" %>
