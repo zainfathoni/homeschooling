@@ -1,5 +1,6 @@
 class NotesController < ApplicationController
   def index
+    @students = Current.user.students
     @student = current_student
 
     unless @student
