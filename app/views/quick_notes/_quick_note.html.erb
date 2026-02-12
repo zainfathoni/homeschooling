@@ -14,11 +14,7 @@
     <% end %>
 
     <% if quick_note.audio.attached? %>
-      <div class="<%= 'mt-2' if quick_note.content.present? %>">
-        <audio controls class="w-full" src="<%= url_for(quick_note.audio) %>" aria-label="Voice quick note">
-          Your browser does not support audio playback.
-        </audio>
-      </div>
+      <%= render "quick_notes/audio_player", quick_note: quick_note %>
     <% end %>
 
     <div class="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100">
