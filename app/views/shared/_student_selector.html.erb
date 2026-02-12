@@ -11,5 +11,13 @@
         <% end %>
       <% end %>
     </div>
+  <% elsif @students.present? && @students.size == 1 %>
+    <% student = @students.first %>
+    <div class="flex gap-2 mb-4">
+      <div class="flex items-center gap-2 px-4 py-2 rounded-full font-medium bg-coral text-white shadow-sm">
+        <%= student_avatar(student, size: :small) %>
+        <span><%= student.name %></span>
+      </div>
+    </div>
   <% end %>
 <% end %>
