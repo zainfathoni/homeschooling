@@ -1,9 +1,10 @@
 ---
 id: "002"
 title: Weekly Grid Epic
-status: ready
+status: complete
 created: 2026-01-28
 refined: 2026-01-28
+completed: 2026-02-10
 depends_on: "001"
 ---
 
@@ -261,7 +262,7 @@ Shows weekly progress (Mon-Fri), not daily. Updates via Turbo Stream when comple
 ### Mobile vs Tablet
 
 - **Mobile (<768px)**: Vertical subject list with compact 5-circle row
-- **Tablet (≥768px)**: Same layout for now; Duet view is a future enhancement
+- **Tablet (≥768px)**: Duet layout — Weekly Grid (60%) + Daily Focus (40%) side-by-side
 
 ## Task Breakdown
 
@@ -355,15 +356,15 @@ Shows weekly progress (Mon-Fri), not daily. Updates via Turbo Stream when comple
 
 ## Success Criteria
 
-- [ ] Weekly grid shows all subjects as rows
-- [ ] 5-day columns (Mon-Fri) with completion circles
-- [ ] Current day highlighted with coral outline
-- [ ] Toggling completion updates circle immediately
-- [ ] Progress bar shows weekly percentage
-- [ ] Progress bar updates on completion toggle
-- [ ] Student selector switches grid data
-- [ ] All tests pass
-- [ ] No rubocop violations
+- [x] Weekly grid shows all subjects as rows
+- [x] 5-day columns (Mon-Fri) with completion circles
+- [x] Current day highlighted with coral outline
+- [x] Toggling completion updates circle immediately
+- [x] Progress bar shows weekly percentage
+- [x] Progress bar updates on completion toggle
+- [x] Student selector switches grid data
+- [x] All tests pass (499 tests, 0 failures)
+- [x] No rubocop violations
 
 ## Beads Issues Structure
 
@@ -388,8 +389,20 @@ hs-weekly-grid (epic)
 
 ## Future Enhancements
 
-- Week navigation (prev/next week)
+- Week navigation (prev/next week) — intentionally deferred; current week focus is sufficient for v1
 - Subject icons (customizable)
-- Tablet Duet view (grid + daily detail)
+- ~~Tablet Duet view (grid + daily detail)~~ — **Implemented** (see `_layouts/duet.html.erb`)
 - Scheduled days (grayed out unavailable days)
-- Pick1 subject indicators
+- ~~Pick1 subject indicators~~ — **Implemented** (see Pick1 epic)
+
+## Implementation Notes (2026-02-10)
+
+The weekly grid was implemented and extended beyond the original plan:
+
+1. **Duet Layout**: Tablet/desktop shows Weekly Grid + Daily Focus side-by-side
+2. **Pick1 Integration**: Completion circles show Pick1 selection state
+3. **Narration Indicators**: Grid shows narration indicators per subject
+4. **Quick Notes**: Daily focus panel includes Quick Notes section
+5. **Off-Day Handling**: Subjects scheduled off for the day are visually distinguished
+
+Week navigation (prev/next) was intentionally deferred as current-week focus is sufficient for the initial launch.
