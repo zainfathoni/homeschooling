@@ -45,7 +45,7 @@ Replace paper-based weekly planners with a digital tool that:
 - Expandable "Pick 1" categories with radio options
 - Dropdown selectors for multi-option subjects
 - "Not today" label for scheduled-only subjects
-- "Narration Required" badges
+- "Narration Required" indicators
 - Quick notes input with voice option
 
 #### 3. Notes & Narrations
