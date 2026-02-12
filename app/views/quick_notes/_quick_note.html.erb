@@ -6,10 +6,16 @@
       <div>
         <span class="text-sm text-gray-500"><%= quick_note.date&.strftime("%b %d, %Y") %></span>
       </div>
-      <span class="text-lg">📝</span>
+      <span class="text-lg"><%= quick_note.audio.attached? ? "🎙️" : "📝" %></span>
     </div>
 
-    <p class="text-gray-700 whitespace-pre-wrap"><%= quick_note.content %></p>
+    <% if quick_note.content.present? %>
+      <p class="text-gray-700 whitespace-pre-wrap"><%= quick_note.content %></p>
+    <% end %>
+
+    <% if quick_note.audio.attached? %>
+      <%= render "quick_notes/audio_player", quick_note: quick_note %>
+    <% end %>
 
     <div class="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100">
       <%= link_to "Edit", edit_student_quick_note_path(quick_note.student, recording),

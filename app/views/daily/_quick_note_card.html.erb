@@ -2,9 +2,17 @@
 <%= turbo_frame_tag dom_id(quick_note) do %>
   <div class="bg-gray-50 rounded-lg p-3">
     <div class="flex items-start justify-between gap-2">
-      <p class="text-sm text-gray-700 whitespace-pre-wrap flex-1"><%= quick_note.content %></p>
-      <span class="text-sm flex-shrink-0">📝</span>
+      <% if quick_note.content.present? %>
+        <p class="text-sm text-gray-700 whitespace-pre-wrap flex-1"><%= quick_note.content %></p>
+      <% else %>
+        <p class="text-sm text-gray-400 italic flex-1">Voice note</p>
+      <% end %>
+      <span class="text-sm flex-shrink-0"><%= quick_note.audio.attached? ? "🎙️" : "📝" %></span>
     </div>
+
+    <% if quick_note.audio.attached? %>
+      <%= render "quick_notes/audio_player", quick_note: quick_note %>
+    <% end %>
 
     <div class="flex items-center gap-3 mt-2 pt-2 border-t border-gray-200">
       <%= link_to "Edit", edit_student_quick_note_path(recording.student, recording),
