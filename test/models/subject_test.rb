@@ -87,29 +87,29 @@ class SubjectTest < ActiveSupport::TestCase
     assert_equal false, subject.narration_required
   end
 
-  test "has_narration_for? returns true when narration exists for date" do
+  test "has_document_for? returns true when document exists for date" do
     subject = subjects(:one)
     date = Date.new(2026, 1, 26)
-    assert subject.has_narration_for?(date)
+    assert subject.has_document_for?(date)
   end
 
-  test "has_narration_for? returns false when no narration exists for date" do
+  test "has_document_for? returns false when no document exists for date" do
     subject = subjects(:one)
     date = Date.new(2026, 1, 28)
-    assert_not subject.has_narration_for?(date)
+    assert_not subject.has_document_for?(date)
   end
 
-  test "has_narration_for? returns false for subject with no narrations" do
+  test "has_document_for? returns false for subject with no documents" do
     subject = subjects(:two)
     date = Date.new(2026, 1, 26)
-    assert_not subject.has_narration_for?(date)
+    assert_not subject.has_document_for?(date)
   end
 
   # View compatibility helper tests
-  test "student_for_narration returns owner student for individual subject" do
+  test "student_for_document returns owner student for individual subject" do
     subject = subjects(:one)
     other_student = students(:two)
-    assert_equal students(:one), subject.student_for_narration(other_student)
+    assert_equal students(:one), subject.student_for_document(other_student)
   end
 
   test "for_student? returns true for owner student" do

@@ -20,7 +20,7 @@ pick1_islamic:
   subject_type: pick1
 
 narration_required_subject:
-  name: Reading Narration
+  name: Reading Document
   teachable: student_one_teachable
   subject_type: fixed
   narration_required: true

@@ -122,9 +122,9 @@ completion_count = 0
 end
 puts "  Created #{completion_count} completions"
 
-# Create narrations for subjects that require them
-puts "Creating narrations..."
-narration_count = 0
+# Create documents for subjects that require them
+puts "Creating documents..."
+document_count = 0
 all_subjects.select(&:narration_required?).each do |subject|
   student = subject.owner_student
   next unless student
@@ -135,22 +135,22 @@ all_subjects.select(&:narration_required?).each do |subject|
     next if rand > 0.5 # 50% have narrations
 
     # Check if a recording already exists for this subject/student/date
-    existing = Recording.joins("INNER JOIN narrations ON recordings.recordable_id = narrations.id AND recordings.recordable_type = 'Narration'")
+    existing = Recording.joins("INNER JOIN documents ON recordings.recordable_id = documents.id AND recordings.recordable_type = 'Document'")
                         .where(student: student, date: date)
-                        .where(narrations: { subject_id: subject.id })
+                        .where(documents: { subject_id: subject.id })
                         .exists?
     next if existing
 
-    narration = Narration.create!(
+    document = Document.create!(
       subject: subject,
-      narration_type: "text",
+      document_type: "text",
       content: "#{student.name} worked on #{subject.name} today. Great progress!"
     )
-    Recording.create!(student: student, date: date, recordable: narration)
-    narration_count += 1
+    Recording.create!(student: student, date: date, recordable: document)
+    document_count += 1
   end
 end
-puts "  Created #{narration_count} narrations (with recordings)"
+puts "  Created #{document_count} documents (with recordings)"
 
 puts "\nSeed complete!"
 puts "  Users: #{User.count}"
@@ -160,4 +160,4 @@ puts "  GroupMemberships: #{GroupMembership.count}"
 puts "  Teachables: #{Teachable.count}"
 puts "  Subjects: #{Subject.count}"
 puts "  Completions: #{Completion.count}"
-puts "  Narrations: #{Narration.count}"
+puts "  Documents: #{Document.count}"

@@ -9,7 +9,7 @@ class StudentsController < ApplicationController
 
   def show
     @subjects = @student.all_subjects.order(:name)
-    @recent_narrations = @student.narrations.includes(:subject).order(created_at: :desc).limit(5)
+    @recent_documents = @student.documents.includes(:subject).order(created_at: :desc).limit(5)
     @recent_quick_notes = QuickNote
       .joins(:recording)
       .where(recordings: { student_id: @student.id })

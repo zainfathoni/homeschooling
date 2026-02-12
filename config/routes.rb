@@ -17,7 +17,7 @@ Rails.application.routes.draw do
       post :select
     end
     resources :subjects, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
-    resources :narrations
+    resources :documents
     resources :quick_notes
   end
   resources :student_groups do

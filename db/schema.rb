@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_12_211012) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_12_221334) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -50,6 +50,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_12_211012) do
     t.index ["subject_option_id"], name: "index_completions_on_subject_option_id"
   end
 
+  create_table "documents", force: :cascade do |t|
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.string "document_type", null: false
+    t.integer "subject_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["subject_id"], name: "index_documents_on_subject_id"
+  end
+
   create_table "group_memberships", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "student_group_id", null: false
@@ -58,15 +67,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_12_211012) do
     t.index ["student_group_id", "student_id"], name: "index_group_memberships_on_student_group_id_and_student_id", unique: true
     t.index ["student_group_id"], name: "index_group_memberships_on_student_group_id"
     t.index ["student_id"], name: "index_group_memberships_on_student_id"
-  end
-
-  create_table "narrations", force: :cascade do |t|
-    t.text "content"
-    t.datetime "created_at", null: false
-    t.string "narration_type", null: false
-    t.integer "subject_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["subject_id"], name: "index_narrations_on_subject_id"
   end
 
   create_table "quick_notes", force: :cascade do |t|
@@ -149,9 +149,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_12_211012) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "completions", "subject_options"
   add_foreign_key "completions", "subjects"
+  add_foreign_key "documents", "subjects"
   add_foreign_key "group_memberships", "student_groups"
   add_foreign_key "group_memberships", "students"
-  add_foreign_key "narrations", "subjects"
   add_foreign_key "recordings", "students"
   add_foreign_key "subject_options", "subjects"
   add_foreign_key "subjects", "teachables"

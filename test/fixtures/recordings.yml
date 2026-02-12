@@ -1,13 +1,13 @@
-text_narration_recording:
+text_document_recording:
   student: one
   date: <%= Date.new(2026, 1, 26) %>
-  recordable_type: Narration
-  recordable_id: <%= ActiveRecord::FixtureSet.identify(:text_narration) %>
+  recordable_type: Document
+  recordable_id: <%= ActiveRecord::FixtureSet.identify(:text_document) %>
 
 another_text_recording:
   student: one
   date: <%= Date.new(2026, 1, 27) %>
-  recordable_type: Narration
+  recordable_type: Document
   recordable_id: <%= ActiveRecord::FixtureSet.identify(:another_text) %>
 
 quick_note_recording:

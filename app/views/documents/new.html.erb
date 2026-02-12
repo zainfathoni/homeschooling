@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-lavender p-4">
   <header class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-800">Add Narration</h1>
+    <h1 class="text-2xl font-bold text-gray-800">Add Document</h1>
     <p class="text-gray-600">for <%= @student.name %></p>
   </header>
 
@@ -12,6 +12,6 @@
   <% end %>
 
   <div class="bg-white rounded-xl p-6 shadow-sm">
-    <%= render "form", narration: @narration, student: @student, subjects: @subjects, date: @date %>
+    <%= render "form", document: @document, student: @student, subjects: @subjects, date: @date %>
   </div>
 </div>

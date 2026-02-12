@@ -9,7 +9,7 @@ class Student < ApplicationRecord
   # Returns only personal subjects; use #all_subjects for personal + group subjects
   has_many :subjects, through: :teachable
   has_many :recordings, dependent: :destroy
-  has_many :narrations, through: :recordings, source: :recordable, source_type: "Narration"
+  has_many :documents, through: :recordings, source: :recordable, source_type: "Document"
   has_many :group_memberships, dependent: :destroy
   has_many :student_groups, through: :group_memberships
 

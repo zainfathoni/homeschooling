@@ -13,14 +13,14 @@ class RecordingTest < ActiveSupport::TestCase
   # Associations
 
   test "belongs to student" do
-    recording = recordings(:text_narration_recording)
+    recording = recordings(:text_document_recording)
     assert_equal students(:one), recording.student
   end
 
   test "has delegated type recordable" do
-    narration_recording = recordings(:text_narration_recording)
-    assert_equal "Narration", narration_recording.recordable_type
-    assert_instance_of Narration, narration_recording.recordable
+    document_recording = recordings(:text_document_recording)
+    assert_equal "Document", document_recording.recordable_type
+    assert_instance_of Document, document_recording.recordable
 
     quick_note_recording = recordings(:quick_note_recording)
     assert_equal "QuickNote", quick_note_recording.recordable_type
@@ -28,7 +28,7 @@ class RecordingTest < ActiveSupport::TestCase
   end
 
   test "student has many recordings" do
-    assert_includes students(:one).recordings, recordings(:text_narration_recording)
+    assert_includes students(:one).recordings, recordings(:text_document_recording)
     assert_includes students(:one).recordings, recordings(:quick_note_recording)
   end
 
@@ -56,7 +56,7 @@ class RecordingTest < ActiveSupport::TestCase
   test "for_date scope returns recordings for specific date" do
     date = Date.new(2026, 1, 26)
     results = Recording.for_date(date)
-    assert_includes results, recordings(:text_narration_recording)
+    assert_includes results, recordings(:text_document_recording)
     assert_not_includes results, recordings(:another_text_recording)
   end
 
@@ -72,13 +72,13 @@ class RecordingTest < ActiveSupport::TestCase
 
   # Delegated type helpers
 
-  test "narration? returns true for Narration recordables" do
-    assert recordings(:text_narration_recording).narration?
-    assert_not recordings(:quick_note_recording).narration?
+  test "document? returns true for Document recordables" do
+    assert recordings(:text_document_recording).document?
+    assert_not recordings(:quick_note_recording).document?
   end
 
   test "quick_note? returns true for QuickNote recordables" do
     assert recordings(:quick_note_recording).quick_note?
-    assert_not recordings(:text_narration_recording).quick_note?
+    assert_not recordings(:text_document_recording).quick_note?
   end
 end

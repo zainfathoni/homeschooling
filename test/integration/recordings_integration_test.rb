@@ -10,7 +10,7 @@ class RecordingsIntegrationTest < ActionDispatch::IntegrationTest
 
   # Timeline Display Tests
 
-  test "notes timeline shows both quick notes and narrations" do
+  test "notes timeline shows both quick notes and documents" do
     get notes_path
 
     assert_response :success
@@ -26,12 +26,12 @@ class RecordingsIntegrationTest < ActionDispatch::IntegrationTest
     assert_select "span", text: "📝"
   end
 
-  test "notes timeline uses correct partial for narrations" do
+  test "notes timeline uses correct partial for documents" do
     get notes_path
 
     assert_response :success
-    narration = narrations(:text_narration)
-    assert_match narration.subject.name, response.body
+    document = documents(:text_document)
+    assert_match document.subject.name, response.body
   end
 
   test "notes timeline orders by date descending" do
@@ -44,15 +44,15 @@ class RecordingsIntegrationTest < ActionDispatch::IntegrationTest
     assert jan_27_pos < jan_26_pos, "Expected Jan 27 to appear before Jan 26"
   end
 
-  test "filter by narrations hides quick notes" do
-    get notes_path(filter: "narrations")
+  test "filter by documents hides quick notes" do
+    get notes_path(filter: "documents")
 
     assert_response :success
     assert_match "Today I learned about fractions", response.body
     assert_no_match(/Field trip to the museum/, response.body)
   end
 
-  test "filter by quick_notes hides narrations" do
+  test "filter by quick_notes hides documents" do
     get notes_path(filter: "quick_notes")
 
     assert_response :success
@@ -61,10 +61,10 @@ class RecordingsIntegrationTest < ActionDispatch::IntegrationTest
   end
 
   test "filter pills show active state" do
-    get notes_path(filter: "narrations")
+    get notes_path(filter: "documents")
 
     assert_response :success
-    assert_select "a.bg-coral", text: "Narrations"
+    assert_select "a.bg-coral", text: "Documents"
     assert_select "a.bg-white", text: "Quick Notes"
   end
 
@@ -143,11 +143,11 @@ class RecordingsIntegrationTest < ActionDispatch::IntegrationTest
   end
 
   test "filtered timeline shows appropriate empty state" do
-    @student.recordings.where(recordable_type: "Narration").destroy_all
+    @student.recordings.where(recordable_type: "Document").destroy_all
 
-    get notes_path(filter: "narrations")
+    get notes_path(filter: "documents")
     assert_response :success
-    assert_match "No narrations yet", response.body
+    assert_match "No documents yet", response.body
   end
 
   # Recording Scopes via Timeline

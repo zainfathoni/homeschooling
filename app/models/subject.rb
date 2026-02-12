@@ -2,7 +2,7 @@ class Subject < ApplicationRecord
   belongs_to :teachable
 
   has_many :completions, dependent: :destroy
-  has_many :narrations, dependent: :destroy
+  has_many :documents, dependent: :destroy
   has_many :subject_options, -> { order(:position) }, dependent: :destroy
 
   accepts_nested_attributes_for :subject_options, allow_destroy: true, reject_if: :all_blank
@@ -35,7 +35,7 @@ class Subject < ApplicationRecord
     { counts: counts, total: total, percentages: percentages }
   end
 
-  def student_for_narration(current_student)
+  def student_for_document(current_student)
     teachable.student? ? teachable.student : current_student
   end
 
@@ -53,8 +53,8 @@ class Subject < ApplicationRecord
     teachable.student? ? teachable.student : nil
   end
 
-  def has_narration_for?(date)
-    narrations.for_date(date).exists?
+  def has_document_for?(date)
+    documents.for_date(date).exists?
   end
 
   def active_on?(date)

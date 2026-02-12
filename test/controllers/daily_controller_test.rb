@@ -177,36 +177,36 @@ class DailyControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "shows narration indicator for subjects with narration" do
+  test "shows document indicator for subjects with document" do
     sign_in_as @user
     post select_student_path(@student)
 
     narration_subject = subjects(:narration_required_subject)
-    # Create narration for this subject on the test date
-    narration = Narration.create!(subject: narration_subject, narration_type: "text", content: "Test narration")
-    Recording.create!(student: @student, date: Date.new(2026, 1, 28), recordable: narration)
+    # Create document for this subject on the test date
+    document = Document.create!(subject: narration_subject, document_type: "text", content: "Test document")
+    Recording.create!(student: @student, date: Date.new(2026, 1, 28), recordable: document)
 
     travel_to Date.new(2026, 1, 28) do
       get today_path
       assert_response :success
-      # Narration exists for this date
-      assert_match(/narrated/, response.body)
+      # Document exists for this date
+      assert_match(/documented/, response.body)
     end
   end
 
-  test "shows add narration link for subjects without narration" do
+  test "shows add document link for subjects without document" do
     sign_in_as @user
     post select_student_path(@student)
 
     narration_subject = subjects(:narration_required_subject)
-    # Test on a day without narration
+    # Test on a day without document
     monday = Date.new(2026, 1, 26)
-    narration_subject.narrations.for_date(monday).destroy_all
+    narration_subject.documents.for_date(monday).destroy_all
 
     travel_to monday do
       get today_path
       assert_response :success
-      assert_match(/Narration Required/, response.body)
+      assert_match(/Document Required/, response.body)
     end
   end
 

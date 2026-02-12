@@ -1,9 +1,9 @@
-text_narration:
+text_document:
   subject: one
-  narration_type: text
+  document_type: text
   content: "Today I learned about fractions"
 
 another_text:
   subject: one
-  narration_type: text
+  document_type: text
   content: "Practiced multiplication tables"

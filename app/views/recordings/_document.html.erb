@@ -1,0 +1,45 @@
+<%# locals: (recording:, recordable:) %>
+<% document = recordable %>
+<%= turbo_frame_tag dom_id(document) do %>
+  <div class="bg-white rounded-xl p-4 shadow-sm">
+    <div class="flex items-start justify-between mb-2">
+      <div>
+        <span class="font-medium text-gray-800"><%= document.subject.name %></span>
+        <span class="text-sm text-gray-500 ml-2"><%= recording.date.strftime("%b %d, %Y") %></span>
+      </div>
+      <span class="text-lg">
+        <%= { "text" => "📝", "voice" => "🎙️", "photo" => "📷", "video" => "🎥" }[document.document_type] %>
+      </span>
+    </div>
+
+    <% case document.document_type %>
+    <% when "text" %>
+      <p class="text-gray-700 whitespace-pre-wrap"><%= document.content %></p>
+    <% when "voice" %>
+      <% if document.media.attached? %>
+        <audio controls class="w-full" src="<%= url_for(document.media) %>">
+          Your browser does not support audio playback.
+        </audio>
+      <% end %>
+    <% when "photo" %>
+      <% if document.media.attached? %>
+        <%= image_tag document.media, class: "w-full rounded-lg", loading: "lazy" %>
+      <% end %>
+    <% when "video" %>
+      <% if document.media.attached? %>
+        <video controls class="w-full rounded-lg" src="<%= url_for(document.media) %>">
+          Your browser does not support video playback.
+        </video>
+      <% end %>
+    <% end %>
+
+    <div class="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100">
+      <%= link_to "Edit", edit_student_document_path(recording.student, recording),
+          class: "text-sm text-gray-500 hover:text-coral",
+          data: { turbo_frame: "_top" } %>
+      <%= link_to "Delete", student_document_path(recording.student, recording),
+          class: "text-sm text-gray-500 hover:text-red-500",
+          data: { turbo_method: :delete, turbo_confirm: "Delete this document?" } %>
+    </div>
+  </div>
+<% end %>

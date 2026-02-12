@@ -56,12 +56,12 @@ class CompletionsController < ApplicationController
       @completion.completed = true
       @completion.save!
       @completed = true
-      check_narration_reminder
+      check_document_reminder
     end
   end
 
-  def check_narration_reminder
-    @show_narration_reminder = @subject.narration_required? && !@subject.has_narration_for?(@date)
+  def check_document_reminder
+    @show_document_reminder = @subject.narration_required? && !@subject.has_document_for?(@date)
   end
 
   def calculate_week_totals
@@ -78,7 +78,7 @@ class CompletionsController < ApplicationController
     @total_possible = calculate_week_possible(subjects, @dates)
     @total_completed = week_completions
     @is_today = @date == Date.current
-    @has_narration = @subject.has_narration_for?(@date)
+    @has_document = @subject.has_document_for?(@date)
 
     calculate_daily_totals(subjects)
   end

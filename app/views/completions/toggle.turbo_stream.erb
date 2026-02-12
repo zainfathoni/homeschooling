@@ -9,7 +9,7 @@
              subject: @subject,
              date: @date,
              completed: @completed,
-             has_narration: @has_narration,
+             has_document: @has_document,
              pick1_option_name: @pick1_option_name,
              is_today: @is_today %>
 <% end %>
@@ -28,13 +28,13 @@
                subject: @subject,
                date: @date,
                selected_option_id: @selected_option_id,
-               has_narration: @has_narration %>
+               has_document: @has_document %>
   <% else %>
     <%= render "daily/task_card",
                subject: @subject,
                date: @date,
                completed: @completed,
-               has_narration: @has_narration %>
+               has_document: @has_document %>
   <% end %>
 <% end %>
 
@@ -45,9 +45,9 @@
              total: @daily_total %>
 <% end %>
 
-<%# Show narration reminder modal for subjects with narration_required %>
-<% if @show_narration_reminder %>
+<%# Show document reminder modal for subjects with narration_required %>
+<% if @show_document_reminder %>
 <%= turbo_stream.append "modals" do %>
-  <%= render "completions/narration_reminder", subject: @subject, date: @date %>
+  <%= render "completions/document_reminder", subject: @subject, date: @date %>
 <% end %>
 <% end %>

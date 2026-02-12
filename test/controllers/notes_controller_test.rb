@@ -16,11 +16,11 @@ class NotesControllerTest < ActionDispatch::IntegrationTest
     assert_match "Notes", response.body
   end
 
-  test "filters by narrations" do
+  test "filters by documents" do
     sign_in_as @user
     post select_student_path(@student)
 
-    get notes_path(filter: "narrations")
+    get notes_path(filter: "documents")
 
     assert_response :success
   end
@@ -53,7 +53,7 @@ class NotesControllerTest < ActionDispatch::IntegrationTest
     assert_match @student.name, response.body
   end
 
-  test "shows filter pills for all, narrations, and quick notes" do
+  test "shows filter pills for all, documents, and quick notes" do
     sign_in_as @user
     post select_student_path(@student)
 
@@ -61,7 +61,7 @@ class NotesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "a", text: "All"
-    assert_select "a", text: "Narrations"
+    assert_select "a", text: "Documents"
     assert_select "a", text: "Quick Notes"
   end
 

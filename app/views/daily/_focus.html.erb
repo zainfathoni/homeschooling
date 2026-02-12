@@ -18,13 +18,13 @@
             subject: subject,
             date: date,
             selected_option_id: pick1_selections[subject.id],
-            has_narration: subject.has_narration_for?(date) %>
+            has_document: subject.has_document_for?(date) %>
       <% else %>
         <%= render "daily/task_card",
             subject: subject,
             date: date,
             completed: completions.include?(subject.id),
-            has_narration: subject.has_narration_for?(date) %>
+            has_document: subject.has_document_for?(date) %>
       <% end %>
     <% end %>
   </div>
