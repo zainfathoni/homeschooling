@@ -1,4 +1,4 @@
-<%# locals: (subject:, date:, completed:, has_narration:, pick1_option_name: nil, is_today:) %>
+<%# locals: (subject:, date:, completed:, has_document:, pick1_option_name: nil, is_today:) %>
 <% active = subject.active_on?(date) %>
 <% clickable = active && !subject.pick1? %>
 <%= turbo_frame_tag dom_id(subject, "circle_#{date.to_s}") do %>
@@ -41,10 +41,10 @@
         <span class="w-8 h-8 rounded-full border-2 border-dashed border-gray-300"></span>
       </div>
     <% end %>
-    <% if has_narration %>
-      <%= link_to student_narrations_path(subject.student_for_narration(current_student), date: date, subject_id: subject.id),
+    <% if has_document %>
+      <%= link_to student_documents_path(subject.student_for_document(current_student), date: date, subject_id: subject.id),
           class: "absolute -top-0.5 -right-0.5 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-green-600 transition-colors",
-          title: "View narration for #{subject.name} on #{date.strftime('%A')}",
+          title: "View document for #{subject.name} on #{date.strftime('%A')}",
           data: { turbo_frame: "_top" } do %>
         <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
           <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />

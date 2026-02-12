@@ -12,8 +12,8 @@ class NotesController < ApplicationController
     @recordings = @student.recordings.includes(:recordable).recent
 
     case @filter
-    when "narrations"
-      @recordings = @recordings.where(recordable_type: "Narration")
+    when "documents"
+      @recordings = @recordings.where(recordable_type: "Document")
     when "quick_notes"
       @recordings = @recordings.where(recordable_type: "QuickNote")
     end

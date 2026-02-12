@@ -1,36 +1,36 @@
-class NarrationsController < ApplicationController
+class DocumentsController < ApplicationController
   before_action :set_student
   before_action :set_recording, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @recordings = @student.recordings
-                          .where(recordable_type: "Narration")
+                          .where(recordable_type: "Document")
                           .recent
-    # Manually preload narrations and their subjects
+    # Manually preload documents and their subjects
     ActiveRecord::Associations::Preloader.new(records: @recordings, associations: :recordable).call
-    narrations = @recordings.map(&:recordable).compact
-    ActiveRecord::Associations::Preloader.new(records: narrations, associations: :subject).call
+    documents = @recordings.map(&:recordable).compact
+    ActiveRecord::Associations::Preloader.new(records: documents, associations: :subject).call
 
     if params[:date].present?
       @recordings = @recordings.for_date(Date.parse(params[:date]))
     end
 
     if params[:subject_id].present?
-      @recordings = @recordings.joins("INNER JOIN narrations ON recordings.recordable_id = narrations.id")
-                              .where(narrations: { subject_id: params[:subject_id] })
+      @recordings = @recordings.joins("INNER JOIN documents ON recordings.recordable_id = documents.id")
+                              .where(documents: { subject_id: params[:subject_id] })
     end
 
-    @narrations = @recordings.map(&:recordable)
+    @documents = @recordings.map(&:recordable)
   end
 
   def show
-    @narration = @recording.recordable
+    @document = @recording.recordable
   end
 
   def new
-    @narration = Narration.new(
+    @document = Document.new(
       subject_id: params[:subject_id],
-      narration_type: "text"
+      document_type: "text"
     )
     @date = params[:date] || Date.current
     @subjects = @student.all_subjects
@@ -38,25 +38,25 @@ class NarrationsController < ApplicationController
   end
 
   def edit
-    @narration = @recording.recordable
+    @document = @recording.recordable
     @date = @recording.date
     @subjects = @student.all_subjects
   end
 
   def create
-    @narration = Narration.new(narration_params.except(:date))
-    @date = narration_params[:date] || Date.current
+    @document = Document.new(document_params.except(:date))
+    @date = document_params[:date] || Date.current
 
-    if @narration.valid?
+    if @document.valid?
       ActiveRecord::Base.transaction do
-        @narration.save!
+        @document.save!
         @recording = Recording.create!(
           student: @student,
           date: @date,
-          recordable: @narration
+          recordable: @document
         )
       end
-      redirect_to student_narrations_path(@student), notice: "Narration was successfully created."
+      redirect_to student_documents_path(@student), notice: "Document was successfully created."
     else
       @subjects = @student.all_subjects
       render :new, status: :unprocessable_entity
@@ -67,13 +67,13 @@ class NarrationsController < ApplicationController
   end
 
   def update
-    @narration = @recording.recordable
+    @document = @recording.recordable
 
     recording_updates = {}
-    recording_updates[:date] = narration_params[:date] if narration_params[:date].present?
+    recording_updates[:date] = document_params[:date] if document_params[:date].present?
 
     success = ActiveRecord::Base.transaction do
-      @narration.update!(narration_params.except(:date))
+      @document.update!(document_params.except(:date))
       @recording.update!(recording_updates) if recording_updates.any?
       true
     rescue ActiveRecord::RecordInvalid
@@ -81,7 +81,7 @@ class NarrationsController < ApplicationController
     end
 
     if success
-      redirect_to student_narrations_path(@student), notice: "Narration was successfully updated."
+      redirect_to student_documents_path(@student), notice: "Document was successfully updated."
     else
       @date = @recording.date
       @subjects = @student.all_subjects
@@ -93,7 +93,7 @@ class NarrationsController < ApplicationController
     @recording.destroy
 
     respond_to do |format|
-      format.html { redirect_to student_narrations_path(@student), notice: "Narration was successfully deleted." }
+      format.html { redirect_to student_documents_path(@student), notice: "Document was successfully deleted." }
       format.turbo_stream
     end
   end
@@ -107,12 +107,12 @@ class NarrationsController < ApplicationController
   end
 
   def set_recording
-    @recording = @student.recordings.where(recordable_type: "Narration").find(params[:id])
+    @recording = @student.recordings.where(recordable_type: "Document").find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    redirect_to student_narrations_path(@student), alert: "Narration not found"
+    redirect_to student_documents_path(@student), alert: "Document not found"
   end
 
-  def narration_params
-    params.require(:narration).permit(:subject_id, :date, :narration_type, :content, :media)
+  def document_params
+    params.require(:document).permit(:subject_id, :date, :document_type, :content, :media)
   end
 end

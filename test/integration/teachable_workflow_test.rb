@@ -109,15 +109,15 @@ class TeachableWorkflowTest < ActionDispatch::IntegrationTest
       "all_subjects should include group subjects"
   end
 
-  test "student_for_narration helper returns owner for individual subject" do
+  test "student_for_document helper returns owner for individual subject" do
     subject = subjects(:one)
     current_student = students(:two)
 
     # For individual subject, should return the owner student
-    assert_equal @student, subject.student_for_narration(current_student)
+    assert_equal @student, subject.student_for_document(current_student)
   end
 
-  test "student_for_narration helper returns current_student for group subject" do
+  test "student_for_document helper returns current_student for group subject" do
     student_one = students(:one)
     student_two = students(:two)
 
@@ -137,7 +137,7 @@ class TeachableWorkflowTest < ActionDispatch::IntegrationTest
     )
 
     # For group subject, should return the provided current_student
-    assert_equal student_two, subject.student_for_narration(student_two)
+    assert_equal student_two, subject.student_for_document(student_two)
   end
 
   test "for_student? returns true for individual subject owner" do

@@ -114,21 +114,21 @@
       </ul>
     </div>
 
-    <%# Notes & narrations %>
+    <%# Notes & Documents %>
     <div class="bg-white rounded-xl p-4 shadow-sm mb-4">
-      <h2 class="text-lg font-semibold text-gray-800 mb-3">Notes & Narrations</h2>
+      <h2 class="text-lg font-semibold text-gray-800 mb-3">Notes & Documents</h2>
       <% if @weekly_recordings.any? %>
         <ul class="space-y-3">
           <% @weekly_recordings.each do |rec| %>
             <li class="border border-gray-100 rounded-xl p-3">
               <p class="text-xs text-gray-400 mb-1"><%= rec.date.strftime("%a, %b %d") %></p>
-              <% if rec.recordable_type == "Narration" %>
+              <% if rec.recordable_type == "Document" %>
                 <% n = rec.recordable %>
                 <p class="text-sm font-semibold text-gray-700"><%= n.subject.name %></p>
                 <% if n.text? %>
                   <p class="text-sm text-gray-600 mt-0.5"><%= n.content %></p>
                 <% else %>
-                  <p class="text-sm text-gray-500 mt-0.5 italic"><%= n.narration_type.humanize %> narration</p>
+                  <p class="text-sm text-gray-500 mt-0.5 italic"><%= n.document_type.humanize %> document</p>
                 <% end %>
               <% elsif rec.recordable_type == "QuickNote" %>
                 <p class="text-sm font-semibold text-gray-700">Quick Note</p>
@@ -138,7 +138,7 @@
           <% end %>
         </ul>
       <% else %>
-        <p class="text-sm text-gray-500">No notes or narrations this week.</p>
+        <p class="text-sm text-gray-500">No notes or documents this week.</p>
       <% end %>
     </div>
   <% else %>

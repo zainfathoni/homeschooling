@@ -1,17 +1,17 @@
-<div id="narration-reminder-modal"
+<div id="document-reminder-modal"
      data-controller="modal"
      data-action="click->modal#backdropClick"
      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
   <div class="bg-white rounded-xl p-6 mx-4 max-w-sm w-full shadow-xl"
        data-modal-target="dialog">
-    <h2 class="text-lg font-semibold text-gray-800 mb-2">Add a Narration?</h2>
+    <h2 class="text-lg font-semibold text-gray-800 mb-2">Add a Document?</h2>
     <p class="text-gray-600 mb-6">
-      <%= subject.name %> encourages narrations to capture learning evidence.
+      <%= subject.name %> encourages documents to capture learning evidence.
     </p>
     <div class="flex flex-col gap-3">
-      <%= link_to new_student_narration_path(subject.student_for_narration(current_student), subject_id: subject.id, date: date),
+      <%= link_to new_student_document_path(subject.student_for_document(current_student), subject_id: subject.id, date: date),
                   class: "w-full bg-coral text-white font-medium py-3 px-4 rounded-lg text-center hover:bg-coral/90 transition-colors min-h-[44px]" do %>
-        Add Narration
+        Add Document
       <% end %>
       <button type="button"
               data-action="click->modal#close"

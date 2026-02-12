@@ -40,11 +40,11 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2", "Subjects"
   end
 
-  test "should show notes and narrations section" do
+  test "should show notes and documents section" do
     sign_in_as(@user)
     get report_path
     assert_response :success
-    assert_select "h2", "Notes & Narrations"
+    assert_select "h2", "Notes & Documents"
   end
 
   test "should navigate to previous week" do

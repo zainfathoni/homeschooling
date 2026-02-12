@@ -1,18 +1,18 @@
-class Narration < ApplicationRecord
+class Document < ApplicationRecord
   belongs_to :subject
   has_one_attached :media
 
   has_one :recording, as: :recordable, dependent: :destroy, inverse_of: :recordable
   delegate :student, :student_id, :date, to: :recording, allow_nil: true
 
-  # Define enum first so narration_types.keys is available for validation
-  enum :narration_type, { text: "text", voice: "voice", photo: "photo", video: "video" }
+  # Define enum first so document_types.keys is available for validation
+  enum :document_type, { text: "text", voice: "voice", photo: "photo", video: "video" }
 
-  validates :narration_type, presence: true, inclusion: { in: narration_types.keys }
+  validates :document_type, presence: true, inclusion: { in: document_types.keys }
   validates :content, presence: true, if: :text?
   validates :media, presence: true, if: -> { voice? || photo? || video? }
   validate :student_matches_subject
-  validate :media_content_type_matches_narration_type
+  validate :media_content_type_matches_document_type
 
   ALLOWED_CONTENT_TYPES = {
     "voice" => %r{\Aaudio/},
@@ -27,7 +27,7 @@ class Narration < ApplicationRecord
 
   private
 
-  # Validates that the recording's student is allowed to narrate this subject.
+  # Validates that the recording's student is allowed to document this subject.
   # - For individual subjects: student must match the subject's owner
   # - For group subjects: student must be a member of the group
   def student_matches_subject
@@ -49,19 +49,19 @@ class Narration < ApplicationRecord
     end
   end
 
-  # Validates that the attached media content type matches the narration type.
+  # Validates that the attached media content type matches the document type.
   # - voice: must be audio/*
   # - photo: must be image/*
   # - video: must be video/*
-  def media_content_type_matches_narration_type
-    return unless media.attached? && narration_type.present?
+  def media_content_type_matches_document_type
+    return unless media.attached? && document_type.present?
 
-    allowed_pattern = ALLOWED_CONTENT_TYPES[narration_type]
+    allowed_pattern = ALLOWED_CONTENT_TYPES[document_type]
     return unless allowed_pattern # text type has no media requirement
 
     content_type = media.content_type
     unless content_type&.match?(allowed_pattern)
-      errors.add(:media, "must be a #{narration_type} file")
+      errors.add(:media, "must be a #{document_type} file")
     end
   end
 end

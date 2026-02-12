@@ -1,7 +1,7 @@
 class Recording < ApplicationRecord
   belongs_to :student
 
-  delegated_type :recordable, types: %w[Narration QuickNote], dependent: :destroy
+  delegated_type :recordable, types: %w[Document QuickNote], dependent: :destroy
 
   validates :date, presence: true
 

@@ -61,9 +61,9 @@
     <label class="flex items-center gap-3 cursor-pointer">
       <%= form.check_box :narration_required,
           class: "w-5 h-5 rounded border-gray-300 text-coral focus:ring-coral" %>
-      <span class="text-gray-700 font-medium">Narration Required</span>
+      <span class="text-gray-700 font-medium">Document Required</span>
     </label>
-    <p class="text-sm text-gray-500 mt-1 ml-8">Prompt to add a narration when completing this subject</p>
+    <p class="text-sm text-gray-500 mt-1 ml-8">Prompt to add a document when completing this subject</p>
   </div>
 
   <div data-subject-type-target="pick1Options" class="<%= 'hidden' unless subject.pick1? %>">

@@ -140,14 +140,14 @@ class CompletionsControllerTest < ActionDispatch::IntegrationTest
     narration_subject = subjects(:narration_required_subject)
     monday = Date.new(2026, 1, 26)
     narration_subject.completions.where(date: monday).destroy_all
-    narration_subject.narrations.for_date(monday).destroy_all
+    narration_subject.documents.for_date(monday).destroy_all
 
     post toggle_completion_path(subject_id: narration_subject.id, date: monday),
       headers: { "Accept" => "text/vnd.turbo-stream.html" }
 
     assert_response :success
-    assert_match "narration-reminder-modal", response.body
-    assert_match "Add Narration", response.body
+    assert_match "document-reminder-modal", response.body
+    assert_match "Add Document", response.body
     assert_match "Skip for Now", response.body
   end
 
@@ -156,22 +156,22 @@ class CompletionsControllerTest < ActionDispatch::IntegrationTest
     narration_subject = subjects(:narration_required_subject)
     monday = Date.new(2026, 1, 26)
     narration_subject.completions.where(date: monday).destroy_all
-    narration = Narration.create!(
+    document = Document.create!(
       subject: narration_subject,
-      narration_type: "text",
-      content: "Test narration"
+      document_type: "text",
+      content: "Test document"
     )
     Recording.create!(
       student: narration_subject.owner_student,
       date: monday,
-      recordable: narration
+      recordable: document
     )
 
     post toggle_completion_path(subject_id: narration_subject.id, date: monday),
       headers: { "Accept" => "text/vnd.turbo-stream.html" }
 
     assert_response :success
-    assert_no_match(/narration-reminder-modal/, response.body)
+    assert_no_match(/document-reminder-modal/, response.body)
   end
 
   test "does not show narration reminder when completing subject without narration_required" do
@@ -182,7 +182,7 @@ class CompletionsControllerTest < ActionDispatch::IntegrationTest
       headers: { "Accept" => "text/vnd.turbo-stream.html" }
 
     assert_response :success
-    assert_no_match(/narration-reminder-modal/, response.body)
+    assert_no_match(/document-reminder-modal/, response.body)
   end
 
   test "does not show narration reminder when uncompleting subject" do
@@ -196,6 +196,6 @@ class CompletionsControllerTest < ActionDispatch::IntegrationTest
       headers: { "Accept" => "text/vnd.turbo-stream.html" }
 
     assert_response :success
-    assert_no_match(/narration-reminder-modal/, response.body)
+    assert_no_match(/document-reminder-modal/, response.body)
   end
 end

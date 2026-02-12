@@ -10,9 +10,9 @@
       <%= link_to "All",
           notes_path,
           class: "px-4 py-2 rounded-full text-sm font-medium transition-colors #{@filter.nil? ? 'bg-coral text-white' : 'bg-white text-gray-600 hover:bg-gray-100'}" %>
-      <%= link_to "Narrations",
-          notes_path(filter: "narrations"),
-          class: "px-4 py-2 rounded-full text-sm font-medium transition-colors #{@filter == 'narrations' ? 'bg-coral text-white' : 'bg-white text-gray-600 hover:bg-gray-100'}" %>
+      <%= link_to "Documents",
+          notes_path(filter: "documents"),
+          class: "px-4 py-2 rounded-full text-sm font-medium transition-colors #{@filter == 'documents' ? 'bg-coral text-white' : 'bg-white text-gray-600 hover:bg-gray-100'}" %>
       <%= link_to "Quick Notes",
           notes_path(filter: "quick_notes"),
           class: "px-4 py-2 rounded-full text-sm font-medium transition-colors #{@filter == 'quick_notes' ? 'bg-coral text-white' : 'bg-white text-gray-600 hover:bg-gray-100'}" %>
@@ -27,8 +27,8 @@
       <% else %>
         <div id="notes_empty_state" class="bg-white rounded-xl p-8 text-center">
           <p class="text-gray-500">
-            <% if @filter == "narrations" %>
-              No narrations yet. Add one from the daily view!
+            <% if @filter == "documents" %>
+              No documents yet. Add one from the daily view!
             <% elsif @filter == "quick_notes" %>
               No quick notes yet. Tap the + button to add one!
             <% else %>
