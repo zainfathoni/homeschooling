@@ -7,10 +7,20 @@
         <span class="inline-block px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">Quick Note</span>
         <span class="text-sm text-gray-500"><%= recording.date.strftime("%b %d, %Y") %></span>
       </div>
-      <span class="text-lg">📝</span>
+      <span class="text-lg"><%= quick_note.audio.attached? ? "🎙️" : "📝" %></span>
     </div>
 
-    <p class="text-gray-700 whitespace-pre-wrap"><%= quick_note.content %></p>
+    <% if quick_note.content.present? %>
+      <p class="text-gray-700 whitespace-pre-wrap"><%= quick_note.content %></p>
+    <% end %>
+
+    <% if quick_note.audio.attached? %>
+      <div class="<%= 'mt-2' if quick_note.content.present? %>">
+        <audio controls class="w-full" src="<%= url_for(quick_note.audio) %>" aria-label="Voice quick note">
+          Your browser does not support audio playback.
+        </audio>
+      </div>
+    <% end %>
 
     <div class="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100">
       <%= link_to "Edit", edit_student_quick_note_path(recording.student, recording),

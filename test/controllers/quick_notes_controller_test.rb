@@ -40,6 +40,13 @@ class QuickNotesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='quick_note[date]'][value='2026-01-28']"
   end
 
+  test "new form includes audio file field" do
+    sign_in_as @user
+    get new_student_quick_note_path(@student)
+    assert_response :success
+    assert_select "input[type='file'][accept='audio/*']"
+  end
+
   test "creates quick note" do
     sign_in_as @user
 
@@ -54,6 +61,7 @@ class QuickNotesControllerTest < ActionDispatch::IntegrationTest
 
     new_note = QuickNote.last
     assert_equal "Feeling under the weather today - light schoolwork", new_note.content
+    assert_not new_note.audio.attached?
     assert_redirected_to student_quick_notes_path(@student)
   end
 
@@ -73,7 +81,7 @@ class QuickNotesControllerTest < ActionDispatch::IntegrationTest
     assert_match "turbo-stream", response.body
   end
 
-  test "rejects invalid quick note" do
+  test "rejects quick note without content or audio" do
     sign_in_as @user
 
     assert_no_difference "QuickNote.count" do
@@ -88,11 +96,91 @@ class QuickNotesControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
+  test "creates quick note with audio only" do
+    sign_in_as @user
+
+    assert_difference "QuickNote.count", 1 do
+      post student_quick_notes_path(@student), params: {
+        quick_note: {
+          content: "",
+          date: "2026-01-28",
+          audio: fixture_file_upload("sample_audio.wav", "audio/wav")
+        }
+      }
+    end
+
+    new_note = QuickNote.last
+    assert new_note.audio.attached?
+    assert_match %r{\Aaudio/}, new_note.audio.content_type
+    assert new_note.content.blank?
+    assert_redirected_to student_quick_notes_path(@student)
+  end
+
+  test "creates quick note with both text and audio" do
+    sign_in_as @user
+
+    assert_difference "QuickNote.count", 1 do
+      post student_quick_notes_path(@student), params: {
+        quick_note: {
+          content: "Voice memo about today's lesson",
+          date: "2026-01-28",
+          audio: fixture_file_upload("sample_audio.wav", "audio/wav")
+        }
+      }
+    end
+
+    new_note = QuickNote.last
+    assert_equal "Voice memo about today's lesson", new_note.content
+    assert new_note.audio.attached?
+    assert_redirected_to student_quick_notes_path(@student)
+  end
+
+  test "creates voice quick note with turbo stream" do
+    sign_in_as @user
+
+    assert_difference "QuickNote.count", 1 do
+      post student_quick_notes_path(@student), params: {
+        quick_note: {
+          content: "",
+          date: "2026-01-28",
+          audio: fixture_file_upload("sample_audio.wav", "audio/wav")
+        }
+      }, as: :turbo_stream
+    end
+
+    assert_response :success
+    assert_match "turbo-stream", response.body
+    assert QuickNote.last.audio.attached?
+  end
+
+  test "rejects non-audio file upload" do
+    sign_in_as @user
+
+    assert_no_difference "QuickNote.count" do
+      post student_quick_notes_path(@student), params: {
+        quick_note: {
+          content: "",
+          date: "2026-01-28",
+          audio: fixture_file_upload("sample_image.png", "image/png")
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
   test "shows edit quick note form" do
     sign_in_as @user
     get edit_student_quick_note_path(@student, @recording)
     assert_response :success
     assert_match @quick_note.content, response.body
+  end
+
+  test "edit form includes audio file field" do
+    sign_in_as @user
+    get edit_student_quick_note_path(@student, @recording)
+    assert_response :success
+    assert_select "input[type='file'][accept='audio/*']"
   end
 
   test "updates quick note content" do
@@ -102,6 +190,18 @@ class QuickNotesControllerTest < ActionDispatch::IntegrationTest
     }
     assert_redirected_to student_quick_notes_path(@student)
     assert_equal "Updated: Museum trip was amazing", @quick_note.reload.content
+  end
+
+  test "updates quick note with audio attachment" do
+    sign_in_as @user
+    patch student_quick_note_path(@student, @recording), params: {
+      quick_note: {
+        content: @quick_note.content,
+        audio: fixture_file_upload("sample_audio.wav", "audio/wav")
+      }
+    }
+    assert_redirected_to student_quick_notes_path(@student)
+    assert @quick_note.reload.audio.attached?
   end
 
   test "updates quick note date" do
@@ -125,6 +225,21 @@ class QuickNotesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match "turbo-stream", response.body
     assert_equal "Updated via Turbo", @quick_note.reload.content
+  end
+
+  test "displays audio player for voice quick note" do
+    sign_in_as @user
+
+    @quick_note.audio.attach(
+      io: StringIO.new("fake audio data"),
+      filename: "note.wav",
+      content_type: "audio/wav"
+    )
+    @quick_note.save!
+
+    get student_quick_note_path(@student, @recording)
+    assert_response :success
+    assert_select "audio[controls]"
   end
 
   test "deletes quick note" do

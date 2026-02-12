@@ -102,6 +102,6 @@ class QuickNotesController < ApplicationController
   end
 
   def quick_note_params
-    params.require(:quick_note).permit(:content)
+    params.require(:quick_note).permit(:content, :audio)
   end
 end
