@@ -52,9 +52,12 @@ module StudentsHelper
               class: [ base_class, extra_class ].compact.join(" ")
     else
       initials_class = "#{size_class} rounded-full flex items-center justify-center"
+      name = student.name.to_s
+      initial = name.first&.upcase || "?"
+
       tag.div class: [ initials_class, "bg-coral/20 text-coral font-bold", text_size, extra_class ].compact.join(" "),
-              aria: { label: student.name } do
-        student.name.first.upcase
+              aria: { label: name.presence || "Student" } do
+        initial
       end
     end
   end
