@@ -8,7 +8,7 @@
         <span class="text-sm text-gray-500 ml-2"><%= recording.date.strftime("%b %d, %Y") %></span>
       </div>
       <span class="text-lg">
-        <%= { "text" => "📝", "voice" => "🎙️", "photo" => "📷" }[document.document_type] %>
+        <%= { "text" => "📝", "voice" => "🎙️", "photo" => "📷", "video" => "🎥" }[document.document_type] %>
       </span>
     </div>
 
@@ -24,6 +24,12 @@
     <% when "photo" %>
       <% if document.media.attached? %>
         <%= image_tag document.media, class: "w-full rounded-lg", loading: "lazy" %>
+      <% end %>
+    <% when "video" %>
+      <% if document.media.attached? %>
+        <video controls class="w-full rounded-lg" src="<%= url_for(document.media) %>">
+          Your browser does not support video playback.
+        </video>
       <% end %>
     <% end %>
 

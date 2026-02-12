@@ -101,11 +101,11 @@
       <div class="bg-white rounded-2xl p-5 shadow-sm">
         <h3 class="text-sm font-semibold text-gray-500 tracking-wide uppercase mb-3">Recent Notes</h3>
         <div class="space-y-3">
-          <% @recent_documents.first(3).each do |narration| %>
+          <% @recent_documents.first(3).each do |document| %>
             <div class="border-b border-gray-50 pb-3 last:border-0 last:pb-0">
-              <p class="text-xs text-coral font-medium"><%= narration.subject.name %></p>
-              <p class="text-sm text-gray-700 line-clamp-2"><%= narration.content %></p>
-              <p class="text-xs text-gray-400 mt-1"><%= time_ago_in_words(narration.created_at) %> ago</p>
+              <p class="text-xs text-coral font-medium"><%= document.subject.name %></p>
+              <p class="text-sm text-gray-700 line-clamp-2"><%= document.content %></p>
+              <p class="text-xs text-gray-400 mt-1"><%= time_ago_in_words(document.created_at) %> ago</p>
             </div>
           <% end %>
           <% @recent_quick_notes.first(3).each do |note| %>

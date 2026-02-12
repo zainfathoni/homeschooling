@@ -115,11 +115,10 @@ class DocumentTest < ActiveSupport::TestCase
   end
 
   test "destroying subject destroys documents" do
-    subject = subjects(:one)
-    document_ids = subject.documents.pluck(:id)
+    document_ids = subjects(:one).documents.pluck(:id)
     assert document_ids.any?
 
-    subject.destroy
+    subjects(:one).destroy
     document_ids.each do |id|
       assert_nil Document.find_by(id: id)
     end
@@ -278,7 +277,7 @@ class DocumentTest < ActiveSupport::TestCase
       content: content
     )
 
-    recording = Recording.create!(
+    Recording.create!(
       student: student,
       date: date,
       recordable: document

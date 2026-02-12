@@ -47,7 +47,7 @@
         <%= link_to student_documents_path(subject.student_for_document(current_student), date: date, subject_id: subject.id),
             class: "text-xs text-green-600 hover:text-green-700 inline-flex items-center gap-1",
             data: { turbo_frame: "_top" } do %>
-          <span>✓</span> narrated
+          <span>✓</span> documented
         <% end %>
       </div>
     <% end %>

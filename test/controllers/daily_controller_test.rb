@@ -190,7 +190,7 @@ class DailyControllerTest < ActionDispatch::IntegrationTest
       get today_path
       assert_response :success
       # Document exists for this date
-      assert_match(/narrated/, response.body)
+      assert_match(/documented/, response.body)
     end
   end
 
